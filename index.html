@@ -2,8 +2,8 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cognitive Assessment 5D Master</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Cognitive Assessment (Safari Fixed)</title>
     <style>
         :root {
             --primary: #2A5C82;
@@ -26,12 +26,13 @@
         }
 
         body { 
-            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; /* 优先使用苹果系统字体 */
             background: var(--bg-color); 
             color: var(--text-main); 
             margin: 0; 
             display: flex; flex-direction: column; min-height: 100vh; 
             transition: background 0.3s;
+            -webkit-font-smoothing: antialiased; /* iOS 字体抗锯齿 */
         }
 
         .container { flex: 1; max-width: 900px; margin: 0 auto; padding: 20px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; }
@@ -40,13 +41,14 @@
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
         .card { 
-            background: var(--card-bg); padding: 40px; border-radius: var(--radius); 
+            background: var(--card-bg); padding: 30px; border-radius: var(--radius); 
             box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.02); position: relative; 
         }
         
         header { 
             background: rgba(255,255,255,0.95); padding: 15px 30px; position: sticky; top: 0; z-index: 100;
             display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); /* Safari 毛玻璃 */
         }
         .brand { font-size: 1.2rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
         .mode-switch button {
@@ -58,6 +60,7 @@
         .btn { 
             padding: 12px 30px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; 
             cursor: pointer; transition: transform 0.1s; display: inline-flex; align-items: center; gap: 8px;
+            -webkit-appearance: none; /* Safari 按钮样式重置 */
         }
         .btn:active { transform: scale(0.96); }
         .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -67,6 +70,7 @@
         input, select { 
             width: 100%; padding: 12px; border: 2px solid #EEE; border-radius: 10px; 
             font-size: 1rem; box-sizing: border-box; background: #FAFAFA;
+            -webkit-appearance: none; /* Safari 输入框样式重置 */
         }
         input:focus { border-color: var(--primary); outline: none; background: #FFF; }
 
@@ -74,40 +78,69 @@
         .progress-track { height: 8px; background: #EEE; border-radius: 4px; overflow: hidden; }
         .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
 
-        /* T2 Corsi Blocks */
+        /* === 核心修复 1: Corsi 方块 (使用 Padding Hack) === */
         .corsi-board {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; 
-            max-width: 360px; margin: 20px auto; aspect-ratio: 1/1;
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 15px; 
+            max-width: 360px; 
+            margin: 20px auto; 
+            /* 移除 aspect-ratio，改用内容撑开 */
         }
         .corsi-block {
-            background: #E0E0E0; border-radius: 12px; cursor: pointer; transition: background 0.2s;
+            background: #E0E0E0; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            transition: background 0.2s;
             box-shadow: 0 4px 0 #CCC;
+            /* 关键修复：利用 padding-bottom 百分比撑开高度，确保是正方形 */
+            height: 0;
+            padding-bottom: 100%; 
+            position: relative;
         }
         .corsi-block:active { transform: translateY(2px); box-shadow: 0 2px 0 #CCC; }
         .corsi-block.active { background: var(--accent) !important; box-shadow: 0 0 15px var(--accent); }
         .corsi-block.user-tap { background: var(--primary); }
 
-        /* T5 SDMT */
-        .svg-wrapper { width: 100%; max-width: 680px; margin: 0 auto; aspect-ratio: 1.75/1; }
-        .arc-text { font-family: Arial; font-weight: bold; fill: black; text-anchor: middle; dominant-baseline: middle; pointer-events: none; }
+        /* === 核心修复 2: SDMT SVG 容器 === */
+        .svg-wrapper { 
+            width: 100%; 
+            max-width: 680px; 
+            margin: 0 auto; 
+            /* 修复：使用 padding-bottom 替代 aspect-ratio 确保 Safari 渲染高度 */
+            height: 0;
+            padding-bottom: 58%; /* 1.75/1 的比例倒数 */
+            position: relative;
+        }
+        .svg-wrapper svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .arc-text { font-family: Arial, sans-serif; font-weight: bold; fill: black; text-anchor: middle; dominant-baseline: middle; pointer-events: none; }
         .sdmt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 400px; margin: 15px auto; }
         .key-btn { 
             background: #FFF; border: 1px solid #DDD; border-radius: 12px; padding: 20px; 
             font-size: 1.5rem; font-weight: bold; box-shadow: 0 3px 0 #CCC; cursor: pointer; color: #333;
+            -webkit-touch-callout: none; /* 禁止长按菜单 */
         }
         .key-btn:active { transform: translateY(3px); box-shadow: none; }
 
-        /* T1 Word */
+        /* 词汇测试 */
         .word-display { font-size: 3.5rem; text-align: center; height: 180px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); }
         .chips-area { display: flex; flex-wrap: wrap; gap: 8px; min-height: 60px; padding: 15px; background: #F4F6F8; border-radius: 10px; margin-bottom: 20px; border: 1px dashed #DDD; }
         .chip { background: var(--primary); color: white; padding: 6px 14px; border-radius: 20px; cursor: pointer; animation: pop 0.3s; font-size: 0.9rem; }
         @keyframes pop { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-        /* Backup Area */
+        /* 备份区域 */
         .backup-section { margin-top: 30px; border-top: 1px solid #EEE; padding-top: 20px; text-align: left; }
         .backup-box { display: none; margin-top: 10px; }
-        textarea.raw-data { width: 100%; height: 150px; font-family: monospace; font-size: 12px; padding: 10px; border: 1px solid #DDD; background: #FAFAFA; border-radius: 8px; }
+        textarea.raw-data { width: 100%; height: 150px; font-family: monospace; font-size: 12px; padding: 10px; border: 1px solid #DDD; background: #FAFAFA; border-radius: 8px; -webkit-appearance: none; }
 
+        /* 通用 */
         .hidden { display: none; }
         .text-center { text-align: center; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
@@ -115,29 +148,26 @@
         .mic-btn.recording { border-color: var(--accent); color: var(--accent); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 112, 67, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
 
-        /* Result Table */
+        /* 结果表 */
         table.res-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         table.res-table th, table.res-table td { padding: 10px; border-bottom: 1px solid #EEE; text-align: left; }
         table.res-table th { color: #888; font-size: 0.85rem; }
 
-        @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } .word-display { font-size: 2.5rem; height: 120px; } }
+        @media (max-width: 600px) { 
+            .card { padding: 25px 20px; }
+            .form-row { grid-template-columns: 1fr; } 
+            .word-display { font-size: 2.5rem; height: 120px; } 
+            /* 手机端进一步优化触摸体验 */
+            .key-btn { padding: 15px; }
+        }
     </style>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2c3e50">
-<link rel="apple-touch-icon" href="icon-192.png">
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js')
-      .then(() => console.log('Service Worker Registered'));
-  }
-</script>
 </head>
 <body>
 
 <header>
     <div class="brand">
         <span style="font-size:1.5rem;">🧠</span>
-        <span id="txt-app-title">Cognitive 5D</span>
+        <span id="txt-app-title">Cognitive Master</span>
     </div>
     <div class="mode-switch">
         <button onclick="setMode('zh')" id="btn-mode-zh" class="active">中文</button>
@@ -151,7 +181,7 @@
     <div id="view-home" class="view-section active">
         <div class="card text-center">
             <h1 id="txt-home-title" style="margin-bottom: 10px;">五维认知评估系统</h1>
-            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">5-Domain Cognitive Battery</p>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">5-Domain Cognitive Battery (Fixed)</p>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 30px; text-align: left; font-size:0.9rem;">
                 <div style="background: var(--bg-color); padding: 10px; border-radius: 8px;"><strong id="txt-menu-t1">1. 10词回忆</strong></div>
@@ -297,7 +327,7 @@
                 <span style="color:var(--success)"><span id="txt-score">得分</span>: <span id="t5-score">0</span></span>
             </div>
             <div class="svg-wrapper">
-                <svg id="sdmt-svg" viewBox="0 0 500 280" preserveAspectRatio="xMidYMax meet" style="width:100%; height:100%;"></svg>
+                <svg id="sdmt-svg" viewBox="0 0 500 280" preserveAspectRatio="xMidYMax meet"></svg>
             </div>
             <div class="big-symbol" id="t5-target" style="font-size: 4rem; height:80px; margin:10px 0;">?</div>
             <div class="sdmt-grid">
@@ -347,7 +377,7 @@
 </div>
 
 <script>
-/* 1. CONFIG & DICTIONARY */
+/* 1. CONFIG */
 const DB = {
     pools: {
         zh: ["苹果", "香蕉", "老虎", "狮子", "钢琴", "吉他", "红色", "绿色", "医生", "护士", "高山", "河流", "房子", "帐篷", "月亮", "太阳", "火车", "汽车", "铅笔", "书本", "椅子", "桌子", "面条", "米饭", "帽子", "围巾", "眼镜", "手表", "电话", "电脑", "足球", "篮球", "玫瑰", "菊花", "茶杯"],
@@ -356,7 +386,7 @@ const DB = {
     },
     text: {
         zh: {
-            app_title: "五维认知评估", home_title: "五维认知评估系统", home_desc: "5-Domain Cognitive Battery (Master)",
+            app_title: "五维认知评估", home_title: "五维认知评估系统", home_desc: "5-Domain Cognitive Battery (Fixed)",
             menu_t1: "1. 10词回忆", menu_t2: "2. 空间记忆", menu_t3: "3. 定向力", menu_t4: "4. 10词再认", menu_t5: "5. SDMT (速度)",
             btn_start: "开始评估", btn_set: "设置",
             reg_title: "受试者信息", l_name: "姓名", l_id: "登记号", l_gen: "性别", l_dob: "出生日期", l_age: "年龄", l_edu: "教育",
@@ -374,7 +404,7 @@ const DB = {
             t3_opts_d: ["周一","周二","周三","周四","周五","周六","周日"]
         },
         en: {
-            app_title: "Cognitive 5D", home_title: "5D Cognitive Assessment", home_desc: "Standardized Battery (Master)",
+            app_title: "Cognitive 5D", home_title: "5D Cognitive Assessment", home_desc: "Standardized Battery (Fixed)",
             menu_t1: "1. Word Recall", menu_t2: "2. Spatial Memory", menu_t3: "3. Orientation", menu_t4: "4. Recognition", menu_t5: "5. SDMT (Speed)",
             btn_start: "Start", btn_set: "Settings",
             reg_title: "Subject Info", l_name: "Name", l_id: "ID", l_gen: "Gender", l_dob: "DOB", l_age: "Age", l_edu: "Education",
@@ -417,7 +447,7 @@ let state = {
     mode: 'zh',
     patient: {},
     t1: { targets: [], entered: [], time: 0 },
-    t2: { level: 2, trials: 0, score: 0, sequence: [], userSeq: [], history:[] }, // Corsi
+    t2: { level: 2, trials: 0, score: 0, sequence: [], userSeq: [], history:[] },
     t3: { details: [], score: 0, time: 0 },
     t4: { targets: [], distractors: [], hits: 0, errors: 0, time: 0 },
     t5: { score: 0, errors: 0, time: 60, responses: [], keyMap: [] },
@@ -428,6 +458,7 @@ let recognition = null;
 let isRecording = false;
 let t1TimerInt = null;
 
+// Init
 window.onload = () => {
     setMode('zh');
     const saved = localStorage.getItem('cog_admin');
@@ -435,13 +466,11 @@ window.onload = () => {
     document.getElementById('set-place').value = state.admin.place;
     document.getElementById('set-city').value = state.admin.city;
     
-    // 防连输
     document.getElementById('t1-input').addEventListener('input', function(e) {
         if(this.value.match(/[\s,，.。]/)) this.value = this.value.replace(/[\s,，.。]/g, '');
     });
     document.getElementById('t1-input').addEventListener('keydown', e => { if(e.key==='Enter') addWordT1(); });
     
-    // 初始化 Corsi 界面
     initCorsiBoard();
 };
 
@@ -450,8 +479,7 @@ function initCorsiBoard() {
     board.innerHTML = '';
     for(let i=0; i<9; i++) {
         let b = document.createElement('div');
-        b.className = 'corsi-block';
-        b.id = 'cb-'+i;
+        b.className = 'corsi-block'; b.id = 'cb-'+i;
         b.onclick = () => handleCorsiTap(i);
         board.appendChild(b);
     }
@@ -465,33 +493,33 @@ function setMode(m) {
     document.getElementById('btn-mode-'+m).classList.add('active');
     
     const T = DB.text[m];
-    setText('txt-app-title', T.app_title); setText('txt-home-title', T.home_title); setText('txt-home-desc', T.home_desc);
-    setText('txt-menu-t1', T.menu_t1); setText('txt-menu-t2', T.menu_t2); setText('txt-menu-t3', T.menu_t3); 
-    setText('txt-menu-t4', T.menu_t4); setText('txt-menu-t5', T.menu_t5);
-    setText('txt-btn-start', T.btn_start); setText('txt-btn-settings', T.btn_set);
-    
-    setText('txt-reg-title', T.reg_title); setText('lbl-name', T.l_name); setText('lbl-id', T.l_id);
-    setText('lbl-gender', T.l_gen); setText('lbl-dob', T.l_dob); setText('lbl-age', T.l_age); setText('lbl-edu', T.l_edu);
-    setText('txt-btn-next', T.btn_next);
+    // Update all IDs with 'txt-' or 'lbl-'
+    for(let key in T) {
+        let prefix = "";
+        if(key.startsWith("app") || key.startsWith("home") || key.startsWith("menu") || key.startsWith("btn") || key.startsWith("reg") || key.startsWith("t") || key.startsWith("rep") || key.startsWith("admin") || key.startsWith("back") || key.startsWith("score")) prefix = "txt-";
+        if(key.startsWith("l_")) prefix = "lbl-"; // handle labels like l_name -> lbl-name
+        
+        // Special mappings for simple keys
+        if(key === 'app_title') setText('txt-app-title', T[key]);
+        else if(key === 'home_title') setText('txt-home-title', T[key]);
+        else if(key === 'home_desc') setText('txt-home-desc', T[key]);
+        else if(key.startsWith('menu_')) setText('txt-'+key.replace('_','-'), T[key]);
+        else if(key.startsWith('btn_')) setText('txt-'+key.replace('_','-'), T[key]);
+        else if(key.startsWith('reg_')) setText('txt-reg-title', T[key]);
+        else if(key === 'admin_t') setText('txt-admin-title', T[key]);
+        else if(key === 'back_hint') setText('txt-backup-hint', T[key]);
+        else if(key === 'score') setText('txt-score', T[key]);
+        else if(key.startsWith('l_')) setText('lbl-'+key.split('_')[1], T[key]);
+        else {
+            // General t1_title -> txt-t1-title
+            let id = 'txt-' + key.replace(/_/g, '-');
+            setText(id, T[key]);
+        }
+    }
+
+    // Gender & Edu Options
     const gs=document.getElementById('p_gender'); gs.innerHTML=''; gs.add(new Option(T.g_m,'M')); gs.add(new Option(T.g_f,'F'));
     const es=document.getElementById('p_edu'); es.innerHTML=''; T.edu_opts.forEach(e=>es.add(new Option(e,e)));
-    
-    setText('txt-t1-title', T.t1_title); setText('txt-t1-instr', T.t1_instr); setText('txt-btn-mem', T.btn_mem);
-    setText('txt-t1-recall-title', T.t1_re_title); setText('txt-btn-add', T.btn_add); setText('txt-btn-finish', T.btn_fin);
-    
-    setText('txt-t2-title', T.t2_title); setText('txt-t2-instr', T.t2_instr); setText('txt-btn-start-corsi', T.btn_start_corsi);
-    setText('txt-t2-test-title', T.t2_test_title);
-    
-    setText('txt-t3-title', T.t3_title); setText('txt-btn-next-q', T.btn_nq);
-    
-    setText('txt-t4-title', T.t4_title); setText('txt-t4-instr', T.t4_instr); setText('txt-btn-mem-new', T.btn_mem_new);
-    setText('txt-t4-test-title', T.t4_test_title); setText('txt-t4-hint', T.t4_hint); setText('txt-btn-finish-t4', T.btn_fin_t4);
-    
-    setText('txt-t5-title', T.t5_title); setText('txt-t5-instr', T.t5_instr); setText('txt-btn-start-test', T.btn_start_test);
-    setText('txt-score', T.score);
-    
-    setText('txt-report-title', T.rep_title); setText('txt-btn-restart', T.btn_new); setText('txt-backup-hint', T.back_hint);
-    setText('txt-admin-title', T.admin_t);
 }
 
 function setText(id, txt) { const el=document.getElementById(id); if(el) el.innerText=txt; }
@@ -512,8 +540,6 @@ function initSession() {
     state.t1.entered = [];
     state.t5.responses = [];
     state.t5.score = 0;
-    
-    // Corsi Reset
     state.t2 = { level: 2, trials: 0, score: 0, sequence: [], userSeq: [], history:[] };
 
     showView('view-register');
@@ -528,7 +554,7 @@ function showView(id) {
 
 function submitRegister() {
     const name = document.getElementById('p_name').value;
-    if(!name) return alert("Please enter name");
+    if(!name) return alert("Enter Name");
     state.patient = {
         name: name, id: document.getElementById('p_id').value,
         gender: document.getElementById('p_gender').value,
@@ -540,7 +566,7 @@ function submitRegister() {
     showView('view-t1-learn');
 }
 
-/* T1: Word Recall (Timed) */
+/* T1 */
 function runSerialWords(phase) {
     const isT1 = phase === 't1';
     const targets = isT1 ? state.t1.targets : state.t4.targets;
@@ -548,7 +574,6 @@ function runSerialWords(phase) {
     document.getElementById(btnId).style.display = 'none';
     const disp = document.getElementById(isT1 ? 't1-word' : 't4-word');
     const bar = document.getElementById(isT1 ? 't1-learn-bar' : 't4-learn-bar');
-    
     let i = 0;
     let timer = setInterval(() => {
         if(i < targets.length) {
@@ -568,18 +593,13 @@ function startT1Recall() {
     state.t1.startTime = Date.now();
     document.getElementById('t1-input').value = '';
     document.getElementById('t1-chips').innerHTML = '';
-    
-    // 60s Timer
     let time = 60;
     document.getElementById('t1-timer').innerText = time;
     if(t1TimerInt) clearInterval(t1TimerInt);
     t1TimerInt = setInterval(() => {
         time--;
         document.getElementById('t1-timer').innerText = time;
-        if(time <= 0) {
-            clearInterval(t1TimerInt);
-            finishT1();
-        }
+        if(time <= 0) { clearInterval(t1TimerInt); finishT1(); }
     }, 1000);
 }
 
@@ -590,8 +610,7 @@ function addWordT1() {
     state.t1.entered.push(val);
     renderChips();
     inp.value = '';
-    document.getElementById('t1-counter').innerText = `${state.t1.entered.length} / 10`;
-    document.getElementById('t1-recall-bar').style.width = (state.t1.entered.length/10*100)+'%';
+    updateProgress('t1-recall-bar', 't1-progress-txt', state.t1.entered.length);
 }
 
 function renderChips() {
@@ -603,6 +622,7 @@ function renderChips() {
         chip.onclick=()=>{ 
             state.t1.entered = state.t1.entered.filter(w=>w!==val); 
             renderChips(); 
+            updateProgress('t1-recall-bar', 't1-progress-txt', state.t1.entered.length);
         };
         box.appendChild(chip);
     });
@@ -614,32 +634,25 @@ function finishT1() {
     showView('view-t2-intro');
 }
 
-/* T2: Corsi Spatial Memory (New) */
-function startCorsi() {
-    showView('view-t2-test');
-    nextCorsiTrial();
+function updateProgress(barId, txtId, val) {
+    document.getElementById(barId).style.width = Math.min(100, (val/10)*100) + "%";
+    document.getElementById(txtId).innerText = val + " / 10";
 }
 
+/* T2 Corsi */
+function startCorsi() { showView('view-t2-test'); nextCorsiTrial(); }
 function nextCorsiTrial() {
-    state.t2.userSeq = [];
-    state.t2.sequence = [];
+    state.t2.userSeq = []; state.t2.sequence = [];
     const status = document.getElementById('t2-status');
     const T = DB.text[state.mode];
-    status.innerText = T.t2_stat_w;
-    status.style.color = 'var(--primary)';
-    
-    // Generate Sequence
+    status.innerText = T.t2_stat_w; status.style.color = 'var(--primary)';
     let pool = [0,1,2,3,4,5,6,7,8];
     for(let i=0; i<state.t2.level; i++) {
         let r = Math.floor(Math.random()*pool.length);
-        state.t2.sequence.push(pool[r]);
-        pool.splice(r,1); // No repeats in standard Corsi
+        state.t2.sequence.push(pool[r]); pool.splice(r,1);
     }
-    
-    // Play Sequence
     let i=0;
     document.querySelectorAll('.corsi-block').forEach(b=>b.style.pointerEvents='none');
-    
     let playInt = setInterval(()=>{
         if(i < state.t2.sequence.length) {
             let id = state.t2.sequence[i];
@@ -649,174 +662,107 @@ function nextCorsiTrial() {
             i++;
         } else {
             clearInterval(playInt);
-            status.innerText = T.t2_stat_g;
-            status.style.color = 'var(--success)';
+            status.innerText = T.t2_stat_g; status.style.color = 'var(--success)';
             document.querySelectorAll('.corsi-block').forEach(b=>b.style.pointerEvents='auto');
         }
     }, 1000);
 }
-
 function handleCorsiTap(id) {
     let blk = document.getElementById('cb-'+id);
-    blk.classList.add('user-tap');
-    setTimeout(()=>blk.classList.remove('user-tap'), 200);
-    
+    blk.classList.add('user-tap'); setTimeout(()=>blk.classList.remove('user-tap'), 200);
     state.t2.userSeq.push(id);
-    // Check match so far
     let idx = state.t2.userSeq.length - 1;
-    if(state.t2.userSeq[idx] !== state.t2.sequence[idx]) {
-        // Error immediately
-        corsiResult(false);
-    } else if(state.t2.userSeq.length === state.t2.sequence.length) {
-        // Full correct
-        corsiResult(true);
-    }
+    if(state.t2.userSeq[idx] !== state.t2.sequence[idx]) corsiResult(false);
+    else if(state.t2.userSeq.length === state.t2.sequence.length) corsiResult(true);
 }
-
 function corsiResult(success) {
     document.querySelectorAll('.corsi-block').forEach(b=>b.style.pointerEvents='none');
     state.t2.history.push({ level: state.t2.level, success: success });
-    
     if(success) {
         state.t2.score = Math.max(state.t2.score, state.t2.level);
-        if(state.t2.trials === 0) { // First trial correct, jump level
-            state.t2.level++;
-            state.t2.trials = 0;
-        } else { // Second trial correct
-            state.t2.level++;
-            state.t2.trials = 0;
-        }
+        if(state.t2.trials === 0) { state.t2.level++; state.t2.trials = 0; } else { state.t2.level++; state.t2.trials = 0; }
         setTimeout(nextCorsiTrial, 1000);
     } else {
-        if(state.t2.trials === 0) {
-            state.t2.trials++; // Try same level again
-            setTimeout(nextCorsiTrial, 1000);
-        } else {
-            // Failed twice
-            finishT2();
-        }
+        if(state.t2.trials === 0) { state.t2.trials++; setTimeout(nextCorsiTrial, 1000); } else { startT3(); }
     }
 }
 
-function finishT2() {
-    startT3(); // Goto Orientation
-}
-
-/* T3: Orientation (Old T2) */
+/* T3 Orientation */
 let t3Idx = 0;
 function startT3() {
-    t3Idx = 0;
-    state.t3.startTime = Date.now();
-    showView('view-t3');
-    loadT3Q();
+    t3Idx = 0; state.t3.startTime = Date.now(); showView('view-t3'); loadT3Q();
 }
-
 function loadT3Q() {
     const qText = DB.text[state.mode].t3q[t3Idx];
     document.getElementById('t3-q').innerText = qText;
-    const area = document.getElementById('t3-input-area');
-    area.innerHTML = '';
-    
+    const area = document.getElementById('t3-input-area'); area.innerHTML = '';
     if(t3Idx === 1 || t3Idx === 3) {
         const opts = t3Idx===1 ? DB.text[state.mode].t3_opts_m : DB.text[state.mode].t3_opts_d;
         let grid = document.createElement('div');
         grid.style.display="grid"; grid.style.gridTemplateColumns="repeat(4,1fr)"; grid.style.gap="10px";
         opts.forEach(o => {
             let b = document.createElement('button');
-            b.className = 'btn btn-outline'; 
-            b.style.padding = "10px"; b.innerText=o;
-            b.onclick = () => nextT3(o);
-            grid.appendChild(b);
+            b.className = 'btn btn-outline'; b.style.padding = "10px"; b.innerText=o;
+            b.onclick = () => nextT3(o); grid.appendChild(b);
         });
         area.appendChild(grid);
     } else {
-        let inp = document.createElement('input');
-        inp.id = 't3-inp';
-        area.appendChild(inp);
-        inp.focus();
-        inp.onkeydown = e => { if(e.key==='Enter') nextT3(); };
+        let inp = document.createElement('input'); inp.id = 't3-inp'; area.appendChild(inp);
+        inp.focus(); inp.onkeydown = e => { if(e.key==='Enter') nextT3(); };
     }
 }
-
 function nextT3(val) {
-    if(!val) val = document.getElementById('t3-inp')?.value;
-    if(!val) return;
-    
-    let correct = true; 
+    if(!val) val = document.getElementById('t3-inp')?.value; if(!val) return;
+    let correct = true;
     if(t3Idx===4 && !val.includes(state.admin.place)) correct = false;
     if(t3Idx===5 && !val.includes(state.admin.city)) correct = false;
     if(correct) state.t3.score++;
-    
     state.t3.details.push({q: t3Idx, ans: val, c: correct});
-    
     t3Idx++;
-    if(t3Idx < 6) loadT3Q();
-    else {
+    if(t3Idx < 6) loadT3Q(); else {
         state.t3.time = ((Date.now() - state.t3.startTime)/1000).toFixed(1);
         showView('view-t4-learn');
     }
 }
 
-/* T4: Recognition (Old T3) */
+/* T4 Recognition */
 let t4Sel = new Set();
 function startT4Test() {
-    showView('view-t4-test');
-    state.t4.startTime = Date.now();
-    t4Sel = new Set();
-    const grid = document.getElementById('t4-grid');
-    grid.innerHTML = '';
-    
+    showView('view-t4-test'); state.t4.startTime = Date.now(); t4Sel = new Set();
+    const grid = document.getElementById('t4-grid'); grid.innerHTML = '';
     let all = [...state.t4.targets, ...state.t4.distractors];
     all.sort(() => Math.random() - 0.5);
-    
     all.forEach(w => {
-        let b = document.createElement('button');
-        b.className = 'btn btn-outline';
-        b.innerText = w;
+        let b = document.createElement('button'); b.className = 'btn btn-outline'; b.innerText = w;
         b.onclick = () => {
             if(t4Sel.has(w)) { t4Sel.delete(w); b.classList.remove('btn-primary'); b.classList.add('btn-outline'); b.style.color = 'var(--primary)'; }
             else { t4Sel.add(w); b.classList.remove('btn-outline'); b.classList.add('btn-primary'); b.style.color = 'white'; }
-            document.getElementById('t4-progress-txt').innerText = `${t4Sel.size} / 10`;
+            updateProgress('t4-bar', 't4-progress-txt', t4Sel.size); // Fixed: Update progress bar
         };
         grid.appendChild(b);
     });
 }
-
 function finishT4() {
     state.t4.time = ((Date.now() - state.t4.startTime)/1000).toFixed(1);
-    t4Sel.forEach(w => {
-        if(state.t4.targets.includes(w)) state.t4.hits++;
-        else state.t4.errors++;
-    });
+    t4Sel.forEach(w => { if(state.t4.targets.includes(w)) state.t4.hits++; else state.t4.errors++; });
     showView('view-t5-intro');
 }
 
-/* T5: SDMT (Old T4) */
-let t5Target = null;
-let t5Interval = null;
-
+/* T5 SDMT */
+let t5Target = null; let t5Interval = null;
 function startSDMT() {
-    showView('view-t5-test');
-    drawSDMTKey();
-    nextSDMT();
+    showView('view-t5-test'); drawSDMTKey(); nextSDMT();
     let time = 60;
     t5Interval = setInterval(() => {
-        time--;
-        document.getElementById('t5-timer').innerText = time;
+        time--; document.getElementById('t5-timer').innerText = time;
         if(time <= 0) endSDMT();
     }, 1000);
 }
-
 function drawSDMTKey() {
-    const svg = document.getElementById('sdmt-svg');
-    svg.innerHTML = '';
-    const cx=250, cy=260, rIn=80, rMid=120, rOut=180;
-    const step = 144 / 9;
-    const startA = -72;
+    const svg = document.getElementById('sdmt-svg'); svg.innerHTML = '';
+    const cx=250, cy=260, rIn=80, rMid=120, rOut=180; const step = 144 / 9; const startA = -72;
     state.t5.keyMap.forEach((k, i) => {
-        const a1 = startA + i*step;
-        const a2 = a1 + step;
-        const ac = a1 + step/2;
+        const a1 = startA + i*step; const a2 = a1 + step; const ac = a1 + step/2;
         const pStr = arcPath(cx,cy,rIn,rOut,a1,a2);
         const p = createEl('path', {d:pStr, fill:'white', stroke:'#555', 'stroke-width':1.5});
         const lStr = arcLine(cx,cy,rMid,a1,a2);
@@ -825,35 +771,25 @@ function drawSDMTKey() {
         const tSym = textEl(k.s, cx, cy, (rMid+rOut)/2, ac, 28);
         const tNum = textEl(k.n, cx, cy, (rIn+rMid)/2, ac, 22);
         const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        g.append(p,l,hl,tSym,tNum);
-        svg.appendChild(g);
+        g.append(p,l,hl,tSym,tNum); svg.appendChild(g);
     });
 }
-
 function nextSDMT() {
     t5Target = state.t5.keyMap[Math.floor(Math.random()*9)];
     document.getElementById('t5-target').innerText = t5Target.s;
     state.t5.lastStimTime = Date.now();
 }
-
 function inputSDMT(n) {
-    const now = Date.now();
-    const correct = n === t5Target.n;
+    const now = Date.now(); const correct = n === t5Target.n;
     state.t5.responses.push({ target: t5Target.n, response: n, correct: correct, latency: now - state.t5.lastStimTime });
     if(correct) {
         state.t5.score++;
-        const hl = document.getElementById(`hl-${n}`);
-        if(hl) { hl.style.opacity = 1; setTimeout(()=>hl.style.opacity=0, 200); }
+        const hl = document.getElementById(`hl-${n}`); if(hl) { hl.style.opacity = 1; setTimeout(()=>hl.style.opacity=0, 200); }
     } else state.t5.errors++;
     document.getElementById('t5-score').innerText = state.t5.score;
     nextSDMT();
 }
-
-function endSDMT() {
-    clearInterval(t5Interval);
-    showReport();
-    saveToLocal();
-}
+function endSDMT() { clearInterval(t5Interval); showReport(); saveToLocal(); }
 
 /* Utils */
 function calcAge() {
@@ -887,24 +823,23 @@ function arcPath(cx,cy,r1,r2,a1,a2) {
 function arcLine(cx,cy,r,a1,a2) { const s=polar(cx,cy,r,a2), e=polar(cx,cy,r,a1); return `M ${s.x} ${s.y} A ${r} ${r} 0 0 0 ${e.x} ${e.y}`; }
 function createEl(tag, attrs) {
     const el = document.createElementNS("http://www.w3.org/2000/svg", tag);
-    for(let k in attrs) el.setAttribute(k, attrs[k]);
-    return el;
+    for(let k in attrs) el.setAttribute(k, attrs[k]); return el;
 }
 function textEl(txt,cx,cy,r,a,sz) {
     const el = createEl('text', {class:'arc-text', 'font-size':sz});
     const p = polar(cx,cy,r,a);
     el.setAttribute('x', p.x); el.setAttribute('y', p.y);
     el.setAttribute('transform', `rotate(${a}, ${p.x}, ${p.y})`);
-    el.textContent = txt;
-    return el;
+    el.textContent = txt; return el;
 }
 
-/* Report */
+/* REPORT & EXPORT (Fixed) */
 function showReport() {
     showView('view-report');
     const p = state.patient;
     const t1hits = state.t1.entered.filter(w => state.t1.targets.includes(w)).length;
     
+    // 生成展示表格
     let html = `
     <table class="res-table">
         <tr><th>Metric</th><th>Value</th></tr>
@@ -917,9 +852,36 @@ function showReport() {
     </table>`;
     document.getElementById('report-body').innerHTML = html;
     
-    // Backup Text
+    // 生成备份文本
     document.getElementById('raw-data').value = generateCSVString();
     document.querySelector('.backup-box').style.display = 'block';
+}
+
+function generateCSVString() {
+    // 严格本地化表头
+    let h = "";
+    if(state.mode === 'zh' || state.mode === 'child') {
+        h = "模块,项目,数值\n";
+    } else {
+        h = "Section,Item,Value\n";
+    }
+    
+    let csv = `\uFEFF${h}`;
+    // Info
+    for(let k in state.patient) csv += `Info,${k},${state.patient[k]}\n`;
+    csv += `T1,Recall,${state.t1.entered.filter(w => state.t1.targets.includes(w)).length}\n`;
+    csv += `T2,SpatialSpan,${state.t2.score}\n`;
+    csv += `T3,Orientation,${state.t3.score}\n`;
+    csv += `T4,Recognition,${state.t4.hits}\n`;
+    csv += `T5,Speed,${state.t5.score}\n`;
+    
+    // T5 Micro Data (Appendix)
+    csv += `\n[T5 Micro Data]\nTarget,Response,Latency,Correct\n`;
+    state.t5.responses.forEach(r => {
+        csv += `${r.target},${r.response},${r.latency},${r.correct?1:0}\n`;
+    });
+    
+    return csv;
 }
 
 function saveToLocal() {
@@ -930,31 +892,14 @@ function saveToLocal() {
 
 function exportJSON() {
     const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `CogData_${state.patient.id}.json`;
-    a.click();
-}
-
-function generateCSVString() {
-    let h = state.mode === 'en' ? "Section,Key,Value\n" : "模块,项目,数值\n";
-    let csv = `\uFEFF${h}`;
-    // Info
-    for(let k in state.patient) csv += `Info,${k},${state.patient[k]}\n`;
-    csv += `T1,Recall,${state.t1.entered.filter(w => state.t1.targets.includes(w)).length}\n`;
-    csv += `T2,SpatialSpan,${state.t2.score}\n`;
-    csv += `T3,Orientation,${state.t3.score}\n`;
-    csv += `T4,Recognition,${state.t4.hits}\n`;
-    csv += `T5,Speed,${state.t5.score}\n`;
-    return csv;
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = `CogData_${state.patient.id}.json`; a.click();
 }
 
 function exportCSV() {
     const blob = new Blob([generateCSVString()], {type:'text/csv'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `Report_${state.patient.id}.csv`;
-    a.click();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+    a.download = `Report_${state.patient.id}.csv`; a.click();
 }
 
 function toggleAdmin() { document.getElementById('admin-modal').style.display = document.getElementById('admin-modal').style.display==='block'?'none':'block'; }
