@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Cognitive Assessment Clinical (v4)</title>
+    <title>Cognitive Assessment Clinical (Final v4.2)</title>
     <style>
-        /* --- 样式保持 v3.0 Safari 修复版不变 --- */
+        /* CSS 样式保持一致，适配 Safari 和移动端 */
         :root {
             --primary: #2A5C82; --primary-light: #5A8AB0; --accent: #FF7043;
             --bg-color: #F8F9FA; --card-bg: #FFFFFF; --text-main: #2D3436;
@@ -39,30 +39,34 @@
         .progress-track { height: 8px; background: #EEE; border-radius: 4px; overflow: hidden; }
         .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
         
-        /* Safari 兼容性样式保持 */
         .corsi-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; max-width: 360px; margin: 20px auto; }
         .corsi-block { background: #E0E0E0; border-radius: 12px; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 0 #CCC; height: 0; padding-bottom: 100%; position: relative; }
         .corsi-block:active { transform: translateY(2px); box-shadow: 0 2px 0 #CCC; }
         .corsi-block.active { background: var(--accent) !important; box-shadow: 0 0 15px var(--accent); }
         .corsi-block.user-tap { background: var(--primary); }
+        
         .svg-wrapper { width: 100%; max-width: 680px; margin: 0 auto; height: 0; padding-bottom: 58%; position: relative; }
         .svg-wrapper svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
         .arc-text { font-family: Arial; font-weight: bold; fill: black; text-anchor: middle; dominant-baseline: middle; pointer-events: none; }
         .sdmt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 400px; margin: 15px auto; }
         .key-btn { background: #FFF; border: 1px solid #DDD; border-radius: 12px; padding: 20px; font-size: 1.5rem; font-weight: bold; box-shadow: 0 3px 0 #CCC; cursor: pointer; color: #333; -webkit-touch-callout: none; }
         .key-btn:active { transform: translateY(3px); box-shadow: none; }
+        
         .word-display { font-size: 3.5rem; text-align: center; height: 180px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); }
         .chips-area { display: flex; flex-wrap: wrap; gap: 8px; min-height: 60px; padding: 15px; background: #F4F6F8; border-radius: 10px; margin-bottom: 20px; border: 1px dashed #DDD; }
         .chip { background: var(--primary); color: white; padding: 6px 14px; border-radius: 20px; cursor: pointer; animation: pop 0.3s; font-size: 0.9rem; }
         @keyframes pop { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        
         .backup-section { margin-top: 30px; border-top: 1px solid #EEE; padding-top: 20px; text-align: left; }
         .backup-box { display: none; margin-top: 10px; }
         textarea.raw-data { width: 100%; height: 150px; font-family: monospace; font-size: 12px; padding: 10px; border: 1px solid #DDD; background: #FAFAFA; border-radius: 8px; -webkit-appearance: none; }
+        
         .hidden { display: none; } .text-center { text-align: center; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         .mic-btn { font-size: 1.5rem; padding: 0 15px; background: #FFF; border: 1px solid #DDD; border-radius: 8px; cursor: pointer; }
         .mic-btn.recording { border-color: var(--accent); color: var(--accent); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 112, 67, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
+        
         table.res-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         table.res-table th, table.res-table td { padding: 10px; border-bottom: 1px solid #EEE; text-align: left; }
         table.res-table th { color: #888; font-size: 0.85rem; }
@@ -88,14 +92,14 @@
     <div id="view-home" class="view-section active">
         <div class="card text-center">
             <h1 id="txt-home-title" style="margin-bottom: 10px;">临床认知评估系统</h1>
-            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Clinical Research Edition (v4.0)</p>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Clinical Research Edition (v4.2)</p>
             
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 30px; text-align: left; font-size:0.9rem;">
                 <div style="background: var(--bg-color); padding: 10px; border-radius: 8px;"><strong id="txt-menu-t1">1. 学习与即时回忆</strong></div>
                 <div style="background: var(--bg-color); padding: 10px; border-radius: 8px;"><strong id="txt-menu-t2">2. 空间记忆 (干扰)</strong></div>
                 <div style="background: var(--bg-color); padding: 10px; border-radius: 8px;"><strong id="txt-menu-t3">3. 定向力 (干扰)</strong></div>
-                <div style="background: var(--bg-color); padding: 10px; border-radius: 8px; color:var(--accent)"><strong id="txt-menu-t4">4. 延迟回忆 (New)</strong></div>
-                <div style="background: var(--bg-color); padding: 10px; border-radius: 8px;"><strong id="txt-menu-t5">5. 再认</strong></div>
+                <div style="background: var(--bg-color); padding: 10px; border-radius: 8px; color:var(--accent)"><strong id="txt-menu-t4">4. 延迟回忆 (重点)</strong></div>
+                <div style="background: var(--bg-color); padding: 10px; border-radius: 8px;"><strong id="txt-menu-t5">5. 再认 (鉴别)</strong></div>
                 <div style="background: var(--bg-color); padding: 10px; border-radius: 8px;"><strong id="txt-menu-t6">6. SDMT 速度</strong></div>
             </div>
 
@@ -130,7 +134,7 @@
     <div id="view-t1-learn" class="view-section">
         <div class="card text-center">
             <h2 id="txt-t1-title">记忆学习</h2>
-            <p id="txt-t1-instr" style="color:#666">屏幕将逐个显示单词。</p>
+            <p id="txt-t1-instr" style="color:#666">屏幕将逐个显示单词 (隐患3: 不提示后续回忆)。</p>
             <div id="t1-word" class="word-display">...</div>
             <div class="progress-container"><div class="progress-track"><div id="t1-learn-bar" class="progress-bar"></div></div></div>
             <button id="btn-start-learn" class="btn btn-primary" onclick="runSerialWords('t1')"><span id="txt-btn-mem">开始记忆</span></button>
@@ -147,7 +151,6 @@
                 <div class="progress-track"><div id="t1-recall-bar" class="progress-bar"></div></div>
                 <div style="text-align:right; font-size:0.8rem; color:#888;" id="t1-counter">0 / 10</div>
             </div>
-            
             <div style="display:flex; gap:10px; margin-bottom: 20px;">
                 <button class="mic-btn" id="t1-mic" onclick="toggleSpeech('t1')">🎤</button>
                 <input type="text" id="t1-input">
@@ -212,7 +215,6 @@
                 <div class="progress-track"><div id="t4-recall-bar" class="progress-bar"></div></div>
                 <div style="text-align:right; font-size:0.8rem; color:#888;" id="t4-counter">0 / 10</div>
             </div>
-            
             <div style="display:flex; gap:10px; margin-bottom: 20px;">
                 <button class="mic-btn" id="t4-mic" onclick="toggleSpeech('t4')">🎤</button>
                 <input type="text" id="t4-input">
@@ -311,7 +313,7 @@ const DB = {
     },
     text: {
         zh: {
-            app_title: "五维认知评估", home_title: "五维认知评估系统", home_desc: "Clinical Research Edition (v4.0)",
+            app_title: "五维认知评估", home_title: "五维认知评估系统", home_desc: "Clinical Research Edition (v4.2)",
             menu_t1: "1. 学习与即时回忆", menu_t2: "2. 空间记忆 (干扰)", menu_t3: "3. 定向力 (干扰)", menu_t4: "4. 延迟回忆", menu_t5: "5. 再认", menu_t6: "6. SDMT 速度",
             btn_start: "开始评估", btn_set: "设置",
             reg_title: "受试者信息", l_name: "姓名", l_id: "登记号", l_gen: "性别", l_dob: "出生日期", l_age: "年龄", l_edu: "教育",
@@ -330,7 +332,7 @@ const DB = {
             t3_opts_d: ["周一","周二","周三","周四","周五","周六","周日"]
         },
         en: {
-            app_title: "Cognitive Clinical", home_title: "Cognitive Assessment Battery", home_desc: "Clinical Research Edition (v4.0)",
+            app_title: "Cognitive Clinical", home_title: "Cognitive Assessment Battery", home_desc: "Clinical Research Edition (v4.2)",
             menu_t1: "1. Immediate Recall", menu_t2: "2. Spatial Memory", menu_t3: "3. Orientation", menu_t4: "4. Delayed Recall", menu_t5: "5. Recognition", menu_t6: "6. SDMT Speed",
             btn_start: "Start", btn_set: "Settings",
             reg_title: "Subject Info", l_name: "Name", l_id: "ID", l_gen: "Gender", l_dob: "DOB", l_age: "Age", l_edu: "Education",
@@ -349,7 +351,7 @@ const DB = {
             t3_opts_d: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
         },
         child: {
-            app_title: "儿童五维认知", home_title: "大脑挑战赛", home_desc: "趣味认知测试 (v4.0)",
+            app_title: "儿童五维认知", home_title: "大脑挑战赛", home_desc: "趣味认知测试 (v4.2)",
             menu_t1: "1. 记词游戏", menu_t2: "2. 记方块", menu_t3: "3. 我在哪里", menu_t4: "4. 还能记得吗", menu_t5: "5. 找词游戏", menu_t6: "6. 眼疾手快",
             btn_start: "开始", btn_set: "设置",
             reg_title: "小朋友信息", l_name: "姓名", l_id: "学号", l_gen: "性别", l_dob: "生日", l_age: "几岁", l_edu: "年级",
@@ -374,20 +376,20 @@ const DB = {
 let state = {
     mode: 'zh',
     patient: {},
-    targets: [],     // Shared Target List
-    distractors: [], // Distractors for T5
+    targets: [],     // 隐患1解决：统一词库
+    distractors: [], 
     t1: { entered: [], time: 0 },
     t2: { level: 2, trials: 0, score: 0, sequence: [], userSeq: [], history:[] },
     t3: { details: [], score: 0, time: 0 },
-    t4: { entered: [], time: 0 }, // Delayed Recall Data
-    t5: { hits: 0, errors: 0, time: 0 }, // Recognition Data
-    t6: { score: 0, errors: 0, time: 60, responses: [], keyMap: [] }, // SDMT
+    t4: { entered: [], time: 0 }, 
+    t5: { hits: 0, false_alarms: 0, errors: 0, time: 0 }, // 隐患2解决：记录虚报
+    t6: { score: 0, errors: 0, time: 60, responses: [], keyMap: [] },
     admin: { place: "医院", city: "北京" }
 };
 
 let recognition = null;
 let isRecording = false;
-let recallTimerInt = null; // Shared timer for T1/T4
+let recallTimerInt = null; 
 let corsiTimeout = null;
 let t6Interval = null;
 
@@ -399,7 +401,6 @@ window.onload = () => {
     document.getElementById('set-place').value = state.admin.place;
     document.getElementById('set-city').value = state.admin.city;
     
-    // Common Listeners
     ['t1-input', 't4-input'].forEach(id => {
         const el = document.getElementById(id);
         if(el) {
@@ -456,21 +457,18 @@ function setMode(m) {
 function setText(id, txt) { const el=document.getElementById(id); if(el) el.innerText=txt; }
 
 function initSession() {
-    // Generate Target List (Unified for T1/T4/T5)
     let pool = [...DB.pools[state.mode]];
     pool.sort(() => Math.random()-0.5);
     state.targets = pool.slice(0, 10);
-    state.distractors = pool.slice(10, 20); // 10 distractors for T5
+    state.distractors = pool.slice(10, 20); 
 
-    // SDMT Key
     let syms = [...DB.symbols];
     syms.sort(()=>Math.random()-0.5);
     state.t6.keyMap = syms.map((s,i)=>({s:s, n:i+1}));
 
-    // Reset State
     state.t1 = { entered: [], time: 0 };
     state.t4 = { entered: [], time: 0 };
-    state.t5 = { hits: 0, errors: 0, time: 0 };
+    state.t5 = { hits: 0, false_alarms: 0, errors: 0, time: 0 };
     state.t6 = { score: 0, errors: 0, time: 60, responses: [], keyMap: state.t6.keyMap };
     state.t2 = { level: 2, trials: 0, score: 0, sequence: [], userSeq: [], history:[] };
 
@@ -497,9 +495,8 @@ function submitRegister() {
     showView('view-t1-learn');
 }
 
-/* T1: Learning & Immediate Recall */
+/* T1: Learning */
 function runSerialWords(phase) {
-    // phase arg is legacy, we only learn in T1
     document.getElementById('btn-start-learn').style.display = 'none';
     const disp = document.getElementById('t1-word');
     const bar = document.getElementById('t1-learn-bar');
@@ -522,7 +519,7 @@ function startT1Recall() {
     startRecallTimer('t1');
 }
 
-/* Shared Word Recall Logic (T1 & T4) */
+/* Recall Logic */
 function startRecallTimer(phase) {
     let time = 60;
     const timerEl = document.getElementById(phase+'-timer');
@@ -671,11 +668,11 @@ function nextT3(val) {
     t3Idx++;
     if(t3Idx < 6) loadT3Q(); else {
         state.t3.time = ((Date.now() - state.t3.startTime)/1000).toFixed(1);
-        showView('view-t4-intro'); // Go to Delayed Recall
+        showView('view-t4-intro'); 
     }
 }
 
-/* T4: Delayed Recall (NEW) */
+/* T4: Delayed Recall */
 function startT4Recall() {
     showView('view-t4-recall');
     state.t4.startTime = Date.now();
@@ -684,15 +681,14 @@ function startT4Recall() {
 function finishT4() {
     if(recallTimerInt) clearInterval(recallTimerInt);
     state.t4.time = ((Date.now() - state.t4.startTime)/1000).toFixed(1);
-    startT5Test(); // Go to Recognition
+    startT5Test();
 }
 
-/* T5: Recognition (Previously T4) */
+/* T5: Recognition (Fixed Logic) */
 let t5Sel = new Set();
 function startT5Test() {
     showView('view-t5-test'); state.t5.startTime = Date.now(); t5Sel = new Set();
     const grid = document.getElementById('t5-grid'); grid.innerHTML = '';
-    // Mix targets and distractors
     let all = [...state.targets, ...state.distractors];
     all.sort(() => Math.random() - 0.5);
     all.forEach(w => {
@@ -707,11 +703,16 @@ function startT5Test() {
 }
 function finishT5() {
     state.t5.time = ((Date.now() - state.t5.startTime)/1000).toFixed(1);
-    t5Sel.forEach(w => { if(state.targets.includes(w)) state.t5.hits++; else state.t5.errors++; });
+    state.t5.hits = 0;
+    state.t5.false_alarms = 0;
+    t5Sel.forEach(w => {
+        if(state.targets.includes(w)) state.t5.hits++;
+        else state.t5.false_alarms++;
+    });
     showView('view-t6-intro');
 }
 
-/* T6: SDMT (Previously T5) */
+/* T6: SDMT */
 let t6Target = null;
 function startSDMT() {
     showView('view-t6-test'); drawSDMTKey(); nextSDMT();
@@ -754,7 +755,7 @@ function inputSDMT(n) {
 }
 function endSDMT() { clearInterval(t6Interval); showReport(); saveToLocal(); }
 
-/* Utils & SVG Helpers */
+/* Utils */
 function calcAge() {
     const d = new Date(document.getElementById('p_dob').value);
     document.getElementById('p_age').value = new Date().getFullYear() - d.getFullYear();
@@ -796,15 +797,15 @@ function textEl(txt,cx,cy,r,a,sz) {
     el.textContent = txt; return el;
 }
 
-/* REPORT & EXPORT */
+/* Report Logic (Fix: Net Score) */
 function showReport() {
     showView('view-report');
     const p = state.patient;
     const t1hits = state.t1.entered.filter(w => state.targets.includes(w)).length;
     const t4hits = state.t4.entered.filter(w => state.targets.includes(w)).length;
     const retention = t1hits > 0 ? ((t4hits / t1hits) * 100).toFixed(0) + "%" : "0%";
+    const net_recog = Math.max(0, state.t5.hits - state.t5.false_alarms);
     
-    // Calculate SDMT Variability (Standard Deviation of Latency)
     let latencies = state.t6.responses.map(r => r.latency);
     let sd = 0;
     if(latencies.length > 1) {
@@ -814,17 +815,15 @@ function showReport() {
 
     let html = `
     <table class="res-table">
-        <tr><th>Metric</th><th>Value</th><th>Clinical Note</th></tr>
-        <tr><td>Name</td><td>${p.name}</td><td></td></tr>
-        <tr><td>Immediate Recall (T1)</td><td>${t1hits}/10</td><td>Learning</td></tr>
-        <tr><td>Delayed Recall (T4)</td><td>${t4hits}/10</td><td>Retention: <b>${retention}</b></td></tr>
-        <tr><td>Recognition (T5)</td><td>${state.t5.hits}/10</td><td>Cue Support</td></tr>
-        <tr><td>Spatial Span (T2)</td><td>${state.t2.score}</td><td>Working Memory</td></tr>
-        <tr><td>Orientation (T3)</td><td>${state.t3.score}/6</td><td>Standard</td></tr>
-        <tr><td>Speed (T6)</td><td>${state.t6.score}</td><td>Var(SD): ${sd.toFixed(0)}ms</td></tr>
+        <tr><th>Metric</th><th>Value</th><th>Note</th></tr>
+        <tr><td>Recall (T1)</td><td>${t1hits}/10</td><td>Immediate</td></tr>
+        <tr><td>Delayed (T4)</td><td>${t4hits}/10</td><td>Ret: <b>${retention}</b></td></tr>
+        <tr><td>Recognition (T5)</td><td>${state.t5.hits}/10 <span style="font-size:0.8em;color:#e74c3c">(FA:${state.t5.false_alarms})</span></td><td>Net: <b>${net_recog}</b></td></tr>
+        <tr><td>Spatial Span (T2)</td><td>${state.t2.score}</td><td>Working Mem</td></tr>
+        <tr><td>Orientation (T3)</td><td>${state.t3.score}/6</td><td></td></tr>
+        <tr><td>Speed (T6)</td><td>${state.t6.score}</td><td>Var: ${sd.toFixed(0)}ms</td></tr>
     </table>`;
     document.getElementById('report-body').innerHTML = html;
-    
     document.getElementById('raw-data').value = generateCSVString();
     document.querySelector('.backup-box').style.display = 'block';
 }
@@ -833,30 +832,20 @@ function generateCSVString() {
     let h = state.mode === 'en' ? "Section,Item,Value\n" : "模块,项目,数值\n";
     let csv = `\uFEFF${h}`;
     for(let k in state.patient) csv += `Info,${k},${state.patient[k]}\n`;
-    
-    // T1 Immediate
     let t1hits = state.t1.entered.filter(w => state.targets.includes(w)).length;
     csv += `T1,Recall_Score,${t1hits}\n`;
     csv += `T1,Recall_Raw,${state.t1.entered.join(';')}\n`;
-    
-    // T2 Corsi
     csv += `T2,SpatialSpan,${state.t2.score}\n`;
-    
-    // T3 Orientation
     csv += `T3,Orientation,${state.t3.score}\n`;
-    
-    // T4 Delayed
     let t4hits = state.t4.entered.filter(w => state.targets.includes(w)).length;
     let retention = t1hits > 0 ? (t4hits/t1hits).toFixed(2) : 0;
     csv += `T4,Delayed_Score,${t4hits}\n`;
     csv += `T4,Delayed_Raw,${state.t4.entered.join(';')}\n`;
     csv += `T4,Retention_Rate,${retention}\n`;
-    
-    // T5 Recognition
+    let net_recog = Math.max(0, state.t5.hits - state.t5.false_alarms);
     csv += `T5,Recog_Hits,${state.t5.hits}\n`;
-    csv += `T5,Recog_Errors,${state.t5.errors}\n`;
-    
-    // T6 SDMT
+    csv += `T5,Recog_FalseAlarms,${state.t5.false_alarms}\n`;
+    csv += `T5,Recog_NetScore,${net_recog}\n`;
     csv += `T6,Speed_Score,${state.t6.score}\n`;
     let lats = state.t6.responses.map(r=>r.latency);
     let sd = 0;
@@ -865,8 +854,6 @@ function generateCSVString() {
         sd = Math.sqrt(lats.map(x=>Math.pow(x-m,2)).reduce((a,b)=>a+b,0)/lats.length);
     }
     csv += `T6,Speed_SD_Var,${sd.toFixed(2)}\n`;
-    csv += `\n[T6 Micro Data]\nTarget,Response,Latency,Correct\n`;
-    state.t6.responses.forEach(r => { csv += `${r.target},${r.response},${r.latency},${r.correct?1:0}\n`; });
     return csv;
 }
 
@@ -875,19 +862,16 @@ function saveToLocal() {
     hist.push({ meta: state.patient, data: state, date: new Date().toLocaleString() });
     localStorage.setItem('cog_history', JSON.stringify(hist));
 }
-
 function exportJSON() {
     const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
     a.download = `CogData_${state.patient.id}.json`; a.click();
 }
-
 function exportCSV() {
     const blob = new Blob([generateCSVString()], {type:'text/csv'});
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
     a.download = `Report_${state.patient.id}.csv`; a.click();
 }
-
 function toggleAdmin() { document.getElementById('admin-modal').style.display = document.getElementById('admin-modal').style.display==='block'?'none':'block'; }
 function saveAdmin() {
     state.admin.place = document.getElementById('set-place').value;
