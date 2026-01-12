@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Cognitive Assessment System (v5.4)</title>
+    <title>Cognitive Assessment System (v5.5)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         /* --- 核心变量 --- */
@@ -66,7 +66,7 @@
         .demo-block:nth-child(9) { animation-delay: 1.2s; }
         @keyframes demoFlash { 0%, 100% { background: #CBD5E0; transform: scale(1); } 20%, 40% { background: var(--accent); transform: scale(1.1); } }
 
-        /* === SDMT Demo Optimized (Clearer & More Scientific) === */
+        /* SDMT Demo */
         .demo-sdmt-container { display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; max-width: 300px; }
         .demo-sdmt-key { display: flex; gap: 5px; justify-content: center; margin-bottom: 5px; }
         .demo-key-pair { border: 1px solid #ccc; border-radius: 6px; padding: 4px 8px; background: white; text-align: center; font-size: 0.9rem; transition: transform 0.2s, border-color 0.2s; }
@@ -78,15 +78,14 @@
         .demo-arrow { color: #999; }
         .demo-finger { font-size: 1.8rem; position: absolute; animation: fingerTap 3s infinite; pointer-events: none; }
         
-        /* Animation Keyframes for SDMT Demo */
         @keyframes fingerTap {
             0% { top: 70%; left: 60%; opacity: 0; transform: scale(1); }
             10% { top: 70%; left: 60%; opacity: 1; } 
-            30% { top: 30%; left: 50%; } /* Move to Key */
-            40% { transform: scale(0.8); } /* Press Key (mental check) */
+            30% { top: 30%; left: 50%; } 
+            40% { transform: scale(0.8); } 
             50% { transform: scale(1); }
-            60% { top: 70%; left: 40%; } /* Move to Answer */
-            70% { transform: scale(0.8); } /* Tap Answer */
+            60% { top: 70%; left: 40%; } 
+            70% { transform: scale(0.8); } 
             80% { transform: scale(1); opacity: 1; }
             100% { top: 70%; left: 40%; opacity: 0; }
         }
@@ -160,7 +159,7 @@
     <div id="view-home" class="view-section active">
         <div class="card text-center">
             <h1 id="txt-home-title" style="margin-bottom: 10px;">认知评估系统</h1>
-            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Clinical Research Edition (v5.4)</p>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Clinical Research Edition (v5.5)</p>
             <div style="max-width:500px; margin:0 auto 30px auto; color:#666; font-size:0.9rem; line-height:1.6;">
                 <p id="txt-home-intro">本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境，准备好后点击下方按钮查看演示。</p>
             </div>
@@ -414,7 +413,6 @@
             </div>
             
             <script>
-                // SDMT Demo Animation Script Logic (Simulated via CSS keyframes in style)
                 setInterval(() => {
                     const key1 = document.getElementById('demo-key-1');
                     if(key1) {
@@ -525,7 +523,7 @@ const DB = {
     },
     text: {
         zh: {
-            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "Clinical Research Edition (v5.4)",
+            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "Clinical Research Edition (v5.5)",
             home_intro: "本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境，准备好后点击下方按钮查看演示。",
             btn_tutorial: "📖 查看演示 (Demo)", btn_start_real: "我明白了，开始登记",
             tut_title: "测试内容演示", tut_desc: "请花一点时间了解即将进行的测试。",
@@ -540,7 +538,7 @@ const DB = {
             g_m: "男", g_f: "女", btn_next: "下一步", reg_err: "请填写所有必填项",
             
             t1_title: "记忆学习", t1_instr: "屏幕将逐个显示单词。<br>请用心记住它们，稍后需要回忆。", btn_mem: "开始记忆",
-            t1_re_title: "即时回忆", btn_add: "添加", btn_fin: "完成本节", task_mem: "Memory Task",
+            t1_re_title: "即时回忆", btn_add: "添加", btn_fin: "完成本节", task_mem: "Memory Task", ph_input: "输入一个词，按空格或回车提交",
             t2_title: "空间记忆", t2_instr: "观察方块点亮顺序，按相同顺序点击。", btn_start_corsi: "开始测试", t2_test_title: "空间记忆", t2_stat_w: "观察...", t2_stat_g: "请点击!", t2_timeout: "响应超时 (10秒)",
             t3_title: "定向力", btn_nq: "下一题",
             t4_title: "延迟回忆", t4_instr: "请再次回忆，刚才(T1)学过的那些单词。", btn_start_recall: "开始回忆", t4_test_title: "延迟回忆",
@@ -553,7 +551,7 @@ const DB = {
             t3_opts_d: ["周一","周二","周三","周四","周五","周六","周日"]
         },
         en: {
-            app_title: "Cognitive System", home_title: "Cognitive Assessment System", home_desc: "Clinical Research Edition (v5.4)",
+            app_title: "Cognitive System", home_title: "Cognitive Assessment System", home_desc: "Clinical Research Edition (v5.5)",
             home_intro: "This battery consists of 6 tasks and takes 10-15 mins.<br>Please ensure you are in a quiet environment.",
             btn_tutorial: "📖 View Demo", btn_start_real: "I Understand, Start",
             tut_title: "Test Demos", tut_desc: "Take a moment to understand the tasks.",
@@ -568,7 +566,7 @@ const DB = {
             g_m: "Male", g_f: "Female", btn_next: "Next", reg_err: "Please fill all required fields",
             
             t1_title: "Learning", t1_instr: "Words shown one by one.<br>Remember them for later recall.", btn_mem: "Start Learning",
-            t1_re_title: "Immediate Recall", btn_add: "Add", btn_fin: "Finish", task_mem: "Memory Task",
+            t1_re_title: "Immediate Recall", btn_add: "Add", btn_fin: "Finish", task_mem: "Memory Task", ph_input: "Enter a word, press Space/Enter",
             t2_title: "Spatial Memory", t2_instr: "Watch sequence, then tap in same order.", btn_start_corsi: "Start", t2_test_title: "Spatial", t2_stat_w: "Watch...", t2_stat_g: "Go!", t2_timeout: "Timeout",
             t3_title: "Orientation", btn_nq: "Next",
             t4_title: "Delayed Recall", t4_instr: "Recall the words from T1 again.", btn_start_recall: "Start Recall", t4_test_title: "Delayed Recall",
@@ -581,7 +579,7 @@ const DB = {
             t3_opts_d: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
         },
         child: {
-            app_title: "儿童五维认知", home_title: "大脑挑战赛", home_desc: "趣味认知测试 (v5.4)",
+            app_title: "儿童五维认知", home_title: "大脑挑战赛", home_desc: "趣味认知测试 (v5.5)",
             home_intro: "我们来玩几个小游戏吧！大约需要10分钟。<br>先看看怎么玩哦。",
             btn_tutorial: "📖 看看怎么玩", btn_start_real: "准备好了，开始！",
             tut_title: "游戏演示", tut_desc: "看清楚哦，很简单！",
@@ -596,7 +594,7 @@ const DB = {
             g_m: "男", g_f: "女", btn_next: "下一步", reg_err: "请把信息填完整哦",
             
             t1_title: "记词挑战", t1_instr: "看仔细并记住这些词哦！<br>等下要考考你。", btn_mem: "开始",
-            t1_re_title: "告诉我", btn_add: "记住了", btn_fin: "做完了", task_mem: "记词游戏",
+            t1_re_title: "告诉我", btn_add: "记住了", btn_fin: "做完了", task_mem: "记词游戏", ph_input: "输入一个词，按空格或回车",
             t2_title: "方块跳舞", t2_instr: "看方块怎么亮，然后照着点。", btn_start_corsi: "开始", t2_test_title: "记方块", t2_stat_w: "看好了...", t2_stat_g: "该你了!", t2_timeout: "太慢啦",
             t3_title: "问答时间", btn_nq: "下一题",
             t4_title: "考考记忆力", t4_instr: "刚才学的词，还记得哪些？", btn_start_recall: "我记得", t4_test_title: "再背一次",
@@ -645,7 +643,13 @@ window.onload = () => {
         const el = document.getElementById(id);
         if(el) {
             el.addEventListener('input', function(e) { if(this.value.match(/[\s,，.。]/)) this.value = this.value.replace(/[\s,，.。]/g, ''); });
-            el.addEventListener('keydown', e => { if(e.key==='Enter') addWord(id.split('-')[0]); });
+            // Modified key listener to include Space
+            el.addEventListener('keydown', e => { 
+                if(e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault(); // Prevent space char from being entered
+                    addWord(id.split('-')[0]); 
+                }
+            });
         }
     });
     initCorsiBoard();
@@ -671,7 +675,6 @@ function setMode(m) {
     document.getElementById('btn-mode-'+m).classList.add('active');
     
     const T = DB.text[m];
-    // Helper to update text by ID prefix or exact match
     for(let key in T) {
         let el = document.getElementById('txt-' + key.replace(/_/g,'-'));
         if(el) el.innerHTML = T[key];
@@ -680,7 +683,12 @@ function setMode(m) {
         if(key.startsWith('l_') && lbl) lbl.innerText = T[key];
     }
     
-    // Update Dropdowns
+    // Update Input Placeholders
+    if(T.ph_input) {
+        document.getElementById('t1-input').placeholder = T.ph_input;
+        document.getElementById('t4-input').placeholder = T.ph_input;
+    }
+
     const gs=document.getElementById('p_gender'); gs.innerHTML=''; 
     gs.add(new Option(m==='en'?"--Select--":"--请选择--", ""));
     gs.add(new Option(T.g_m,'M')); gs.add(new Option(T.g_f,'F'));
@@ -994,7 +1002,6 @@ function inputSDMT(n) {
     const now = Date.now(); const correct = n === t6Target.n;
     state.t6.responses.push({ target: t6Target.n, response: n, correct: correct, latency: now - state.t6.lastStimTime });
     
-    // Feedback Logic
     const btn = document.querySelectorAll('.key-btn')[n-1];
     const overlay = document.getElementById('sdmt-feedback');
     
@@ -1014,7 +1021,6 @@ function inputSDMT(n) {
         overlay.className = "sdmt-overlay-feedback show-wrong";
     }
     
-    // Reset overlay anim
     setTimeout(()=>{ overlay.className = "sdmt-overlay-feedback"; }, 500);
 
     document.getElementById('t6-score').innerText = state.t6.score;
@@ -1094,7 +1100,6 @@ function generateCSVString() {
     csv += `T2,SpatialSpan,${state.t2.score}\n`;
     csv += `T3,Orientation,${state.t3.score}\n`;
     let t4hits = state.t4.entered.filter(w => state.targets.includes(w)).length;
-    let retention = t1hits > 0 ? (t4hits/t1hits).toFixed(2) : 0;
     csv += `T4,Delayed_Score,${t4hits}\n`;
     csv += `T4,Delayed_Raw,${state.t4.entered.join(';')}\n`;
     csv += `T4,Retention_Rate,${retention}\n`;
