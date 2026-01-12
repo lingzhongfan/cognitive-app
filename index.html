@@ -159,7 +159,7 @@
     <div id="view-home" class="view-section active">
         <div class="card text-center">
             <h1 id="txt-home-title" style="margin-bottom: 10px;">认知评估系统</h1>
-            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Clinical Research Edition (v5.7)</p>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Clinical Research Edition (v5.8)</p>
             <div style="max-width:500px; margin:0 auto 30px auto; color:#666; font-size:0.9rem; line-height:1.6;">
                 <p id="txt-home-intro">本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境，准备好后点击下方按钮查看演示。</p>
             </div>
@@ -523,7 +523,7 @@ const DB = {
     },
     text: {
         zh: {
-            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "Clinical Research Edition (v5.7)",
+            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "Clinical Research Edition (v5.8)",
             home_intro: "本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境，准备好后点击下方按钮查看演示。",
             btn_tutorial: "📖 查看演示 (Demo)", btn_start_real: "我明白了，开始登记",
             tut_title: "测试内容演示", tut_desc: "请花一点时间了解即将进行的测试。",
@@ -551,7 +551,7 @@ const DB = {
             t3_opts_d: ["周一","周二","周三","周四","周五","周六","周日"]
         },
         en: {
-            app_title: "Cognitive System", home_title: "Cognitive Assessment System", home_desc: "Clinical Research Edition (v5.7)",
+            app_title: "Cognitive System", home_title: "Cognitive Assessment System", home_desc: "Clinical Research Edition (v5.8)",
             home_intro: "This battery consists of 6 tasks and takes 10-15 mins.<br>Please ensure you are in a quiet environment.",
             btn_tutorial: "📖 View Demo", btn_start_real: "I Understand, Start",
             tut_title: "Test Demos", tut_desc: "Take a moment to understand the tasks.",
@@ -579,7 +579,7 @@ const DB = {
             t3_opts_d: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
         },
         child: {
-            app_title: "儿童五维认知", home_title: "大脑挑战赛", home_desc: "趣味认知测试 (v5.7)",
+            app_title: "儿童五维认知", home_title: "大脑挑战赛", home_desc: "趣味认知测试 (v5.8)",
             home_intro: "我们来玩几个小游戏吧！大约需要10分钟。<br>先看看怎么玩哦。",
             btn_tutorial: "📖 看看怎么玩", btn_start_real: "准备好了，开始！",
             tut_title: "游戏演示", tut_desc: "看清楚哦，很简单！",
@@ -639,23 +639,49 @@ window.onload = () => {
     document.getElementById('set-ai-key').value = state.admin.aiKey || "";
     document.getElementById('set-cloud-url').value = state.admin.cloudUrl || "";
     
-    // Set max/min date for DOB
+    // Set max/min date for DOB (V5.7 feature)
     const dobInput = document.getElementById('p_dob');
     dobInput.max = new Date().toISOString().split("T")[0];
-    // Min is already set in HTML to 1900-01-01
 
+    // --- v5.8 修复开始：输入法合成锁逻辑 ---
     ['t1-input', 't4-input'].forEach(id => {
         const el = document.getElementById(id);
         if(el) {
-            el.addEventListener('input', function(e) { if(this.value.match(/[\s,，.。]/)) this.value = this.value.replace(/[\s,，.。]/g, ''); });
-            // Corrected: Only Enter key
+            let isComposing = false; // 标记：是否正在使用中文输入法打字
+
+            // 1. 监听输入法开始（开始打拼音）
+            el.addEventListener('compositionstart', () => {
+                isComposing = true;
+            });
+
+            // 2. 监听输入法结束（汉字已选定上屏）
+            el.addEventListener('compositionend', () => {
+                isComposing = false;
+                // 某些浏览器在 compositionend 后不会自动触发 input 清理，这里补救一下
+                if(el.value.match(/[\s,，.。]/)) el.value = el.value.replace(/[\s,，.。]/g, '');
+            });
+
+            // 3. 监听输入内容变化（用于清理标点空格）
+            el.addEventListener('input', function(e) {
+                // 如果正在打拼音，千万不要修改 value，否则会打断输入法
+                if(isComposing) return;
+                if(this.value.match(/[\s,，.。]/)) this.value = this.value.replace(/[\s,，.。]/g, '');
+            });
+
+            // 4. 监听按键（回车提交）
             el.addEventListener('keydown', e => { 
                 if(e.key === 'Enter') {
+                    // 关键修复：如果正在打拼音，或者浏览器认为正在合成中，则忽略回车
+                    if(isComposing || e.isComposing) {
+                        return; 
+                    }
                     addWord(id.split('-')[0]); 
                 }
             });
         }
     });
+    // --- v5.8 修复结束 ---
+
     initCorsiBoard();
     startDemoAnimation(); 
 };
