@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Cognitive Clinical (v5.0 Tutorial)</title>
+    <title>Cognitive Clinical (v5.1 UX)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* --- 基础变量 --- */
+        /* --- 核心变量 --- */
         :root {
             --primary: #2A5C82; --primary-light: #5A8AB0; --accent: #FF7043;
             --bg-color: #F8F9FA; --card-bg: #FFFFFF; --text-main: #2D3436;
-            --text-light: #636E72; --success: #00B894;
+            --success: #00B894; --error: #FF7675;
             --radius: 16px; --shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
         body.child-theme { --primary: #FF9F43; --primary-light: #FECA57; --bg-color: #FFF9E6; --text-main: #5F27CD; }
@@ -23,103 +23,102 @@
         }
         .container { flex: 1; max-width: 800px; margin: 0 auto; padding: 20px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; }
         
-        /* 视图切换动画 */
+        /* 视图与动画 */
         .view-section { display: none; animation: slideUp 0.4s ease-out; }
         .view-section.active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
         .card { background: var(--card-bg); padding: 30px; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.02); position: relative; }
         
-        /* 头部 */
-        header { background: rgba(255,255,255,0.95); padding: 15px 30px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        header { background: rgba(255,255,255,0.95); padding: 15px 30px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); backdrop-filter: blur(10px); }
         .brand { font-size: 1.2rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
         .mode-switch button { border: 1px solid #eee; background: white; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: 600; color: var(--text-light); margin-left: 5px; transition: all 0.2s; }
         .mode-switch button.active { background: var(--primary); color: white; border-color: var(--primary); }
         
-        /* 按钮与输入 */
-        .btn { padding: 12px 30px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: transform 0.1s; display: inline-flex; align-items: center; gap: 8px; -webkit-appearance: none; }
+        .btn { padding: 12px 30px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; -webkit-appearance: none; }
         .btn:active { transform: scale(0.96); }
         .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn-success { background: var(--success); color: white; }
         .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
         .btn-ai { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3); }
-        input, select { width: 100%; padding: 12px; border: 2px solid #EEE; border-radius: 10px; font-size: 1rem; box-sizing: border-box; background: #FAFAFA; -webkit-appearance: none; }
-        input:focus { border-color: var(--primary); outline: none; background: #FFF; }
         
-        /* 进度条 */
+        input, select { width: 100%; padding: 12px; border: 2px solid #EEE; border-radius: 10px; font-size: 1rem; box-sizing: border-box; background: #FAFAFA; -webkit-appearance: none; transition: border 0.3s; }
+        input:focus, select:focus { border-color: var(--primary); outline: none; background: #FFF; }
+        input.error, select.error { border-color: var(--error); background: #FFF0F0; }
+        
         .progress-container { margin: 20px 0; }
         .progress-track { height: 8px; background: #EEE; border-radius: 4px; overflow: hidden; }
         .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
         
-        /* === 教程样式 (New) === */
-        .tutorial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 20px; }
-        .tutorial-card { background: #f8f9fa; border: 1px solid #eee; border-radius: 12px; padding: 20px; text-align: left; transition: transform 0.2s; }
-        .tutorial-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .t-icon { font-size: 2rem; margin-bottom: 10px; display: block; }
-        .t-title { font-weight: bold; color: var(--primary); margin-bottom: 5px; font-size: 1.1rem; }
-        .t-desc { font-size: 0.9rem; color: #666; line-height: 1.5; }
+        /* === 微演示动画区域 (Micro-Demos) === */
+        .micro-demo-box {
+            background: #F0F4F8; border-radius: 12px; padding: 20px; margin: 20px 0;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border: 2px dashed #DCE4EA; position: relative; overflow: hidden;
+        }
+        .demo-label { font-size: 0.8rem; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         
-        /* 演示动画容器 */
-        .demo-stage { height: 80px; background: white; border-radius: 8px; margin: 15px 0; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; border: 1px dashed #ddd; }
+        /* T2 Corsi Demo */
+        .demo-corsi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 80px; }
+        .demo-block { width: 100%; padding-bottom: 100%; background: #CBD5E0; border-radius: 4px; }
+        .demo-block.lit { animation: demoFlash 2s infinite; }
+        .demo-block:nth-child(1) { animation-delay: 0s; }
+        .demo-block:nth-child(5) { animation-delay: 0.6s; }
+        .demo-block:nth-child(9) { animation-delay: 1.2s; }
+        @keyframes demoFlash { 0%, 100% { background: #CBD5E0; transform: scale(1); } 20%, 40% { background: var(--accent); transform: scale(1.1); } }
+
+        /* T6 SDMT Demo */
+        .demo-sdmt-row { display: flex; gap: 10px; font-size: 1.5rem; font-weight: bold; align-items: center; }
+        .demo-key { border: 2px solid #ccc; padding: 5px 15px; border-radius: 8px; background: white; }
+        .demo-finger { font-size: 2rem; margin-left: 10px; animation: demoTap 1.5s infinite; }
+        @keyframes demoTap { 0% { transform: translate(0, 0); opacity: 0; } 50% { transform: translate(-10px, -10px); opacity: 1; } 100% { transform: translate(0, 0); opacity: 0; } }
+
+        /* === SDMT 强反馈样式 === */
+        .key-btn { background: #FFF; border: 1px solid #DDD; border-radius: 12px; padding: 20px; font-size: 1.5rem; font-weight: bold; box-shadow: 0 3px 0 #CCC; cursor: pointer; color: #333; transition: all 0.1s; -webkit-tap-highlight-color: transparent; }
+        .key-btn:active { transform: translateY(3px); box-shadow: none; }
         
-        /* 记忆动画 */
-        .demo-word { font-size: 1.5rem; font-weight: bold; color: var(--primary); animation: demoWords 4s infinite; }
-        @keyframes demoWords { 0%, 20% { content: "苹果"; opacity: 1; transform: scale(1); } 25%, 45% { opacity: 0; transform: scale(0.8); } 50%, 70% { content: "香蕉"; opacity: 1; transform: scale(1); } 75%, 100% { opacity: 0; transform: scale(0.8); } }
-        /* Hack for text animation: using JS to swap text is safer, but css content works for simple demo */
-        .demo-word::after { content: "苹果"; animation: changeText 4s infinite; }
-        @keyframes changeText { 0%, 45% { content: "🍎 苹果"; } 50%, 95% { content: "🍌 香蕉"; } }
+        .key-btn.correct-flash { background-color: var(--success) !important; color: white; border-color: var(--success); transform: scale(1.1); }
+        .key-btn.wrong-flash { background-color: var(--error) !important; color: white; border-color: var(--error); animation: shake 0.3s; }
+        
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 
-        /* 方块动画 */
-        .demo-corsi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; width: 60px; }
-        .demo-cb { width: 100%; padding-bottom: 100%; background: #ddd; border-radius: 4px; }
-        .demo-cb:nth-child(1) { animation: flash 2s infinite 0s; }
-        .demo-cb:nth-child(5) { animation: flash 2s infinite 0.6s; }
-        .demo-cb:nth-child(9) { animation: flash 2s infinite 1.2s; }
-        @keyframes flash { 0%, 100% { background: #ddd; } 20%, 40% { background: var(--accent); } }
+        .sdmt-overlay-feedback {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-size: 5rem; font-weight: bold; opacity: 0; pointer-events: none; z-index: 10;
+        }
+        .sdmt-overlay-feedback.show-correct { color: var(--success); animation: fadeOutUp 0.5s forwards; }
+        .sdmt-overlay-feedback.show-wrong { color: var(--error); animation: fadeOutDown 0.5s forwards; }
+        @keyframes fadeOutUp { 0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); } 100% { opacity: 0; transform: translate(-50%, -80%) scale(1.5); } }
+        @keyframes fadeOutDown { 0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); } 100% { opacity: 0; transform: translate(-50%, -20%) scale(1); } }
 
-        /* 速度动画 */
-        .demo-sdmt { font-size: 1.2rem; font-weight: bold; display: flex; gap: 10px; }
-        .demo-pair { border: 1px solid #ccc; padding: 5px 10px; border-radius: 5px; display: flex; flex-direction: column; align-items: center; }
-        .demo-pair span { font-size: 0.8rem; color: #999; }
-        .demo-hand { position: absolute; font-size: 2rem; top: 40px; left: 60%; animation: tap 1.5s infinite; }
-        @keyframes tap { 0% { transform: scale(1); opacity: 0; } 50% { transform: scale(0.8); opacity: 1; } 100% { transform: scale(1); opacity: 0; } }
-
-        /* --- 现有组件 --- */
+        /* 其他原有组件 */
         .corsi-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; max-width: 360px; margin: 20px auto; }
         .corsi-block { background: #E0E0E0; border-radius: 12px; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 0 #CCC; height: 0; padding-bottom: 100%; position: relative; }
         .corsi-block:active { transform: translateY(2px); box-shadow: 0 2px 0 #CCC; }
         .corsi-block.active { background: var(--accent) !important; box-shadow: 0 0 15px var(--accent); }
         .corsi-block.user-tap { background: var(--primary); }
-        
         .svg-wrapper { width: 100%; max-width: 680px; margin: 0 auto; height: 0; padding-bottom: 58%; position: relative; }
         .svg-wrapper svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        .arc-text { font-family: Arial; font-weight: bold; fill: black; text-anchor: middle; dominant-baseline: middle; pointer-events: none; }
         .sdmt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 400px; margin: 15px auto; }
-        .key-btn { background: #FFF; border: 1px solid #DDD; border-radius: 12px; padding: 20px; font-size: 1.5rem; font-weight: bold; box-shadow: 0 3px 0 #CCC; cursor: pointer; color: #333; -webkit-touch-callout: none; }
-        .key-btn:active { transform: translateY(3px); box-shadow: none; }
-        
         .word-display { font-size: 3.5rem; text-align: center; height: 180px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); }
         .chips-area { display: flex; flex-wrap: wrap; gap: 8px; min-height: 60px; padding: 15px; background: #F4F6F8; border-radius: 10px; margin-bottom: 20px; border: 1px dashed #DDD; }
         .chip { background: var(--primary); color: white; padding: 6px 14px; border-radius: 20px; cursor: pointer; animation: pop 0.3s; font-size: 0.9rem; }
-        
         .backup-section { margin-top: 30px; border-top: 1px solid #EEE; padding-top: 20px; text-align: left; }
         .backup-box { display: none; margin-top: 10px; }
         textarea.raw-data { width: 100%; height: 150px; font-family: monospace; font-size: 12px; padding: 10px; border: 1px solid #DDD; background: #FAFAFA; border-radius: 8px; -webkit-appearance: none; }
-        
         .hidden { display: none; } .text-center { text-align: center; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         .mic-btn { font-size: 1.5rem; padding: 0 15px; background: #FFF; border: 1px solid #DDD; border-radius: 8px; cursor: pointer; }
         .mic-btn.recording { border-color: var(--accent); color: var(--accent); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 112, 67, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
-        
         table.res-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         table.res-table th, table.res-table td { padding: 10px; border-bottom: 1px solid #EEE; text-align: left; }
         table.res-table th { color: #888; font-size: 0.85rem; }
-        
         #ai-report-area { margin-top: 20px; background: #f0f7ff; padding: 20px; border-radius: 12px; border: 1px solid #cce5ff; text-align: left; display: none; }
         .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(0,0,0,0.1); border-radius: 50%; border-top-color: #2A5C82; animation: spin 1s ease-in-out infinite; margin-right: 10px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
-        @media (max-width: 600px) { .card { padding: 25px 20px; } .form-row { grid-template-columns: 1fr; } .word-display { font-size: 2.5rem; height: 120px; } .key-btn { padding: 15px; } .tutorial-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 600px) { .card { padding: 25px 20px; } .form-row { grid-template-columns: 1fr; } .word-display { font-size: 2.5rem; height: 120px; } .key-btn { padding: 15px; } }
     </style>
 </head>
 <body>
@@ -141,61 +140,20 @@
     <div id="view-home" class="view-section active">
         <div class="card text-center">
             <h1 id="txt-home-title" style="margin-bottom: 10px;">五维认知评估系统</h1>
-            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Clinical Research Edition (v5.0)</p>
-            <div style="max-width:500px; margin:0 auto 30px auto; color:#666; font-size:0.9rem; line-height:1.6;">
-                <p id="txt-home-intro">本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境，准备好后点击下方按钮查看演示。</p>
-            </div>
-            <button class="btn btn-primary" onclick="startTutorial()"><span id="txt-btn-tutorial">📖 查看演示 (Demo)</span></button>
-            <div style="margin-top: 15px;">
-                <button class="btn btn-outline" style="font-size: 0.8rem; padding: 8px 20px;" onclick="toggleAdmin()">🔧 设置 / Settings</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="view-tutorial" class="view-section">
-        <div class="card text-center">
-            <h2 style="margin-bottom:20px;">测试内容演示</h2>
-            <p style="color:#666; margin-bottom:30px;">请花一点时间了解即将进行的测试。</p>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Clinical Research Edition (v5.1 UX)</p>
             
-            <div class="tutorial-grid">
-                <div class="tutorial-card">
-                    <span class="t-icon">🧠</span>
-                    <div class="t-title">1. 记忆力挑战</div>
-                    <div class="demo-stage">
-                        <div class="demo-word"></div>
-                    </div>
-                    <div class="t-desc">屏幕会逐个显示单词。请用心<b>记住</b>它们。稍后我们会要求您回忆（打字或语音）。</div>
-                </div>
-
-                <div class="tutorial-card">
-                    <span class="t-icon">🟩</span>
-                    <div class="t-title">2. 空间方块</div>
-                    <div class="demo-stage">
-                        <div class="demo-corsi-grid">
-                            <div class="demo-cb"></div><div class="demo-cb"></div><div class="demo-cb"></div>
-                            <div class="demo-cb"></div><div class="demo-cb"></div><div class="demo-cb"></div>
-                            <div class="demo-cb"></div><div class="demo-cb"></div><div class="demo-cb"></div>
-                        </div>
-                    </div>
-                    <div class="t-desc">观察方块亮起的<b>顺序</b>。演示结束后，请按<b>相同顺序</b>点击方块。</div>
-                </div>
-
-                <div class="tutorial-card">
-                    <span class="t-icon">⚡</span>
-                    <div class="t-title">3. 快速反应</div>
-                    <div class="demo-stage">
-                        <div class="demo-sdmt">
-                            <div class="demo-pair"><span>∩</span><b>2</b></div>
-                            <div class="demo-pair"><span>≈</span><b>?</b></div>
-                        </div>
-                        <div class="demo-hand">👆</div>
-                    </div>
-                    <div class="t-desc">屏幕上方会有符号和数字的对应表。请根据出现的符号，<b>尽快</b>点击对应的数字。</div>
-                </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 30px; text-align: left; font-size:0.9rem;">
+                <div style="background: var(--bg-color); padding: 10px; border-radius: 8px;"><strong id="txt-menu-t1">1. 学习与即时回忆</strong></div>
+                <div style="background: var(--bg-color); padding: 10px; border-radius: 8px;"><strong id="txt-menu-t2">2. 空间记忆 (干扰)</strong></div>
+                <div style="background: var(--bg-color); padding: 10px; border-radius: 8px;"><strong id="txt-menu-t3">3. 定向力 (干扰)</strong></div>
+                <div style="background: var(--bg-color); padding: 10px; border-radius: 8px; color:var(--accent)"><strong id="txt-menu-t4">4. 延迟回忆 (重点)</strong></div>
+                <div style="background: var(--bg-color); padding: 10px; border-radius: 8px;"><strong id="txt-menu-t5">5. 再认 (鉴别)</strong></div>
+                <div style="background: var(--bg-color); padding: 10px; border-radius: 8px;"><strong id="txt-menu-t6">6. SDMT 速度</strong></div>
             </div>
 
-            <div style="margin-top:40px;">
-                <button class="btn btn-success" onclick="initSession()"><span id="txt-btn-start-real">我明白了，开始登记</span></button>
+            <button class="btn btn-primary" onclick="initSession()"><span id="txt-btn-start">开始评估</span></button>
+            <div style="margin-top: 15px;">
+                <button class="btn btn-outline" style="font-size: 0.8rem; padding: 8px 20px;" onclick="toggleAdmin()" id="txt-btn-settings">🔧 设置 / Settings</button>
             </div>
         </div>
     </div>
@@ -204,19 +162,20 @@
         <div class="card">
             <h2 id="txt-reg-title">受试者信息</h2>
             <div class="form-row">
-                <div><label id="lbl-name">姓名</label><input type="text" id="p_name"></div>
-                <div><label id="lbl-id">登记号</label><input type="text" id="p_id"></div>
+                <div><label id="lbl-name">姓名 *</label><input type="text" id="p_name" required></div>
+                <div><label id="lbl-id">登记号 *</label><input type="text" id="p_id" required></div>
             </div>
             <div class="form-row">
-                <div><label id="lbl-gender">性别</label><select id="p_gender"></select></div>
-                <div><label id="lbl-dob">出生日期</label><input type="date" id="p_dob" onchange="calcAge()"></div>
+                <div><label id="lbl-gender">性别 *</label><select id="p_gender"><option value="">--Select--</option></select></div>
+                <div><label id="lbl-dob">出生日期 *</label><input type="date" id="p_dob" onchange="calcAge()" required></div>
             </div>
             <div class="form-row">
                 <div><label id="lbl-age">年龄</label><input type="number" id="p_age" readonly></div>
-                <div><label id="lbl-edu">教育</label><select id="p_edu"></select></div>
+                <div><label id="lbl-edu">教育 *</label><select id="p_edu"><option value="">--Select--</option></select></div>
             </div>
             <div class="text-center">
-                <button class="btn btn-primary" onclick="submitRegister()"><span id="txt-btn-next">下一步</span></button>
+                <button class="btn btn-primary" id="btn-submit-reg" onclick="validateAndSubmit()"><span id="txt-btn-next">下一步</span></button>
+                <div id="reg-error-msg" style="color:var(--error); margin-top:10px; display:none;">请填写所有必填项 (Please fill all fields)</div>
             </div>
         </div>
     </div>
@@ -224,7 +183,14 @@
     <div id="view-t1-learn" class="view-section">
         <div class="card text-center">
             <h2 id="txt-t1-title">记忆学习</h2>
-            <p id="txt-t1-instr" style="color:#666">屏幕将逐个显示单词。</p>
+            
+            <div class="micro-demo-box">
+                <div class="demo-label">Demo 演示</div>
+                <div style="font-size:1.5rem; font-weight:bold; color:var(--primary); animation:demoWords 3s infinite">苹果</div>
+            </div>
+            <style>@keyframes demoWords { 0%,45%{content:"苹果";opacity:1;} 50%,95%{opacity:0.3;} }</style>
+
+            <p id="txt-t1-instr" style="color:#666">屏幕将逐个显示单词 (60秒回忆倒计时)。</p>
             <div id="t1-word" class="word-display">...</div>
             <div class="progress-container"><div class="progress-track"><div id="t1-learn-bar" class="progress-bar"></div></div></div>
             <button id="btn-start-learn" class="btn btn-primary" onclick="runSerialWords('t1')"><span id="txt-btn-mem">开始记忆</span></button>
@@ -256,12 +222,17 @@
     <div id="view-t2-intro" class="view-section">
         <div class="card text-center">
             <h2 id="txt-t2-title">空间记忆</h2>
-            <p id="txt-t2-instr">观察方块亮起的顺序，然后按<b>相同顺序</b>点击。</p>
-            <div class="corsi-board" style="pointer-events: none; opacity:0.6;">
-                <div class="corsi-block"></div><div class="corsi-block"></div><div class="corsi-block"></div>
-                <div class="corsi-block"></div><div class="corsi-block" style="background:var(--accent)"></div><div class="corsi-block"></div>
-                <div class="corsi-block"></div><div class="corsi-block"></div><div class="corsi-block"></div>
+            
+            <div class="micro-demo-box">
+                <div class="demo-label">Demo 演示</div>
+                <div class="demo-corsi-grid">
+                    <div class="demo-block lit"></div><div class="demo-block"></div><div class="demo-block"></div>
+                    <div class="demo-block"></div><div class="demo-block lit" style="animation-delay:0.5s"></div><div class="demo-block"></div>
+                    <div class="demo-block"></div><div class="demo-block"></div><div class="demo-block lit" style="animation-delay:1s"></div>
+                </div>
             </div>
+
+            <p id="txt-t2-instr">观察方块亮起的顺序，然后按<b>相同顺序</b>点击。</p>
             <button class="btn btn-primary" onclick="startCorsi()"><span id="txt-btn-start-corsi">开始测试</span></button>
         </div>
     </div>
@@ -317,14 +288,26 @@
         </div>
     </div>
 
+    <div id="view-t5-intro" class="view-section">
+        <div class="card text-center">
+            <h2 id="txt-t5-title">再认</h2>
+            <p id="txt-t5-hint">从下方列表中，选出 T1 学过的单词。</p>
+            <div style="margin:30px 0;">
+                <div class="btn btn-outline" style="opacity:0.5; cursor:default;">干扰词</div>
+                <div class="btn btn-primary" style="cursor:default;">目标词</div>
+                <div class="btn btn-outline" style="opacity:0.5; cursor:default;">干扰词</div>
+            </div>
+            <button class="btn btn-primary" onclick="startT5Test()"><span id="txt-btn-start-recog">开始选择</span></button>
+        </div>
+    </div>
+
     <div id="view-t5-test" class="view-section">
         <div class="card">
             <div style="display:flex; justify-content:space-between;">
-                <h2 id="txt-t5-title">再认</h2>
+                <h2>再认</h2>
                 <div id="t5-progress-txt">0 / 10</div>
             </div>
-            <p id="txt-t5-hint">从下方列表中，选出 T1 学过的单词。</p>
-            <div id="t5-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;"></div>
+            <div id="t5-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:20px;"></div>
             <div class="text-center" style="margin-top:30px;">
                 <button class="btn btn-success" onclick="finishT5()"><span id="txt-btn-finish-t5">完成本节</span></button>
             </div>
@@ -334,6 +317,16 @@
     <div id="view-t6-intro" class="view-section">
         <div class="card text-center">
             <h2 id="txt-t6-title">处理速度</h2>
+            
+            <div class="micro-demo-box">
+                <div class="demo-label">Demo 演示</div>
+                <div class="demo-sdmt-row">
+                    <div class="demo-key">∩ <span style="font-size:0.8rem;color:red;">2</span></div>
+                    <div class="demo-key">≈ <span style="font-size:0.8rem;color:blue;">?</span></div>
+                    <div class="demo-finger">👆</div>
+                </div>
+            </div>
+
             <p id="txt-t6-instr">参照图例，点击数字。</p>
             <p><strong>60 s</strong></p>
             <button class="btn btn-primary" onclick="startSDMT()"><span id="txt-btn-start-test">开始测试</span></button>
@@ -341,7 +334,9 @@
     </div>
 
     <div id="view-t6-test" class="view-section">
-        <div class="card text-center">
+        <div class="card text-center" style="position:relative;">
+            <div id="sdmt-feedback" class="sdmt-overlay-feedback">✓</div>
+
             <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.2rem; margin-bottom:15px;">
                 <span>⏱ <span id="t6-timer">60</span>s</span>
                 <span style="color:var(--success)"><span id="txt-score">得分</span>: <span id="t6-score">0</span></span>
@@ -429,17 +424,17 @@ const DB = {
     },
     text: {
         zh: {
-            app_title: "五维认知评估", home_title: "五维认知评估系统", home_desc: "Clinical Research Edition (v5.0)",
+            app_title: "五维认知评估", home_title: "五维认知评估系统", home_desc: "Clinical Research Edition (v5.1 UX)",
             menu_t1: "1. 学习与即时回忆", menu_t2: "2. 空间记忆 (干扰)", menu_t3: "3. 定向力 (干扰)", menu_t4: "4. 延迟回忆", menu_t5: "5. 再认", menu_t6: "6. SDMT 速度",
             btn_start: "开始评估", btn_set: "设置",
-            reg_title: "受试者信息", l_name: "姓名", l_id: "登记号", l_gen: "性别", l_dob: "出生日期", l_age: "年龄", l_edu: "教育",
+            reg_title: "受试者信息 (请填写完整)", l_name: "姓名", l_id: "登记号", l_gen: "性别", l_dob: "出生日期", l_age: "年龄", l_edu: "教育",
             g_m: "男", g_f: "女", btn_next: "下一步",
             t1_title: "记忆学习", t1_instr: "屏幕逐个显示单词 (60秒回忆倒计时)。", btn_mem: "开始记忆",
             t1_re_title: "即时回忆", btn_add: "添加", btn_fin: "完成本节",
             t2_title: "空间记忆 (Corsi)", t2_instr: "观察方块点亮顺序，按相同顺序点击。", btn_start_corsi: "开始测试", t2_test_title: "空间记忆", t2_stat_w: "观察...", t2_stat_g: "请点击!", t2_timeout: "响应超时 (10秒)",
             t3_title: "定向力", btn_nq: "下一题",
             t4_title: "延迟回忆", t4_instr: "请再次回忆，刚才(T1)学过的那些单词。", btn_start_recall: "开始回忆", t4_test_title: "延迟回忆",
-            t5_title: "再认", t5_hint: "从下方列表中，选出 T1 学过的单词。", btn_fin_t5: "完成本节",
+            t5_title: "再认", t5_hint: "从下方列表中，选出 T1 学过的单词。", btn_fin_t5: "完成本节", btn_start_recog: "开始选择",
             t6_title: "处理速度", t6_instr: "参照图例，点击数字。", btn_start_test: "开始测试", score: "得分",
             rep_title: "评估报告", btn_new: "新受试者", admin_t: "设置", back_hint: "原始数据备份",
             edu_opts: ["小学","初中","高中","大学","研究生"],
@@ -448,17 +443,17 @@ const DB = {
             t3_opts_d: ["周一","周二","周三","周四","周五","周六","周日"]
         },
         en: {
-            app_title: "Cognitive Clinical", home_title: "Cognitive Assessment Battery", home_desc: "Clinical Research Edition (v5.0)",
+            app_title: "Cognitive Clinical", home_title: "Cognitive Assessment Battery", home_desc: "Clinical Research Edition (v5.1 UX)",
             menu_t1: "1. Immediate Recall", menu_t2: "2. Spatial Memory", menu_t3: "3. Orientation", menu_t4: "4. Delayed Recall", menu_t5: "5. Recognition", menu_t6: "6. SDMT Speed",
             btn_start: "Start", btn_set: "Settings",
-            reg_title: "Subject Info", l_name: "Name", l_id: "ID", l_gen: "Gender", l_dob: "DOB", l_age: "Age", l_edu: "Education",
+            reg_title: "Subject Info (Required)", l_name: "Name", l_id: "ID", l_gen: "Gender", l_dob: "DOB", l_age: "Age", l_edu: "Education",
             g_m: "Male", g_f: "Female", btn_next: "Next",
             t1_title: "Learning", t1_instr: "Words shown 1-by-1 (60s recall limit).", btn_mem: "Start Learning",
             t1_re_title: "Immediate Recall", btn_add: "Add", btn_fin: "Finish",
             t2_title: "Spatial Memory", t2_instr: "Watch sequence, then tap in same order.", btn_start_corsi: "Start", t2_test_title: "Spatial", t2_stat_w: "Watch...", t2_stat_g: "Go!", t2_timeout: "Timeout",
             t3_title: "Orientation", btn_nq: "Next",
             t4_title: "Delayed Recall", t4_instr: "Recall the words from T1 again.", btn_start_recall: "Start Recall", t4_test_title: "Delayed Recall",
-            t5_title: "Recognition", t5_hint: "Select words learned in T1.", btn_fin_t5: "Finish",
+            t5_title: "Recognition", t5_hint: "Select words learned in T1.", btn_fin_t5: "Finish", btn_start_recog: "Start Selection",
             t6_title: "Speed (SDMT)", t6_instr: "Match symbols to numbers.", btn_start_test: "Start Test", score: "Score",
             rep_title: "Report", btn_new: "New Subject", admin_t: "Settings", back_hint: "Backup Data",
             edu_opts: ["Primary","Middle","High","Uni","Grad"],
@@ -467,17 +462,17 @@ const DB = {
             t3_opts_d: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
         },
         child: {
-            app_title: "儿童五维认知", home_title: "大脑挑战赛", home_desc: "趣味认知测试 (v5.0)",
+            app_title: "儿童五维认知", home_title: "大脑挑战赛", home_desc: "趣味认知测试 (v5.1 UX)",
             menu_t1: "1. 记词游戏", menu_t2: "2. 记方块", menu_t3: "3. 我在哪里", menu_t4: "4. 还能记得吗", menu_t5: "5. 找词游戏", menu_t6: "6. 眼疾手快",
             btn_start: "开始", btn_set: "设置",
-            reg_title: "小朋友信息", l_name: "姓名", l_id: "学号", l_gen: "性别", l_dob: "生日", l_age: "几岁", l_edu: "年级",
+            reg_title: "小朋友信息 (必填)", l_name: "姓名", l_id: "学号", l_gen: "性别", l_dob: "生日", l_age: "几岁", l_edu: "年级",
             g_m: "男", g_f: "女", btn_next: "下一步",
             t1_title: "记词挑战", t1_instr: "看仔细并记住这些词哦！", btn_mem: "开始",
             t1_re_title: "告诉我", btn_add: "记住了", btn_fin: "做完了",
             t2_title: "方块跳舞", t2_instr: "看方块怎么亮，然后照着点。", btn_start_corsi: "开始", t2_test_title: "记方块", t2_stat_w: "看好了...", t2_stat_g: "该你了!", t2_timeout: "太慢啦",
             t3_title: "问答时间", btn_nq: "下一题",
             t4_title: "考考记忆力", t4_instr: "刚才学的词，还记得哪些？", btn_start_recall: "我记得", t4_test_title: "再背一次",
-            t5_title: "找朋友", t5_hint: "把刚才学的词找出来。", btn_fin_t5: "完成",
+            t5_title: "找朋友", t5_hint: "把刚才学的词找出来。", btn_fin_t5: "完成", btn_start_recog: "开始找",
             t6_title: "找符号", t6_instr: "看图找数字，越快越好！", btn_start_test: "开始", score: "分数",
             rep_title: "成绩单", btn_new: "下一个", admin_t: "设置", back_hint: "数据备份",
             edu_opts: ["幼儿园","一年级","二年级","三年级","四年级","五年级","六年级","初中"],
@@ -551,12 +546,14 @@ function setMode(m) {
         else if(key.startsWith('l_')) setText('lbl-'+key.split('_')[1], T[key]);
         else setText('txt-'+key.replace(/_/g,'-'), T[key]);
     }
-    const gs=document.getElementById('p_gender'); gs.innerHTML=''; gs.add(new Option(T.g_m,'M')); gs.add(new Option(T.g_f,'F'));
-    const es=document.getElementById('p_edu'); es.innerHTML=''; T.edu_opts.forEach(e=>es.add(new Option(e,e)));
+    const gs=document.getElementById('p_gender'); gs.innerHTML=''; 
+    gs.add(new Option(m==='en'?"--Select--":"--请选择--", ""));
+    gs.add(new Option(T.g_m,'M')); gs.add(new Option(T.g_f,'F'));
+    const es=document.getElementById('p_edu'); es.innerHTML=''; 
+    es.add(new Option(m==='en'?"--Select--":"--请选择--", ""));
+    T.edu_opts.forEach(e=>es.add(new Option(e,e)));
 }
 function setText(id, txt) { const el=document.getElementById(id); if(el) el.innerText=txt; }
-
-function startTutorial() { showView('view-tutorial'); }
 
 function initSession() {
     let pool = [...DB.pools[state.mode]];
@@ -570,7 +567,7 @@ function initSession() {
     state.t5 = { hits: 0, false_alarms: 0, errors: 0, time: 0 };
     state.t6 = { score: 0, errors: 0, time: 60, responses: [], keyMap: state.t6.keyMap };
     state.t2 = { level: 2, trials: 0, score: 0, sequence: [], userSeq: [], history:[] };
-    state.t3 = { details: [], score: 0, time: 0 }; // Reset T3
+    state.t3 = { details: [], score: 0, time: 0 }; 
     showView('view-register');
     preloadVoice();
 }
@@ -581,9 +578,40 @@ function showView(id) {
     window.scrollTo(0,0);
 }
 
+// === 新增：提交前校验 ===
+function validateAndSubmit() {
+    const required = ['p_name', 'p_id', 'p_gender', 'p_dob', 'p_edu'];
+    let valid = true;
+    required.forEach(id => {
+        const el = document.getElementById(id);
+        if(!el.value) { el.classList.add('error'); valid = false; }
+        else { el.classList.remove('error'); }
+    });
+
+    const msg = document.getElementById('reg-error-msg');
+    if(!valid) {
+        msg.style.display = 'block';
+    } else {
+        msg.style.display = 'none';
+        const btn = document.getElementById('btn-submit-reg');
+        const originalText = btn.innerText;
+        btn.innerText = "✓ Success";
+        btn.classList.add('btn-success');
+        btn.classList.remove('btn-primary');
+        
+        // 0.5s Delay for UX
+        setTimeout(() => {
+            submitRegister();
+            btn.innerText = originalText;
+            btn.classList.add('btn-primary');
+            btn.classList.remove('btn-success');
+        }, 500);
+    }
+}
+
 function submitRegister() {
     state.patient = {
-        name: document.getElementById('p_name').value || "Anon",
+        name: document.getElementById('p_name').value,
         id: document.getElementById('p_id').value,
         gender: document.getElementById('p_gender').value,
         dob: document.getElementById('p_dob').value,
@@ -716,7 +744,7 @@ function corsiResult(success) {
     }
 }
 
-/* T3 Orientation (Auto-Scoring) */
+/* T3 Orientation */
 let t3Idx = 0;
 function startT3() { t3Idx = 0; state.t3.startTime = Date.now(); showView('view-t3'); loadT3Q(); }
 function loadT3Q() {
@@ -741,42 +769,20 @@ function loadT3Q() {
 function nextT3(val) {
     if (!val) val = document.getElementById('t3-inp')?.value;
     if (!val) return; 
-
     const now = new Date();
     let correct = false;
-
     switch (t3Idx) {
-        case 0: // Year
-            correct = (val.trim() == now.getFullYear());
-            break;
-        case 1: // Month
-            const monthOpts = DB.text[state.mode].t3_opts_m; 
-            correct = (val === monthOpts[now.getMonth()]);
-            break;
-        case 2: // Date
-            const inputDate = parseInt(val);
-            const realDate = now.getDate();
-            correct = Math.abs(inputDate - realDate) <= 1; 
-            break;
-        case 3: // Day
-            const dayOpts = DB.text[state.mode].t3_opts_d;
-            const dayIndex = (now.getDay() + 6) % 7; // Fix for JS Sunday=0
-            correct = (val === dayOpts[dayIndex]);
-            break;
-        case 4: // Place
-            correct = val.includes(state.admin.place);
-            break;
-        case 5: // City
-            correct = val.includes(state.admin.city);
-            break;
+        case 0: correct = (val.trim() == now.getFullYear()); break;
+        case 1: correct = (val === DB.text[state.mode].t3_opts_m[now.getMonth()]); break;
+        case 2: correct = Math.abs(parseInt(val) - now.getDate()) <= 1; break;
+        case 3: correct = (val === DB.text[state.mode].t3_opts_d[(now.getDay()+6)%7]); break;
+        case 4: correct = val.includes(state.admin.place); break;
+        case 5: correct = val.includes(state.admin.city); break;
     }
-
     if (correct) state.t3.score++;
     state.t3.details.push({ q: t3Idx, ans: val, c: correct });
-
     t3Idx++;
-    if (t3Idx < 6) loadT3Q(); 
-    else {
+    if (t3Idx < 6) loadT3Q(); else {
         state.t3.time = ((Date.now() - state.t3.startTime) / 1000).toFixed(1);
         showView('view-t4-intro'); 
     }
@@ -787,7 +793,7 @@ function startT4Recall() { showView('view-t4-recall'); state.t4.startTime = Date
 function finishT4() {
     if(recallTimerInt) clearInterval(recallTimerInt);
     state.t4.time = ((Date.now() - state.t4.startTime)/1000).toFixed(1);
-    startT5Test();
+    showView('view-t5-intro'); // Change: Go to T5 Intro first
 }
 
 /* T5 Recognition */
@@ -814,7 +820,7 @@ function finishT5() {
     showView('view-t6-intro');
 }
 
-/* T6 SDMT */
+/* T6 SDMT (Enhanced Feedback) */
 let t6Target = null;
 function startSDMT() { showView('view-t6-test'); drawSDMTKey(); nextSDMT(); let time = 60; t6Interval = setInterval(() => { time--; document.getElementById('t6-timer').innerText = time; if(time <= 0) endSDMT(); }, 1000); }
 function drawSDMTKey() {
@@ -837,7 +843,30 @@ function nextSDMT() { t6Target = state.t6.keyMap[Math.floor(Math.random()*9)]; d
 function inputSDMT(n) {
     const now = Date.now(); const correct = n === t6Target.n;
     state.t6.responses.push({ target: t6Target.n, response: n, correct: correct, latency: now - state.t6.lastStimTime });
-    if(correct) { state.t6.score++; const hl = document.getElementById(`hl-${n}`); if(hl) { hl.style.opacity = 1; setTimeout(()=>hl.style.opacity=0, 200); } } else state.t6.errors++;
+    
+    // Feedback Logic
+    const btn = document.querySelectorAll('.key-btn')[n-1];
+    const overlay = document.getElementById('sdmt-feedback');
+    
+    if(correct) { 
+        state.t6.score++; 
+        btn.classList.add('correct-flash');
+        setTimeout(()=>btn.classList.remove('correct-flash'), 100);
+        
+        overlay.innerText = "✓";
+        overlay.className = "sdmt-overlay-feedback show-correct";
+    } else { 
+        state.t6.errors++;
+        btn.classList.add('wrong-flash');
+        setTimeout(()=>btn.classList.remove('wrong-flash'), 200);
+        
+        overlay.innerText = "✗";
+        overlay.className = "sdmt-overlay-feedback show-wrong";
+    }
+    
+    // Reset overlay anim
+    setTimeout(()=>{ overlay.className = "sdmt-overlay-feedback"; }, 500);
+
     document.getElementById('t6-score').innerText = state.t6.score;
     nextSDMT();
 }
