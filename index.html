@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAS v6.0.2 (Responsive)</title>
+    <title>CAS v6.0.3 (Standardized Symbols)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         /* =========================================
@@ -78,12 +78,12 @@
         .t-hint { font-size: 0.75rem; color: var(--accent); margin-top: 8px; font-style: italic; background: rgba(255,112,67,0.1); padding: 4px 8px; border-radius: 4px; display: inline-block; }
 
         /* =========================================
-           3. SDMT Linear Key (Responsive Fix v6.0.2)
+           3. SDMT Linear Key (Optimized for Consistency)
            ========================================= */
         .sdmt-legend { 
             display: flex; 
-            flex-wrap: wrap;       /* Auto-wrap on small screens */
-            justify-content: center; /* Center alignment */
+            flex-wrap: wrap;       /* Auto-wrap */
+            justify-content: center; /* Center */
             gap: 8px;              
             padding: 10px; 
             background: #F0F4F8; 
@@ -94,19 +94,24 @@
 
         .sdmt-legend-item { 
             flex: 0 1 auto; 
-            width: 60px; /* Reduced base width for better mobile fit */
+            width: 60px;
             display: flex; flex-direction: column; align-items: center; 
             background: white; border-radius: 8px; overflow: hidden; 
             box-shadow: 0 2px 5px rgba(0,0,0,0.03); border: 1px solid white;
         }
         
+        /* v6.0.3: Force identical rendering for Legend and Target */
+        .symbol-font {
+            font-family: "Segoe UI Symbol", "Apple Symbols", "Noto Sans Symbols", sans-serif;
+            font-weight: 400; /* Regular weight prevents "bold" distortion */
+            line-height: 1;
+        }
+
         .sdmt-legend-sym { 
             font-size: 2.2rem; 
-            font-weight: 500; 
             color: var(--primary); 
             height: 50px; width: 100%; display: flex; align-items: center; justify-content: center; 
             background: #FFFFFF;
-            font-family: "Segoe UI Symbol", "Apple Symbols", sans-serif; 
         }
         
         .sdmt-legend-num { 
@@ -115,7 +120,6 @@
             background: #DFE6E9; border-top: 1px solid #eee;
         }
 
-        /* Mobile Optimization */
         @media (max-width: 400px) {
             .sdmt-legend-item { width: 18%; }
             .sdmt-legend-sym { font-size: 1.8rem; height: 45px; }
@@ -134,7 +138,7 @@
         @keyframes fingerTap { 0% { top: 70%; left: 60%; opacity: 0; transform: scale(1); } 10% { opacity: 1; } 30% { top: 30%; left: 50%; } 40% { transform: scale(0.8); } 50% { transform: scale(1); } 60% { top: 70%; left: 40%; } 70% { transform: scale(0.8); } 80% { transform: scale(1); opacity: 1; } 100% { top: 70%; left: 40%; opacity: 0; } }
 
         /* =========================================
-           4. Enhanced Visual Feedback (10rem Size)
+           4. Enhanced Visual Feedback (Huge)
            ========================================= */
         .sdmt-overlay-feedback { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
@@ -160,10 +164,11 @@
         .corsi-block.user-tap { background: var(--primary); }
         
         .sdmt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 400px; margin: 15px auto; }
+        
         #t6-target { 
             filter: drop-shadow(0 4px 0px rgba(0,0,0,0.1)); 
             transition: all 0.2s; 
-            font-family: "Segoe UI Symbol", "Apple Symbols", sans-serif;
+            font-size: 5rem; height: 100px; margin: 20px 0; color: var(--primary);
         }
 
         .word-display { font-size: 3.5rem; text-align: center; height: 180px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); }
@@ -190,7 +195,7 @@
 <header>
     <div class="brand">
         <span style="font-size:1.5rem;">🧠</span>
-        <span id="txt-app-title">CAS v6.0.2</span>
+        <span id="txt-app-title">CAS v6.0.3</span>
     </div>
     <div class="mode-switch">
         <button onclick="setMode('zh')" id="btn-mode-zh" class="active">中文</button>
@@ -204,7 +209,7 @@
     <div id="view-home" class="view-section active">
         <div class="card text-center">
             <h1 id="txt-home-title" style="margin-bottom: 10px;">认知评估系统</h1>
-            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Scientific Research Edition (v6.0.2)</p>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Scientific Research Edition (v6.0.3)</p>
             <div style="max-width:500px; margin:0 auto 30px auto; color:#666; font-size:0.9rem; line-height:1.6;">
                 <p id="txt-home-intro">本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境。</p>
             </div>
@@ -251,7 +256,7 @@
                     <div class="micro-demo-box" style="margin:5px 0; min-height:80px; padding:10px;">
                         <div class="demo-sdmt-container">
                             <div class="demo-sdmt-task">
-                                <span class="demo-target-box">⊏</span><span class="demo-arrow">→</span><span style="font-weight:bold;">1</span>
+                                <span class="demo-target-box symbol-font">⊏</span><span class="demo-arrow">→</span><span style="font-weight:bold;">1</span>
                             </div>
                             <div class="demo-finger">👆</div>
                         </div>
@@ -408,15 +413,15 @@
                 <div style="display:flex; flex-direction:column; align-items:center; gap:15px;">
                     <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                         <div style="border:1px solid #ccc; border-radius:6px; padding:5px 10px; background:white; text-align:center;">
-                            <div style="font-weight:bold;color:var(--primary);font-size:1.5rem;">⊏</div>
+                            <div style="font-weight:500;color:var(--primary);font-size:1.8rem;" class="symbol-font">⊏</div>
                             <div style="font-size:1rem;color:#555;border-top:1px solid #eee;">1</div>
                         </div>
                         <div style="border:1px solid #ccc; border-radius:6px; padding:5px 10px; background:white; text-align:center;">
-                            <div style="font-weight:bold;color:var(--primary);font-size:1.5rem;">⊐</div>
+                            <div style="font-weight:500;color:var(--primary);font-size:1.8rem;" class="symbol-font">⊐</div>
                             <div style="font-size:1rem;color:#555;border-top:1px solid #eee;">2</div>
                         </div>
                     </div>
-                    <div style="font-size:1.5rem;"><b>⊏</b> ➜ <b>1</b></div>
+                    <div style="font-size:1.5rem;" class="symbol-font"><b>⊏</b> ➜ <b>1</b></div>
                 </div>
             </div>
             <p id="txt-t6-instr">参照图例，点击数字。</p>
@@ -433,7 +438,7 @@
             
             <div id="sdmt-legend" class="sdmt-legend"></div>
 
-            <div class="big-symbol" id="t6-target" style="font-size: 5rem; height:100px; margin:20px 0; color:var(--primary); font-weight:bold;">?</div>
+            <div class="big-symbol symbol-font" id="t6-target">?</div>
             <div class="sdmt-grid">
                 <button class="key-btn" onclick="inputSDMT(1)">1</button><button class="key-btn" onclick="inputSDMT(2)">2</button><button class="key-btn" onclick="inputSDMT(3)">3</button>
                 <button class="key-btn" onclick="inputSDMT(4)">4</button><button class="key-btn" onclick="inputSDMT(5)">5</button><button class="key-btn" onclick="inputSDMT(6)">6</button>
@@ -522,11 +527,12 @@ const DB = {
         en: { w1:"Apple", w2:"Banana" },
         child: { w1:"苹果", w2:"香蕉" }
     },
-    // Updated Symbols: Distinct, Directional-Invariant Geometrics
-    symbols: ['⊏', '⊐', '⊓', '⊔', '△', '▽', '◁', '▷', '○'],
+    // v6.0.3: Geometric Shapes (Topologically Distinct)
+    // Removed directional triangles to avoid mental rotation bias
+    symbols: ['⊏', '⊐', '⊓', '⊔', '○', '□', '◇', '☆', '△'], 
     text: {
         zh: {
-            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "科研专业版 (v6.0.2)",
+            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "科研专业版 (v6.0.3)",
             home_intro: "本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境。",
             btn_tutorial: "📖 查看演示 (Demo)", btn_start_real: "我明白了，开始登记", btn_settings: "🔧 设置",
             tut_title: "测试内容演示",
@@ -548,13 +554,11 @@ const DB = {
             t3_opts_m: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],
             t3_opts_d: ["周一","周二","周三","周四","周五","周六","周日"],
             lbl_demo: "演示", t2_watch: "请观察...", t2_go: "请点击!", t2_timeout: "超时",
-            // Admin Settings
             admin_title: "⚙️ 系统设置", admin_place: "📍 地点 (关键词)", admin_city: "🏙️ 城市 (关键词)", admin_cloud: "☁️ Google Script URL", admin_key: "🤖 Gemini API Key",
-            // Report Labels
             rep_t1: "言语学习", rep_t4: "延迟回忆", rep_t5: "再认记忆", rep_t2: "空间广度", rep_t3: "定向力", rep_t6: "加工速度", rep_note: "备注"
         },
         en: { 
-            app_title: "CAS v6.0.2", home_title: "Cognitive Assessment System", home_desc: "Scientific Research Edition (v6.0.2)",
+            app_title: "CAS v6.0.3", home_title: "Cognitive Assessment System", home_desc: "Scientific Research Edition (v6.0.3)",
             home_intro: "This battery consists of 6 neuropsychological tasks.<br>Estimated time: 10-15 mins. Please ensure a quiet environment.",
             btn_tutorial: "📖 View Demo", btn_start_real: "Proceed to Register", btn_settings: "🔧 Settings",
             tut_title: "Task Demonstration",
@@ -576,13 +580,11 @@ const DB = {
             t3_opts_m: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
             t3_opts_d: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
             lbl_demo: "Demo", t2_watch: "Watch...", t2_go: "Go!", t2_timeout: "Timeout",
-            // Admin Settings
             admin_title: "⚙️ Settings", admin_place: "📍 Place (Keywords)", admin_city: "🏙️ City (Keywords)", admin_cloud: "☁️ Google Script URL", admin_key: "🤖 Gemini API Key",
-            // Report Labels
             rep_t1: "Verbal Learning", rep_t4: "Delayed Recall", rep_t5: "Recognition", rep_t2: "Spatial Span", rep_t3: "Orientation", rep_t6: "Proc. Speed", rep_note: "Note"
         },
         child: {
-            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v6.0.2)",
+            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v6.0.3)",
             home_intro: "我们来玩几个小游戏吧！<br>先看看怎么玩哦。",
             btn_tutorial: "📖 看看怎么玩", btn_start_real: "准备好了！", btn_settings: "🔧 设置",
             tut_title: "游戏演示",
@@ -604,7 +606,6 @@ const DB = {
             t3_opts_m: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],
             t3_opts_d: ["周一","周二","周三","周四","周五","周六","周日"],
             lbl_demo: "演示", t2_watch: "看好了...", t2_go: "该你了!", t2_timeout: "太慢啦",
-            // Admin Settings
             admin_title: "⚙️ 设置", admin_place: "📍 地点", admin_city: "🏙️ 城市", admin_cloud: "☁️ 云端地址", admin_key: "🤖 AI 密钥",
             rep_t1: "记词分数", rep_t4: "背书分数", rep_t5: "找词分数", rep_t2: "方块分数", rep_t3: "问答分数", rep_t6: "反应速度", rep_note: "说明"
         }
@@ -694,7 +695,7 @@ function setMode(m) {
     const gs=document.getElementById('p_gender'); gs.innerHTML=''; gs.add(new Option(T.select_def, "")); gs.add(new Option(T.g_m,'M')); gs.add(new Option(T.g_f,'F'));
     const es=document.getElementById('p_edu'); es.innerHTML=''; es.add(new Option(T.select_def, "")); T.edu_opts.forEach(e=>es.add(new Option(e,e)));
     
-    // v6.0.2 Fix: Force Date Input Language
+    // Force Date Input Language
     const dobInput = document.getElementById('p_dob');
     dobInput.setAttribute('lang', m === 'en' ? 'en-US' : 'zh-CN');
 
@@ -718,7 +719,7 @@ function updateDemoText() {
 
 function startTutorial() { showView('view-tutorial'); }
 
-// v6.0.2: Only Reset State here, do NOT generate words yet
+// v6.0.3: Session Reset
 function initSession() {
     let syms = [...DB.symbols]; syms.sort(()=>Math.random()-0.5);
     state.t6.keyMap = syms.map((s,i)=>({s:s, n:i+1}));
@@ -746,7 +747,7 @@ function validateAndSubmit() {
     if(!valid) { msg.innerText = DB.text[state.mode].reg_err; msg.style.display = 'block'; } else { msg.style.display = 'none'; submitRegister(); }
 }
 
-// v6.0.2: Generate Words HERE (Late Binding) to match current language
+// v6.0.3: Late Binding for Lists
 function submitRegister() {
     state.patient = {
         name: document.getElementById('p_name').value, id: document.getElementById('p_id').value,
