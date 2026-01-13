@@ -90,12 +90,12 @@
         .key-btn.wrong-flash { background-color: var(--error) !important; color: white; border-color: var(--error); animation: shake 0.3s; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
         
-        /* v5.9.4 SDMT Feedback Enhancement */
+        /* v5.9.4 SDMT Feedback Enhancement (Bigger & Glow) */
         .sdmt-overlay-feedback { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            font-size: 8rem; /* Bigger */
+            font-size: 8rem; /* 巨大尺寸 */
             font-weight: 900; opacity: 0; pointer-events: none; z-index: 20; 
-            text-shadow: 0 0 20px rgba(255,255,255,0.9); /* Glow */
+            text-shadow: 0 0 20px rgba(255,255,255,0.9);
         }
         .sdmt-overlay-feedback.show-correct { color: var(--success); animation: popOut 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         .sdmt-overlay-feedback.show-wrong { color: var(--error); animation: shakeFade 0.6s ease-in-out forwards; }
@@ -458,7 +458,7 @@
 </div>
 
 <script>
-/* 1. DATA STRUCTURES (Psychometrically Valid Symbols) */
+/* 1. DATA STRUCTURES (Abstract Geometric Symbols) */
 const DB = {
     lists: {
         zh: {
@@ -479,7 +479,7 @@ const DB = {
         en: { w1:"Apple", w2:"Banana" },
         child: { w1:"苹果", w2:"香蕉" }
     },
-    // Updated Symbols: Abstract Geometrics to avoid semantic processing
+    // Updated Symbols: Abstract Geometrics
     symbols: ['⊏', '⊐', '⊓', '⊔', '△', '▽', '◁', '▷', '○'],
     text: {
         zh: {
@@ -491,7 +491,7 @@ const DB = {
             tut_c2_title: "2. 空间记忆", tut_c2_desc: "观察方块亮起的<b>顺序</b>。演示结束后，请按<b>相同顺序</b>点击方块。",
             tut_c3_title: "4. 处理速度", tut_c3_desc: "屏幕上方会有符号和数字的对应表。请根据出现的符号，<b>尽快</b>点击对应的数字。",
             tut_c4_title: "3. 定向问答", tut_c4_desc: "我们会询问当前的时间（年/月/日）和地点。", tut_c4_hint: "注：最后两题（地点/城市）的正确答案请在【设置】中预设",
-            reg_title: "受试者信息", l_name: "姓名", l_id: "登记号", l_gen: "性别", l_dob: "出生日期", l_age: "年龄", l_edu: "教育", g_m: "男", g_f: "女", btn_next: "下一步", reg_err: "请填写必填项",
+            reg_title: "受试者信息", l_name: "姓名", l_id: "登记号", l_gender: "性别", l_dob: "出生日期", l_age: "年龄", l_edu: "教育", g_m: "男", g_f: "女", btn_next: "下一步", reg_err: "请填写必填项",
             t1_title: "记忆学习", t1_instr: "屏幕将逐个显示单词。<br>请用心记住它们，稍后需要回忆。", btn_mem: "开始记忆",
             t1_recall_title: "即时回忆", btn_add: "添加", btn_finish: "完成本节", task_mem: "Memory Task", ph_input: "输入一个词，按回车提交",
             t2_title: "空间记忆", t2_instr: "观察方块点亮顺序，按相同顺序点击。", btn_start_corsi: "开始测试", t2_test_title: "空间记忆",
@@ -517,7 +517,7 @@ const DB = {
             tut_c2_title: "2. Spatial Span", tut_c2_desc: "Observe the sequence of lit blocks, then tap them in the <b>exact same order</b>.",
             tut_c3_title: "4. Processing Speed", tut_c3_desc: "Match symbols to numbers using the key. Respond <b>as fast as possible</b>.",
             tut_c4_title: "3. Orientation", tut_c4_desc: "Standard questions regarding current date and location.", tut_c4_hint: "Note: Preset Place/City in [Settings] for correct scoring.",
-            reg_title: "Subject Demographics", l_name: "Name", l_id: "Subject ID", l_gen: "Gender", l_dob: "Date of Birth", l_age: "Age", l_edu: "Education", g_m: "Male", g_f: "Female", btn_next: "Next", reg_err: "All fields required",
+            reg_title: "Subject Demographics", l_name: "Name", l_id: "Subject ID", l_gender: "Gender", l_dob: "Date of Birth", l_age: "Age", l_edu: "Education", g_m: "Male", g_f: "Female", btn_next: "Next", reg_err: "All fields required",
             t1_title: "Verbal Learning", t1_instr: "Words will appear one by one.<br>Memorize them.", btn_mem: "Start Encoding",
             t1_recall_title: "Immediate Recall", btn_add: "Add", btn_finish: "Finish Section", task_mem: "Encoding Phase", ph_input: "Type word, press Enter",
             t2_title: "Spatial Span", t2_instr: "Watch the sequence, then repeat it.", btn_start_corsi: "Start Task", t2_test_title: "Corsi Block Task",
@@ -543,7 +543,7 @@ const DB = {
             tut_c2_title: "2. 点方块", tut_c2_desc: "看方块怎么亮，然后照着<b>点一点</b>。",
             tut_c3_title: "4. 找数字", tut_c3_desc: "看上面的图，找对应的数字，<b>越快越好</b>！",
             tut_c4_title: "3. 问答时间", tut_c4_desc: "问问你今天是几号，在哪里。", tut_c4_hint: "让大人在【设置】里填好答案哦",
-            reg_title: "小朋友信息", l_name: "姓名", l_id: "学号", l_gen: "性别", l_dob: "生日", l_age: "几岁", l_edu: "年级", g_m: "男", g_f: "女", btn_next: "下一步", reg_err: "请把信息填完整",
+            reg_title: "小朋友信息", l_name: "姓名", l_id: "学号", l_gender: "性别", l_dob: "生日", l_age: "几岁", l_edu: "年级", g_m: "男", g_f: "女", btn_next: "下一步", reg_err: "请把信息填完整",
             t1_title: "记词挑战", t1_instr: "看仔细并记住这些词哦！", btn_mem: "开始",
             t1_recall_title: "告诉我", btn_add: "记住了", btn_finish: "做完了", task_mem: "记词游戏", ph_input: "输入一个词",
             t2_title: "方块跳舞", t2_instr: "看方块怎么亮，然后照着点。", btn_start_corsi: "开始", t2_test_title: "记方块",
@@ -624,8 +624,14 @@ function setMode(m) {
     for(let key in T) {
         let el = document.getElementById('txt-' + key.replace(/_/g,'-'));
         if(el) el.innerHTML = T[key];
-        let lbl = document.getElementById('lbl-' + key.split('_')[1]);
-        if(key.startsWith('l_') && lbl) lbl.innerText = T[key];
+        
+        // Correctly target labels by splitting key "l_gender" -> "gender"
+        let parts = key.split('_');
+        if(parts[0] === 'l' && parts.length > 1) {
+            let lblId = 'lbl-' + parts[1];
+            let lbl = document.getElementById(lblId);
+            if(lbl) lbl.innerText = T[key];
+        }
     }
     document.querySelectorAll('.demo-label').forEach(l => l.innerText = T.lbl_demo);
     
@@ -793,7 +799,7 @@ function corsiResult(success) {
     } else { if(state.t2.trials === 0) { state.t2.trials++; setTimeout(nextCorsiTrial, 1000); } else { startT3(); } }
 }
 
-/* T3 Orientation (Fuzzy) */
+/* T3 Orientation */
 let t3Idx = 0;
 function startT3() { t3Idx = 0; state.t3.startTime = Date.now(); showView('view-t3'); loadT3Q(); }
 function loadT3Q() {
@@ -866,7 +872,7 @@ function finishT5() {
     showView('view-t6-intro');
 }
 
-/* T6 SDMT (Enhanced Visual Feedback) */
+/* T6 SDMT (Visual Feedback V5.9.4) */
 let t6Target = null;
 function startSDMT() { showView('view-t6-test'); drawSDMTKey(); nextSDMT(); let time = 60; t6Interval = setInterval(() => { time--; document.getElementById('t6-timer').innerText = time; if(time <= 0) endSDMT(); }, 1000); }
 function drawSDMTKey() {
@@ -889,8 +895,9 @@ function inputSDMT(n) {
     
     const btn = document.querySelectorAll('.key-btn')[n-1];
     const overlay = document.getElementById('sdmt-feedback');
-    // Force reflow for animation restart
-    overlay.classList.remove('show-correct', 'show-wrong');
+    
+    // Force CSS Animation Reflow
+    overlay.className = "sdmt-overlay-feedback";
     void overlay.offsetWidth; 
 
     if(correct) { 
@@ -1012,7 +1019,6 @@ async function analyzeWithAI() {
     reportArea.style.display = 'block'; loading.style.display = 'block'; contentArea.innerHTML = '';
     const dataPrompt = generateCSVString();
     
-    // v5.9: Professional prompt
     const prompt = `Act as a clinical neuropsychologist. Analyze this assessment data:\n${dataPrompt}\n\nProvide a clinical interpretation covering: 1. Memory Profile (Encoding vs Retention), 2. Attention & Executive Function (Processing Speed & Variability). 3. Clinical Impression (Normal, MCI risk, or other). Concise. Language: ${state.mode === 'zh' ? 'Chinese' : 'English'}.`;
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${state.admin.aiKey}`, {
