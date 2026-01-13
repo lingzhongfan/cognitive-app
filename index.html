@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAS v6.0.1 (Stable)</title>
+    <title>CAS v6.0.2 (Responsive)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         /* =========================================
@@ -78,37 +78,48 @@
         .t-hint { font-size: 0.75rem; color: var(--accent); margin-top: 8px; font-style: italic; background: rgba(255,112,67,0.1); padding: 4px 8px; border-radius: 4px; display: inline-block; }
 
         /* =========================================
-           3. SDMT Linear Key (Visual Fix)
+           3. SDMT Linear Key (Responsive Fix v6.0.2)
            ========================================= */
         .sdmt-legend { 
-            display: flex; gap: 10px; padding: 12px; 
-            background: #F0F4F8; border-radius: 16px; margin-bottom: 20px; 
-            overflow-x: auto; 
-            scrollbar-width: none; -ms-overflow-style: none;
-            box-shadow: inset 0 2px 6px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05);
+            display: flex; 
+            flex-wrap: wrap;       /* Auto-wrap on small screens */
+            justify-content: center; /* Center alignment */
+            gap: 8px;              
+            padding: 10px; 
+            background: #F0F4F8; 
+            border-radius: 16px; 
+            margin-bottom: 15px; 
+            border: 1px solid rgba(0,0,0,0.05);
         }
-        .sdmt-legend::-webkit-scrollbar { display: none; }
 
         .sdmt-legend-item { 
-            flex: 0 0 auto; width: 68px; 
+            flex: 0 1 auto; 
+            width: 60px; /* Reduced base width for better mobile fit */
             display: flex; flex-direction: column; align-items: center; 
-            background: white; border-radius: 12px; overflow: hidden; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid white;
+            background: white; border-radius: 8px; overflow: hidden; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03); border: 1px solid white;
         }
         
         .sdmt-legend-sym { 
-            font-size: 2.8rem; 
+            font-size: 2.2rem; 
             font-weight: 500; 
             color: var(--primary); 
-            height: 65px; width: 100%; display: flex; align-items: center; justify-content: center; 
+            height: 50px; width: 100%; display: flex; align-items: center; justify-content: center; 
             background: #FFFFFF;
             font-family: "Segoe UI Symbol", "Apple Symbols", sans-serif; 
         }
         
         .sdmt-legend-num { 
-            font-size: 1.4rem; font-weight: 700; color: #636E72; 
-            height: 35px; width: 100%; display: flex; align-items: center; justify-content: center; 
+            font-size: 1.2rem; font-weight: 700; color: #636E72; 
+            height: 30px; width: 100%; display: flex; align-items: center; justify-content: center; 
             background: #DFE6E9; border-top: 1px solid #eee;
+        }
+
+        /* Mobile Optimization */
+        @media (max-width: 400px) {
+            .sdmt-legend-item { width: 18%; }
+            .sdmt-legend-sym { font-size: 1.8rem; height: 45px; }
+            .sdmt-legend-num { height: 25px; }
         }
 
         .demo-sdmt-container { display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; max-width: 300px; }
@@ -179,7 +190,7 @@
 <header>
     <div class="brand">
         <span style="font-size:1.5rem;">🧠</span>
-        <span id="txt-app-title">CAS v6.0.1</span>
+        <span id="txt-app-title">CAS v6.0.2</span>
     </div>
     <div class="mode-switch">
         <button onclick="setMode('zh')" id="btn-mode-zh" class="active">中文</button>
@@ -193,7 +204,7 @@
     <div id="view-home" class="view-section active">
         <div class="card text-center">
             <h1 id="txt-home-title" style="margin-bottom: 10px;">认知评估系统</h1>
-            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Clinical & Scientific Edition (v6.0.1)</p>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Scientific Research Edition (v6.0.2)</p>
             <div style="max-width:500px; margin:0 auto 30px auto; color:#666; font-size:0.9rem; line-height:1.6;">
                 <p id="txt-home-intro">本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境。</p>
             </div>
@@ -263,7 +274,7 @@
             </div>
             <div class="form-row">
                 <div><label id="lbl-gender">性别 *</label><select id="p_gender"><option value="">--Select--</option></select></div>
-                <div><label id="lbl-dob">出生日期 *</label><input type="date" id="p_dob" min="1900-01-01" onchange="calcAge()" required></div>
+                <div><label id="lbl-dob">出生日期 *</label><input type="date" id="p_dob" min="1900-01-01" lang="zh-CN" onchange="calcAge()" required></div>
             </div>
             <div class="form-row">
                 <div><label id="lbl-age">年龄</label><input type="number" id="p_age" readonly></div>
@@ -515,7 +526,7 @@ const DB = {
     symbols: ['⊏', '⊐', '⊓', '⊔', '△', '▽', '◁', '▷', '○'],
     text: {
         zh: {
-            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "科研专业版 (v6.0.1)",
+            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "科研专业版 (v6.0.2)",
             home_intro: "本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境。",
             btn_tutorial: "📖 查看演示 (Demo)", btn_start_real: "我明白了，开始登记", btn_settings: "🔧 设置",
             tut_title: "测试内容演示",
@@ -543,7 +554,7 @@ const DB = {
             rep_t1: "言语学习", rep_t4: "延迟回忆", rep_t5: "再认记忆", rep_t2: "空间广度", rep_t3: "定向力", rep_t6: "加工速度", rep_note: "备注"
         },
         en: { 
-            app_title: "CAS v6.0.1", home_title: "Cognitive Assessment System", home_desc: "Scientific Research Edition (v6.0.1)",
+            app_title: "CAS v6.0.2", home_title: "Cognitive Assessment System", home_desc: "Scientific Research Edition (v6.0.2)",
             home_intro: "This battery consists of 6 neuropsychological tasks.<br>Estimated time: 10-15 mins. Please ensure a quiet environment.",
             btn_tutorial: "📖 View Demo", btn_start_real: "Proceed to Register", btn_settings: "🔧 Settings",
             tut_title: "Task Demonstration",
@@ -571,7 +582,7 @@ const DB = {
             rep_t1: "Verbal Learning", rep_t4: "Delayed Recall", rep_t5: "Recognition", rep_t2: "Spatial Span", rep_t3: "Orientation", rep_t6: "Proc. Speed", rep_note: "Note"
         },
         child: {
-            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v6.0.1)",
+            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v6.0.2)",
             home_intro: "我们来玩几个小游戏吧！<br>先看看怎么玩哦。",
             btn_tutorial: "📖 看看怎么玩", btn_start_real: "准备好了！", btn_settings: "🔧 设置",
             tut_title: "游戏演示",
@@ -683,7 +694,7 @@ function setMode(m) {
     const gs=document.getElementById('p_gender'); gs.innerHTML=''; gs.add(new Option(T.select_def, "")); gs.add(new Option(T.g_m,'M')); gs.add(new Option(T.g_f,'F'));
     const es=document.getElementById('p_edu'); es.innerHTML=''; es.add(new Option(T.select_def, "")); T.edu_opts.forEach(e=>es.add(new Option(e,e)));
     
-    // v6.0.1 Fix: Force Date Input Language
+    // v6.0.2 Fix: Force Date Input Language
     const dobInput = document.getElementById('p_dob');
     dobInput.setAttribute('lang', m === 'en' ? 'en-US' : 'zh-CN');
 
@@ -707,7 +718,7 @@ function updateDemoText() {
 
 function startTutorial() { showView('view-tutorial'); }
 
-// v6.0.1: Only Reset State here, do NOT generate words yet
+// v6.0.2: Only Reset State here, do NOT generate words yet
 function initSession() {
     let syms = [...DB.symbols]; syms.sort(()=>Math.random()-0.5);
     state.t6.keyMap = syms.map((s,i)=>({s:s, n:i+1}));
@@ -735,7 +746,7 @@ function validateAndSubmit() {
     if(!valid) { msg.innerText = DB.text[state.mode].reg_err; msg.style.display = 'block'; } else { msg.style.display = 'none'; submitRegister(); }
 }
 
-// v6.0.1: Generate Words HERE (Late Binding) to match current language
+// v6.0.2: Generate Words HERE (Late Binding) to match current language
 function submitRegister() {
     state.patient = {
         name: document.getElementById('p_name').value, id: document.getElementById('p_id').value,
