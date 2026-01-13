@@ -3,33 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAS v5.9.3 (Scientific)</title>
+    <title>CAS v5.9.4 (Golden Master)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* (样式部分与 v5.9.2 完全保持一致，为节省篇幅略去重复 CSS，请使用 v5.9.2 的 CSS) */
-        /* ... CSS Styles from v5.9.2 ... */
-        :root { --primary: #2A5C82; --primary-light: #5A8AB0; --accent: #FF7043; --bg-color: #F8F9FA; --card-bg: #FFFFFF; --text-main: #2D3436; --text-light: #636E72; --success: #00B894; --error: #FF7675; --radius: 16px; --shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        /* --- 核心变量 --- */
+        :root {
+            --primary: #2A5C82; --primary-light: #5A8AB0; --accent: #FF7043;
+            --bg-color: #F8F9FA; --card-bg: #FFFFFF; --text-main: #2D3436;
+            --text-light: #636E72; --success: #00B894; --error: #FF7675;
+            --radius: 16px; --shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
         body.child-theme { --primary: #FF9F43; --primary-light: #FECA57; --bg-color: #FFF9E6; --text-main: #5F27CD; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: var(--bg-color); color: var(--text-main); margin: 0; display: flex; flex-direction: column; min-height: 100vh; transition: background 0.3s; -webkit-font-smoothing: antialiased; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-color); color: var(--text-main); margin: 0; 
+            display: flex; flex-direction: column; min-height: 100vh; 
+            transition: background 0.3s; -webkit-font-smoothing: antialiased;
+        }
         .container { flex: 1; max-width: 800px; margin: 0 auto; padding: 20px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; }
-        .view-section { display: none; animation: slideUp 0.4s ease-out; } .view-section.active { display: block; } @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* 视图与动画 */
+        .view-section { display: none; animation: slideUp 0.4s ease-out; }
+        .view-section.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
         .card { background: var(--card-bg); padding: 30px; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.02); position: relative; }
+        
         header { background: rgba(255,255,255,0.95); padding: 15px 30px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); backdrop-filter: blur(10px); }
         .brand { font-size: 1.2rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
         .mode-switch button { border: 1px solid #eee; background: white; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: 600; color: var(--text-light); margin-left: 5px; transition: all 0.2s; }
         .mode-switch button.active { background: var(--primary); color: white; border-color: var(--primary); }
+        
         .btn { padding: 12px 30px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; -webkit-appearance: none; }
-        .btn:active { transform: scale(0.96); } .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); } .btn-success { background: var(--success); color: white; } .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); } .btn-ai { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3); }
-        input, select { width: 100%; padding: 12px; border: 2px solid #EEE; border-radius: 10px; font-size: 1rem; box-sizing: border-box; background: #FAFAFA; -webkit-appearance: none; transition: border 0.3s; } input:focus, select:focus { border-color: var(--primary); outline: none; background: #FFF; } input.error, select.error { border-color: var(--error); background: #FFF0F0; }
-        .progress-container { margin: 20px 0; } .progress-track { height: 8px; background: #EEE; border-radius: 4px; overflow: hidden; } .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
+        .btn:active { transform: scale(0.96); }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-ai { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3); }
+        
+        input, select { width: 100%; padding: 12px; border: 2px solid #EEE; border-radius: 10px; font-size: 1rem; box-sizing: border-box; background: #FAFAFA; -webkit-appearance: none; transition: border 0.3s; }
+        input:focus, select:focus { border-color: var(--primary); outline: none; background: #FFF; }
+        input.error, select.error { border-color: var(--error); background: #FFF0F0; }
+        
+        .progress-container { margin: 20px 0; }
+        .progress-track { height: 8px; background: #EEE; border-radius: 4px; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
+        
+        /* === Visual Demos === */
         .micro-demo-box { background: #F0F4F8; border-radius: 12px; padding: 20px; margin: 20px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed #DCE4EA; position: relative; overflow: hidden; min-height: 100px; }
         .demo-label { font-size: 0.8rem; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .demo-word-dynamic { font-size: 1.5rem; font-weight: bold; color: var(--primary); transition: opacity 0.5s; }
+
+        /* Corsi Demo */
         .demo-corsi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 80px; }
         .demo-block { width: 100%; padding-bottom: 100%; background: #CBD5E0; border-radius: 4px; }
         .demo-block.lit { animation: demoFlash 2s infinite; }
         .demo-block:nth-child(1) { animation-delay: 0s; } .demo-block:nth-child(5) { animation-delay: 0.6s; } .demo-block:nth-child(9) { animation-delay: 1.2s; }
         @keyframes demoFlash { 0%, 100% { background: #CBD5E0; transform: scale(1); } 20%, 40% { background: var(--accent); transform: scale(1.1); } }
+
+        /* SDMT Demo */
         .demo-sdmt-container { display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; max-width: 300px; }
         .demo-sdmt-key { display: flex; gap: 5px; justify-content: center; margin-bottom: 5px; }
         .demo-key-pair { border: 1px solid #ccc; border-radius: 6px; padding: 4px 8px; background: white; text-align: center; font-size: 0.9rem; transition: transform 0.2s, border-color 0.2s; }
@@ -40,6 +73,8 @@
         .demo-arrow { color: #999; }
         .demo-finger { font-size: 1.8rem; position: absolute; animation: fingerTap 3s infinite; pointer-events: none; }
         @keyframes fingerTap { 0% { top: 70%; left: 60%; opacity: 0; transform: scale(1); } 10% { opacity: 1; } 30% { top: 30%; left: 50%; } 40% { transform: scale(0.8); } 50% { transform: scale(1); } 60% { top: 70%; left: 40%; } 70% { transform: scale(0.8); } 80% { transform: scale(1); opacity: 1; } 100% { top: 70%; left: 40%; opacity: 0; } }
+
+        /* Tutorial Grid */
         .tutorial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; margin-top: 20px; }
         .tutorial-card { background: #f8f9fa; border: 1px solid #eee; border-radius: 12px; padding: 20px; text-align: left; transition: transform 0.2s; position: relative; overflow: hidden; }
         .tutorial-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
@@ -47,16 +82,37 @@
         .t-title { font-weight: bold; color: var(--primary); margin-bottom: 5px; font-size: 1rem; }
         .t-desc { font-size: 0.85rem; color: #666; line-height: 1.5; }
         .t-hint { font-size: 0.75rem; color: var(--accent); margin-top: 8px; font-style: italic; background: rgba(255,112,67,0.1); padding: 4px 8px; border-radius: 4px; display: inline-block; }
+
+        /* General Components */
         .key-btn { background: #FFF; border: 1px solid #DDD; border-radius: 12px; padding: 20px; font-size: 1.5rem; font-weight: bold; box-shadow: 0 3px 0 #CCC; cursor: pointer; color: #333; transition: all 0.1s; -webkit-tap-highlight-color: transparent; }
         .key-btn:active { transform: translateY(3px); box-shadow: none; }
         .key-btn.correct-flash { background-color: var(--success) !important; color: white; border-color: var(--success); transform: scale(1.1); }
         .key-btn.wrong-flash { background-color: var(--error) !important; color: white; border-color: var(--error); animation: shake 0.3s; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        .sdmt-overlay-feedback { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 5rem; font-weight: bold; opacity: 0; pointer-events: none; z-index: 10; }
-        .sdmt-overlay-feedback.show-correct { color: var(--success); animation: fadeOutUp 0.5s forwards; }
-        .sdmt-overlay-feedback.show-wrong { color: var(--error); animation: fadeOutDown 0.5s forwards; }
-        @keyframes fadeOutUp { 0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); } 100% { opacity: 0; transform: translate(-50%, -80%) scale(1.5); } }
-        @keyframes fadeOutDown { 0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); } 100% { opacity: 0; transform: translate(-50%, -20%) scale(1); } }
+        
+        /* v5.9.4 SDMT Feedback Enhancement */
+        .sdmt-overlay-feedback { 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            font-size: 8rem; /* Bigger */
+            font-weight: 900; opacity: 0; pointer-events: none; z-index: 20; 
+            text-shadow: 0 0 20px rgba(255,255,255,0.9); /* Glow */
+        }
+        .sdmt-overlay-feedback.show-correct { color: var(--success); animation: popOut 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .sdmt-overlay-feedback.show-wrong { color: var(--error); animation: shakeFade 0.6s ease-in-out forwards; }
+        
+        @keyframes popOut { 
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); } 
+        }
+        @keyframes shakeFade { 
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            15% { opacity: 1; transform: translate(-55%, -50%) scale(1); }
+            30% { transform: translate(-45%, -50%) scale(1); }
+            45% { transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -20%) scale(0.8); }
+        }
+
         .corsi-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; max-width: 360px; margin: 20px auto; }
         .corsi-block { background: #E0E0E0; border-radius: 12px; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 0 #CCC; height: 0; padding-bottom: 100%; position: relative; }
         .corsi-block:active { transform: translateY(2px); box-shadow: 0 2px 0 #CCC; }
@@ -90,7 +146,7 @@
 <header>
     <div class="brand">
         <span style="font-size:1.5rem;">🧠</span>
-        <span id="txt-app-title">CAS v5.9.3</span>
+        <span id="txt-app-title">CAS v5.9.4</span>
     </div>
     <div class="mode-switch">
         <button onclick="setMode('zh')" id="btn-mode-zh" class="active">中文</button>
@@ -104,13 +160,13 @@
     <div id="view-home" class="view-section active">
         <div class="card text-center">
             <h1 id="txt-home-title" style="margin-bottom: 10px;">认知评估系统</h1>
-            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Scientific Research Edition (v5.9.3)</p>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Scientific Research Edition (v5.9.4)</p>
             <div style="max-width:500px; margin:0 auto 30px auto; color:#666; font-size:0.9rem; line-height:1.6;">
                 <p id="txt-home-intro">本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境。</p>
             </div>
             <button class="btn btn-primary" onclick="startTutorial()"><span id="txt-btn-tutorial">📖 查看演示 (Demo)</span></button>
             <div style="margin-top: 15px;">
-                <button class="btn btn-outline" style="font-size: 0.8rem; padding: 8px 20px;" onclick="toggleAdmin()">🔧 Settings</button>
+                <button class="btn btn-outline" style="font-size: 0.8rem; padding: 8px 20px;" onclick="toggleAdmin()"><span id="txt-btn-settings">🔧 设置</span></button>
             </div>
         </div>
     </div>
@@ -151,7 +207,7 @@
                     <div class="micro-demo-box" style="margin:5px 0; min-height:80px; padding:10px;">
                         <div class="demo-sdmt-container">
                             <div class="demo-sdmt-task">
-                                <span class="demo-target-box">∩</span><span class="demo-arrow">→</span><span style="font-weight:bold;">1</span>
+                                <span class="demo-target-box">⊏</span><span class="demo-arrow">→</span><span style="font-weight:bold;">1</span>
                             </div>
                             <div class="demo-finger">👆</div>
                         </div>
@@ -307,11 +363,11 @@
                 <div class="demo-label" id="lbl-demo-t6">演示</div>
                 <div class="demo-sdmt-container">
                     <div class="demo-sdmt-key">
-                        <div class="demo-key-pair" id="demo-key-1"><span>∩</span>1</div>
-                        <div class="demo-key-pair" id="demo-key-2"><span>≈</span>2</div>
+                        <div class="demo-key-pair" id="demo-key-1"><span>⊏</span>1</div>
+                        <div class="demo-key-pair" id="demo-key-2"><span>⊐</span>2</div>
                     </div>
                     <div class="demo-sdmt-task">
-                        <span class="demo-target-box">∩</span><span class="demo-arrow">→</span><span style="font-weight:bold;">1</span>
+                        <span class="demo-target-box">⊏</span><span class="demo-arrow">→</span><span style="font-weight:bold;">1</span>
                     </div>
                     <div class="demo-finger">👆</div>
                 </div>
@@ -377,21 +433,21 @@
     <div style="background:white; width:90%; max-width:400px; margin:50px auto; padding:25px; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.2);">
         <h3 id="txt-admin-title">⚙️ Settings</h3>
         <div style="margin-bottom:15px;">
-            <label style="font-weight:bold; font-size:0.9rem;">📍 Place</label>
+            <label id="lbl-set-place" style="font-weight:bold; font-size:0.9rem;">📍 Place</label>
             <input type="text" id="set-place" value="Hospital">
         </div>
         <div style="margin-bottom:15px;">
-            <label style="font-weight:bold; font-size:0.9rem;">🏙️ City</label>
+            <label id="lbl-set-city" style="font-weight:bold; font-size:0.9rem;">🏙️ City</label>
             <input type="text" id="set-city" value="Beijing">
         </div>
         <p style="font-size:0.8rem; color:#666; margin-bottom:20px;">* Multiple keywords allowed (e.g. "Beijing,Peking")</p>
         <hr style="margin: 20px 0; border:0; border-top:1px solid #eee;">
         <div style="margin-bottom:15px;">
-            <label style="font-weight:bold; font-size:0.9rem; color:#667eea;">☁️ Google Script URL</label>
+            <label id="lbl-set-cloud" style="font-weight:bold; font-size:0.9rem; color:#667eea;">☁️ Google Script URL</label>
             <input type="text" id="set-cloud-url" placeholder="https://script.google.com/..." style="font-size:0.8rem;">
         </div>
         <div style="margin-bottom:15px;">
-            <label style="font-weight:bold; font-size:0.9rem; color:#667eea;">🤖 Gemini API Key</label>
+            <label id="lbl-set-key" style="font-weight:bold; font-size:0.9rem; color:#667eea;">🤖 Gemini API Key</label>
             <input type="password" id="set-ai-key" placeholder="AIzaSy..." style="font-size:0.8rem;">
         </div>
         <div style="margin-top:20px; text-align:right;">
@@ -402,14 +458,12 @@
 </div>
 
 <script>
-/* 1. DATA STRUCTURES (AI-READY) */
-// Semantic Lists: Controlled for categories (Animals, Tools, Fruits, Vehicles)
-// This structure ensures semantic interference is measurable.
+/* 1. DATA STRUCTURES (Psychometrically Valid Symbols) */
 const DB = {
     lists: {
         zh: {
-            A: ["老虎", "熊猫", "狮子", "斧头", "锤子", "锯子", "苹果", "香蕉", "葡萄", "汽车"], // Targets
-            B: ["豹子", "大象", "狼", "螺丝刀", "钳子", "钻机", "橘子", "梨", "桃子", "卡车"]   // Distractors (Semantically Close)
+            A: ["老虎", "熊猫", "狮子", "斧头", "锤子", "锯子", "苹果", "香蕉", "葡萄", "汽车"],
+            B: ["豹子", "大象", "狼", "螺丝刀", "钳子", "钻机", "橘子", "梨", "桃子", "卡车"]
         },
         en: {
             A: ["Tiger", "Panda", "Lion", "Hammer", "Wrench", "Saw", "Apple", "Banana", "Grape", "Car"],
@@ -425,11 +479,13 @@ const DB = {
         en: { w1:"Apple", w2:"Banana" },
         child: { w1:"苹果", w2:"香蕉" }
     },
+    // Updated Symbols: Abstract Geometrics to avoid semantic processing
+    symbols: ['⊏', '⊐', '⊓', '⊔', '△', '▽', '◁', '▷', '○'],
     text: {
         zh: {
-            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "科研专业版 (v5.9.3)",
+            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "科研专业版 (v5.9.4)",
             home_intro: "本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境。",
-            btn_tutorial: "📖 查看演示 (Demo)", btn_start_real: "我明白了，开始登记",
+            btn_tutorial: "📖 查看演示 (Demo)", btn_start_real: "我明白了，开始登记", btn_settings: "🔧 设置",
             tut_title: "测试内容演示",
             tut_c1_title: "1. 记忆力挑战", tut_c1_desc: "屏幕会逐个显示单词。请用心<b>记住</b>它们。稍后我们会要求您回忆。",
             tut_c2_title: "2. 空间记忆", tut_c2_desc: "观察方块亮起的<b>顺序</b>。演示结束后，请按<b>相同顺序</b>点击方块。",
@@ -448,18 +504,20 @@ const DB = {
             t3q: ["今年是哪一年?","现在是几月份?","今天是几号?","今天是星期几?","我们现在在哪(地点)?","我们在哪个城市?"],
             t3_opts_m: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],
             t3_opts_d: ["周一","周二","周三","周四","周五","周六","周日"],
-            lbl_demo: "演示", t2_watch: "请观察...", t2_go: "请点击!", t2_timeout: "超时"
+            lbl_demo: "演示", t2_watch: "请观察...", t2_go: "请点击!", t2_timeout: "超时",
+            // Admin Settings
+            admin_title: "⚙️ 系统设置", admin_place: "📍 地点 (关键词)", admin_city: "🏙️ 城市 (关键词)", admin_cloud: "☁️ Google Script URL", admin_key: "🤖 Gemini API Key"
         },
         en: { 
-            app_title: "CAS v5.9.3", home_title: "Cognitive Assessment System", home_desc: "Scientific Research Edition (v5.9.3)",
+            app_title: "CAS v5.9.4", home_title: "Cognitive Assessment System", home_desc: "Scientific Research Edition (v5.9.4)",
             home_intro: "This battery consists of 6 neuropsychological tasks.<br>Estimated time: 10-15 mins. Please ensure a quiet environment.",
-            btn_tutorial: "📖 View Demo", btn_start_real: "Proceed to Register",
+            btn_tutorial: "📖 View Demo", btn_start_real: "Proceed to Register", btn_settings: "🔧 Settings",
             tut_title: "Task Demonstration",
             tut_c1_title: "1. Verbal Memory", tut_c1_desc: "Words will be shown sequentially. Memorize them for immediate and delayed recall.",
             tut_c2_title: "2. Spatial Span", tut_c2_desc: "Observe the sequence of lit blocks, then tap them in the <b>exact same order</b>.",
             tut_c3_title: "4. Processing Speed", tut_c3_desc: "Match symbols to numbers using the key. Respond <b>as fast as possible</b>.",
             tut_c4_title: "3. Orientation", tut_c4_desc: "Standard questions regarding current date and location.", tut_c4_hint: "Note: Preset Place/City in [Settings] for correct scoring.",
-            reg_title: "Subject Demographics", l_name: "Name", l_id: "Subject ID", l_gen: "Gender", l_dob: "DOB", l_age: "Age", l_edu: "Education", g_m: "Male", g_f: "Female", btn_next: "Next", reg_err: "All fields required",
+            reg_title: "Subject Demographics", l_name: "Name", l_id: "Subject ID", l_gen: "Gender", l_dob: "Date of Birth", l_age: "Age", l_edu: "Education", g_m: "Male", g_f: "Female", btn_next: "Next", reg_err: "All fields required",
             t1_title: "Verbal Learning", t1_instr: "Words will appear one by one.<br>Memorize them.", btn_mem: "Start Encoding",
             t1_recall_title: "Immediate Recall", btn_add: "Add", btn_finish: "Finish Section", task_mem: "Encoding Phase", ph_input: "Type word, press Enter",
             t2_title: "Spatial Span", t2_instr: "Watch the sequence, then repeat it.", btn_start_corsi: "Start Task", t2_test_title: "Corsi Block Task",
@@ -472,12 +530,14 @@ const DB = {
             t3q: ["Current Year?","Current Month?","Current Date?","Day of Week?","Current Place?","Current City?"],
             t3_opts_m: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
             t3_opts_d: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
-            lbl_demo: "Demo", t2_watch: "Watch...", t2_go: "Go!", t2_timeout: "Timeout"
+            lbl_demo: "Demo", t2_watch: "Watch...", t2_go: "Go!", t2_timeout: "Timeout",
+            // Admin Settings
+            admin_title: "⚙️ Settings", admin_place: "📍 Place (Keywords)", admin_city: "🏙️ City (Keywords)", admin_cloud: "☁️ Google Script URL", admin_key: "🤖 Gemini API Key"
         },
         child: {
-            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v5.9.3)",
+            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v5.9.4)",
             home_intro: "我们来玩几个小游戏吧！<br>先看看怎么玩哦。",
-            btn_tutorial: "📖 看看怎么玩", btn_start_real: "准备好了！",
+            btn_tutorial: "📖 看看怎么玩", btn_start_real: "准备好了！", btn_settings: "🔧 设置",
             tut_title: "游戏演示",
             tut_c1_title: "1. 记词游戏", tut_c1_desc: "屏幕上会出现词语。要把它们<b>记在脑子里</b>哦。",
             tut_c2_title: "2. 点方块", tut_c2_desc: "看方块怎么亮，然后照着<b>点一点</b>。",
@@ -496,10 +556,11 @@ const DB = {
             t3q: ["今年是哪一年?","现在是几月份?","今天是几号?","今天是星期几?","这是什么地方?","我们在哪个城市?"],
             t3_opts_m: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],
             t3_opts_d: ["周一","周二","周三","周四","周五","周六","周日"],
-            lbl_demo: "演示", t2_watch: "看好了...", t2_go: "该你了!", t2_timeout: "太慢啦"
+            lbl_demo: "演示", t2_watch: "看好了...", t2_go: "该你了!", t2_timeout: "太慢啦",
+            // Admin Settings
+            admin_title: "⚙️ 设置", admin_place: "📍 地点", admin_city: "🏙️ 城市", admin_cloud: "☁️ 云端地址", admin_key: "🤖 AI 密钥"
         }
-    },
-    symbols: ['∥', '∩', '╲', '⨆', '≠', ']', '[', '∪', '≈']
+    }
 };
 
 let state = {
@@ -558,16 +619,23 @@ function setMode(m) {
     document.querySelectorAll('.mode-switch button').forEach(b => b.classList.remove('active'));
     document.getElementById('btn-mode-'+m).classList.add('active');
     const T = DB.text[m];
+    
+    // UI Localized Update
     for(let key in T) {
         let el = document.getElementById('txt-' + key.replace(/_/g,'-'));
         if(el) el.innerHTML = T[key];
         let lbl = document.getElementById('lbl-' + key.split('_')[1]);
         if(key.startsWith('l_') && lbl) lbl.innerText = T[key];
     }
-    // Dynamic Updates for Demo Labels (v5.9.3 Fix)
-    const demoLabels = document.querySelectorAll('.demo-label');
-    demoLabels.forEach(l => l.innerText = T.lbl_demo);
+    document.querySelectorAll('.demo-label').forEach(l => l.innerText = T.lbl_demo);
     
+    // Admin Modal Localization Fix
+    document.getElementById('txt-admin-title').innerText = T.admin_title;
+    document.getElementById('lbl-set-place').innerText = T.admin_place;
+    document.getElementById('lbl-set-city').innerText = T.admin_city;
+    document.getElementById('lbl-set-cloud').innerText = T.admin_cloud;
+    document.getElementById('lbl-set-key').innerText = T.admin_key;
+
     if(T.ph_input) { document.getElementById('t1-input').placeholder = T.ph_input; document.getElementById('t4-input').placeholder = T.ph_input; }
     const gs=document.getElementById('p_gender'); gs.innerHTML=''; gs.add(new Option(m==='en'?"--Select--":"--请选择--", "")); gs.add(new Option(T.g_m,'M')); gs.add(new Option(T.g_f,'F'));
     const es=document.getElementById('p_edu'); es.innerHTML=''; es.add(new Option(m==='en'?"--Select--":"--请选择--", "")); T.edu_opts.forEach(e=>es.add(new Option(e,e)));
@@ -591,14 +659,10 @@ function updateDemoText() {
 
 function startTutorial() { showView('view-tutorial'); }
 
-// v5.9.3 Update: Use Fixed Semantic Lists
 function initSession() {
     const listSet = DB.lists[state.mode];
-    // List A = Targets, List B = Distractors
     state.targets = [...listSet.A];
     state.distractors = [...listSet.B];
-    
-    // Shuffle targets for presentation order (but keep list identity)
     state.presentationOrder = [...state.targets].sort(() => Math.random() - 0.5);
 
     let syms = [...DB.symbols]; syms.sort(()=>Math.random()-0.5);
@@ -643,7 +707,6 @@ function runSerialWords() {
     const disp = document.getElementById('t1-word');
     const bar = document.getElementById('t1-learn-bar');
     let i = 0;
-    // Use the shuffled presentation order
     const wordsToShow = state.presentationOrder; 
     let timer = setInterval(() => {
         if(i < wordsToShow.length) {
@@ -692,7 +755,7 @@ function startCorsiTimer() {
 function nextCorsiTrial() {
     state.t2.userSeq = []; state.t2.sequence = [];
     const status = document.getElementById('t2-status'); 
-    status.innerText = DB.text[state.mode].t2_watch; // v5.9.3: Unified
+    status.innerText = DB.text[state.mode].t2_watch; 
     status.style.color = 'var(--primary)';
     let pool = [0,1,2,3,4,5,6,7,8];
     for(let i=0; i<state.t2.level; i++) { let r = Math.floor(Math.random()*pool.length); state.t2.sequence.push(pool[r]); pool.splice(r,1); }
@@ -704,7 +767,7 @@ function nextCorsiTrial() {
             blk.classList.add('active'); setTimeout(()=>blk.classList.remove('active'), 600); i++;
         } else {
             clearInterval(playInt); 
-            status.innerText = DB.text[state.mode].t2_go; // v5.9.3: Unified
+            status.innerText = DB.text[state.mode].t2_go; 
             status.style.color = 'var(--success)';
             document.querySelectorAll('.corsi-block').forEach(b=>b.style.pointerEvents='auto'); startCorsiTimer();
         }
@@ -730,7 +793,7 @@ function corsiResult(success) {
     } else { if(state.t2.trials === 0) { state.t2.trials++; setTimeout(nextCorsiTrial, 1000); } else { startT3(); } }
 }
 
-/* T3 Orientation (Fuzzy Match Added) */
+/* T3 Orientation (Fuzzy) */
 let t3Idx = 0;
 function startT3() { t3Idx = 0; state.t3.startTime = Date.now(); showView('view-t3'); loadT3Q(); }
 function loadT3Q() {
@@ -750,22 +813,19 @@ function nextT3(val) {
     if (!val) val = document.getElementById('t3-inp')?.value;
     if (!val) return; 
     const now = new Date(); let correct = false;
-    
-    // v5.9.3: Fuzzy Matching Helper
     const checkFuzzy = (userIn, targetStr) => {
         if(!targetStr) return false;
-        const targets = targetStr.split(/,|，/).map(s=>s.trim().toLowerCase()); // Support multi-keywords
+        const targets = targetStr.split(/,|，/).map(s=>s.trim().toLowerCase());
         const u = userIn.trim().toLowerCase();
         return targets.some(t => u.includes(t));
     };
-
     switch (t3Idx) {
         case 0: correct = (val.trim() == now.getFullYear()); break;
         case 1: correct = (val === DB.text[state.mode].t3_opts_m[now.getMonth()]); break;
         case 2: correct = Math.abs(parseInt(val) - now.getDate()) <= 1; break;
         case 3: correct = (val === DB.text[state.mode].t3_opts_d[(now.getDay()+6)%7]); break;
-        case 4: correct = checkFuzzy(val, state.admin.place); break; // Fuzzy
-        case 5: correct = checkFuzzy(val, state.admin.city); break;  // Fuzzy
+        case 4: correct = checkFuzzy(val, state.admin.place); break; 
+        case 5: correct = checkFuzzy(val, state.admin.city); break;  
     }
     if (correct) state.t3.score++;
     state.t3.details.push({ q: t3Idx, ans: val, c: correct });
@@ -786,7 +846,6 @@ let t5Sel = new Set();
 function startT5Test() {
     showView('view-t5-test'); state.t5.startTime = Date.now(); t5Sel = new Set();
     const grid = document.getElementById('t5-grid'); grid.innerHTML = '';
-    // v5.9.3: Use Fixed Lists (Target + Distractor)
     let all = [...state.targets, ...state.distractors];
     all.sort(() => Math.random() - 0.5);
     all.forEach(w => {
@@ -807,7 +866,7 @@ function finishT5() {
     showView('view-t6-intro');
 }
 
-/* T6 SDMT */
+/* T6 SDMT (Enhanced Visual Feedback) */
 let t6Target = null;
 function startSDMT() { showView('view-t6-test'); drawSDMTKey(); nextSDMT(); let time = 60; t6Interval = setInterval(() => { time--; document.getElementById('t6-timer').innerText = time; if(time <= 0) endSDMT(); }, 1000); }
 function drawSDMTKey() {
@@ -827,9 +886,23 @@ function nextSDMT() { t6Target = state.t6.keyMap[Math.floor(Math.random()*9)]; d
 function inputSDMT(n) {
     const now = Date.now(); const correct = n === t6Target.n;
     state.t6.responses.push({ target: t6Target.n, response: n, correct: correct, latency: now - state.t6.lastStimTime });
+    
     const btn = document.querySelectorAll('.key-btn')[n-1];
-    if(correct) { state.t6.score++; btn.classList.add('correct-flash'); setTimeout(()=>btn.classList.remove('correct-flash'), 100); }
-    else { state.t6.errors++; btn.classList.add('wrong-flash'); setTimeout(()=>btn.classList.remove('wrong-flash'), 200); }
+    const overlay = document.getElementById('sdmt-feedback');
+    // Force reflow for animation restart
+    overlay.classList.remove('show-correct', 'show-wrong');
+    void overlay.offsetWidth; 
+
+    if(correct) { 
+        state.t6.score++; 
+        btn.classList.add('correct-flash'); setTimeout(()=>btn.classList.remove('correct-flash'), 100);
+        overlay.innerText = "✓"; overlay.classList.add('show-correct');
+    } else { 
+        state.t6.errors++; 
+        btn.classList.add('wrong-flash'); setTimeout(()=>btn.classList.remove('wrong-flash'), 200);
+        overlay.innerText = "✗"; overlay.classList.add('show-wrong');
+    }
+    
     document.getElementById('t6-score').innerText = state.t6.score;
     nextSDMT();
 }
@@ -865,7 +938,7 @@ function textEl(txt,cx,cy,r,a,sz) {
     el.textContent = txt; return el;
 }
 
-/* Report & AI & Data Export (v5.9.3 Enhanced) */
+/* Report & AI & Data Export */
 function showReport() {
     showView('view-report');
     const t1hits = state.t1.entered.filter(w => state.targets.includes(w)).length;
