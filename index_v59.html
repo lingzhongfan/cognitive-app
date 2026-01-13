@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAS v5.9 (Scientific Edition)</title>
+    <title>CAS v5.9.2 (Scientific)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* --- 样式保持 v5.8 原样 --- */
+        /* --- 核心变量 --- */
         :root {
             --primary: #2A5C82; --primary-light: #5A8AB0; --accent: #FF7043;
             --bg-color: #F8F9FA; --card-bg: #FFFFFF; --text-main: #2D3436;
@@ -50,10 +50,12 @@
         .progress-track { height: 8px; background: #EEE; border-radius: 4px; overflow: hidden; }
         .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
         
-        /* Demos & Visuals */
+        /* === Visual Demos === */
         .micro-demo-box { background: #F0F4F8; border-radius: 12px; padding: 20px; margin: 20px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed #DCE4EA; position: relative; overflow: hidden; min-height: 100px; }
         .demo-label { font-size: 0.8rem; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .demo-word-dynamic { font-size: 1.5rem; font-weight: bold; color: var(--primary); transition: opacity 0.5s; }
+
+        /* Corsi Demo */
         .demo-corsi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 80px; }
         .demo-block { width: 100%; padding-bottom: 100%; background: #CBD5E0; border-radius: 4px; }
         .demo-block.lit { animation: demoFlash 2s infinite; }
@@ -125,7 +127,7 @@
 <header>
     <div class="brand">
         <span style="font-size:1.5rem;">🧠</span>
-        <span id="txt-app-title">CAS v5.9</span>
+        <span id="txt-app-title">CAS v5.9.2</span>
     </div>
     <div class="mode-switch">
         <button onclick="setMode('zh')" id="btn-mode-zh" class="active">中文</button>
@@ -139,7 +141,7 @@
     <div id="view-home" class="view-section active">
         <div class="card text-center">
             <h1 id="txt-home-title" style="margin-bottom: 10px;">认知评估系统</h1>
-            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Scientific Research Edition (v5.9)</p>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Scientific Research Edition (v5.9.2)</p>
             <div style="max-width:500px; margin:0 auto 30px auto; color:#666; font-size:0.9rem; line-height:1.6;">
                 <p id="txt-home-intro">本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境。</p>
             </div>
@@ -154,10 +156,48 @@
         <div class="card text-center">
             <h2 id="txt-tut-title" style="margin-bottom:20px;">测试演示</h2>
             <div class="tutorial-grid">
-                <div class="tutorial-card"><span class="t-icon">🧠</span><div class="t-title" id="txt-tut-c1-title">1. 记忆力</div><div class="t-desc" id="txt-tut-c1-desc">记住屏幕显示的单词。</div></div>
-                <div class="tutorial-card"><span class="t-icon">🟩</span><div class="t-title" id="txt-tut-c2-title">2. 空间记忆</div><div class="t-desc" id="txt-tut-c2-desc">按顺序点击亮起的方块。</div></div>
-                <div class="tutorial-card"><span class="t-icon">📅</span><div class="t-title" id="txt-tut-c4-title">3. 定向力</div><div class="t-desc" id="txt-tut-c4-desc">回答时间与地点问题。</div></div>
-                <div class="tutorial-card"><span class="t-icon">⚡</span><div class="t-title" id="txt-tut-c3-title">4. 处理速度</div><div class="t-desc" id="txt-tut-c3-desc">根据符号表点击数字，越快越好。</div></div>
+                <div class="tutorial-card">
+                    <span class="t-icon">🧠</span>
+                    <div class="t-title" id="txt-tut-c1-title">1. 记忆力</div>
+                    <div class="demo-stage" style="height:60px;">
+                        <div class="demo-word-dynamic" id="demo-word-tut">苹果</div>
+                    </div>
+                    <div class="t-desc" id="txt-tut-c1-desc">记住屏幕显示的单词。</div>
+                </div>
+
+                <div class="tutorial-card">
+                    <span class="t-icon">🟩</span>
+                    <div class="t-title" id="txt-tut-c2-title">2. 空间记忆</div>
+                    <div class="demo-stage" style="height:100px;">
+                        <div class="demo-corsi-grid">
+                            <div class="demo-block lit"></div><div class="demo-block"></div><div class="demo-block"></div>
+                            <div class="demo-block"></div><div class="demo-block lit" style="animation-delay:0.5s"></div><div class="demo-block"></div>
+                            <div class="demo-block"></div><div class="demo-block"></div><div class="demo-block lit" style="animation-delay:1s"></div>
+                        </div>
+                    </div>
+                    <div class="t-desc" id="txt-tut-c2-desc">按顺序点击亮起的方块。</div>
+                </div>
+
+                <div class="tutorial-card">
+                    <span class="t-icon">📅</span>
+                    <div class="t-title" id="txt-tut-c4-title">3. 定向力</div>
+                    <div class="t-desc" id="txt-tut-c4-desc">回答时间与地点问题。</div>
+                    <div class="t-hint" id="txt-tut-c4-hint">注：最后两题（地点/城市）的正确答案请在【设置】中预设</div>
+                </div>
+
+                <div class="tutorial-card">
+                    <span class="t-icon">⚡</span>
+                    <div class="t-title" id="txt-tut-c3-title">4. 处理速度</div>
+                    <div class="micro-demo-box" style="margin:5px 0; min-height:80px; padding:10px;">
+                        <div class="demo-sdmt-container">
+                            <div class="demo-sdmt-task">
+                                <span class="demo-target-box">∩</span><span class="demo-arrow">→</span><span style="font-weight:bold;">1</span>
+                            </div>
+                            <div class="demo-finger">👆</div>
+                        </div>
+                    </div>
+                    <div class="t-desc" id="txt-tut-c3-desc">根据符号表点击数字，越快越好。</div>
+                </div>
             </div>
             <div style="margin-top:40px;">
                 <button class="btn btn-success" onclick="initSession()"><span id="txt-btn-start-real">开始登记</span></button>
@@ -190,6 +230,10 @@
     <div id="view-t1-intro" class="view-section">
         <div class="card text-center">
             <h2 id="txt-t1-title">记忆学习</h2>
+            <div class="micro-demo-box">
+                <div class="demo-label">Demo</div>
+                <div class="demo-word-dynamic" id="demo-word-intro">苹果</div>
+            </div>
             <p id="txt-t1-instr" style="color:#666">屏幕将逐个显示单词，请用心记住。</p>
             <button class="btn btn-primary" onclick="startT1Run()"><span id="txt-btn-mem">开始</span></button>
         </div>
@@ -220,6 +264,14 @@
     <div id="view-t2-intro" class="view-section">
         <div class="card text-center">
             <h2 id="txt-t2-title">空间记忆</h2>
+            <div class="micro-demo-box">
+                <div class="demo-label">Demo</div>
+                <div class="demo-corsi-grid">
+                    <div class="demo-block lit"></div><div class="demo-block"></div><div class="demo-block"></div>
+                    <div class="demo-block"></div><div class="demo-block lit" style="animation-delay:0.5s"></div><div class="demo-block"></div>
+                    <div class="demo-block"></div><div class="demo-block"></div><div class="demo-block lit" style="animation-delay:1s"></div>
+                </div>
+            </div>
             <p id="txt-t2-instr">观察方块亮起的顺序，按相同顺序点击。</p>
             <button class="btn btn-primary" onclick="startCorsi()"><span id="txt-btn-start-corsi">开始</span></button>
         </div>
@@ -291,6 +343,25 @@
     <div id="view-t6-intro" class="view-section">
         <div class="card text-center">
             <h2 id="txt-t6-title">处理速度</h2>
+            <div class="micro-demo-box">
+                <div class="demo-label">Demo</div>
+                <div class="demo-sdmt-container">
+                    <div class="demo-sdmt-key">
+                        <div class="demo-key-pair" id="demo-key-1"><span>∩</span>1</div>
+                        <div class="demo-key-pair" id="demo-key-2"><span>≈</span>2</div>
+                    </div>
+                    <div class="demo-sdmt-task">
+                        <span class="demo-target-box">∩</span><span class="demo-arrow">→</span><span style="font-weight:bold;">1</span>
+                    </div>
+                    <div class="demo-finger">👆</div>
+                </div>
+            </div>
+            <script>
+                setInterval(() => {
+                    const key1 = document.getElementById('demo-key-1');
+                    if(key1) { setTimeout(() => key1.classList.add('highlight'), 1000); setTimeout(() => key1.classList.remove('highlight'), 2000); }
+                }, 3000);
+            </script>
             <p id="txt-t6-instr">参照图例，点击数字。</p>
             <button class="btn btn-primary" onclick="startSDMT()"><span id="txt-btn-start-test">开始测试</span></button>
         </div>
@@ -384,14 +455,14 @@ const DB = {
     },
     text: {
         zh: {
-            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "科研专业版 (v5.9)",
+            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "科研专业版 (v5.9.2)",
             home_intro: "本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境。",
             btn_tutorial: "📖 查看演示 (Demo)", btn_start_real: "我明白了，开始登记",
             tut_title: "测试内容演示",
             tut_c1_title: "1. 记忆力挑战", tut_c1_desc: "屏幕会逐个显示单词。请用心<b>记住</b>它们。稍后我们会要求您回忆。",
             tut_c2_title: "2. 空间记忆", tut_c2_desc: "观察方块亮起的<b>顺序</b>。演示结束后，请按<b>相同顺序</b>点击方块。",
             tut_c3_title: "4. 处理速度", tut_c3_desc: "屏幕上方会有符号和数字的对应表。请根据出现的符号，<b>尽快</b>点击对应的数字。",
-            tut_c4_title: "3. 定向问答", tut_c4_desc: "我们会询问当前的时间（年/月/日）和地点。",
+            tut_c4_title: "3. 定向力", tut_c4_desc: "我们会询问当前的时间（年/月/日）和地点。", tut_c4_hint: "注：最后两题（地点/城市）的正确答案请在【设置】中预设",
             reg_title: "受试者信息", l_name: "姓名", l_id: "登记号", l_gen: "性别", l_dob: "出生日期", l_age: "年龄", l_edu: "教育", g_m: "男", g_f: "女", btn_next: "下一步", reg_err: "请填写必填项",
             t1_title: "记忆学习", t1_instr: "屏幕将逐个显示单词。<br>请用心记住它们，稍后需要回忆。", btn_mem: "开始记忆",
             t1_recall_title: "即时回忆", btn_add: "添加", btn_finish: "完成本节", task_mem: "Memory Task", ph_input: "输入一个词，按回车提交",
@@ -406,15 +477,15 @@ const DB = {
             t3_opts_m: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],
             t3_opts_d: ["周一","周二","周三","周四","周五","周六","周日"]
         },
-        en: { // UNIFIED PROFESSIONAL ENGLISH (v5.9 Update)
-            app_title: "CAS v5.9", home_title: "Cognitive Assessment System", home_desc: "Scientific Research Edition (v5.9)",
+        en: { // UNIFIED PROFESSIONAL ENGLISH
+            app_title: "CAS v5.9.2", home_title: "Cognitive Assessment System", home_desc: "Scientific Research Edition (v5.9.2)",
             home_intro: "This battery consists of 6 neuropsychological tasks.<br>Estimated time: 10-15 mins. Please ensure a quiet environment.",
             btn_tutorial: "📖 View Demo", btn_start_real: "Proceed to Register",
             tut_title: "Task Demonstration",
             tut_c1_title: "1. Verbal Memory", tut_c1_desc: "Words will be shown sequentially. Memorize them for immediate and delayed recall.",
             tut_c2_title: "2. Spatial Span", tut_c2_desc: "Observe the sequence of lit blocks, then tap them in the <b>exact same order</b>.",
             tut_c3_title: "4. Processing Speed", tut_c3_desc: "Match symbols to numbers using the key. Respond <b>as fast as possible</b>.",
-            tut_c4_title: "3. Orientation", tut_c4_desc: "Standard questions regarding current date and location.",
+            tut_c4_title: "3. Orientation", tut_c4_desc: "Standard questions regarding current date and location.", tut_c4_hint: "Note: Preset Place/City in [Settings] for correct scoring.",
             reg_title: "Subject Demographics", l_name: "Name", l_id: "Subject ID", l_gen: "Gender", l_dob: "DOB", l_age: "Age", l_edu: "Education", g_m: "Male", g_f: "Female", btn_next: "Next", reg_err: "All fields required",
             t1_title: "Verbal Learning", t1_instr: "Words will appear one by one.<br>Memorize them.", btn_mem: "Start Encoding",
             t1_recall_title: "Immediate Recall", btn_add: "Add", btn_finish: "Finish Section", task_mem: "Encoding Phase", ph_input: "Type word, press Enter",
@@ -430,14 +501,14 @@ const DB = {
             t3_opts_d: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]
         },
         child: {
-            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v5.9)",
+            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v5.9.2)",
             home_intro: "我们来玩几个小游戏吧！<br>先看看怎么玩哦。",
             btn_tutorial: "📖 看看怎么玩", btn_start_real: "准备好了！",
             tut_title: "游戏演示",
             tut_c1_title: "1. 记词游戏", tut_c1_desc: "屏幕上会出现词语。要把它们<b>记在脑子里</b>哦。",
             tut_c2_title: "2. 点方块", tut_c2_desc: "看方块怎么亮，然后照着<b>点一点</b>。",
             tut_c3_title: "4. 找数字", tut_c3_desc: "看上面的图，找对应的数字，<b>越快越好</b>！",
-            tut_c4_title: "3. 问答时间", tut_c4_desc: "问问你今天是几号，在哪里。",
+            tut_c4_title: "3. 问答时间", tut_c4_desc: "问问你今天是几号，在哪里。", tut_c4_hint: "让大人在【设置】里填好答案哦",
             reg_title: "小朋友信息", l_name: "姓名", l_id: "学号", l_gen: "性别", l_dob: "生日", l_age: "几岁", l_edu: "年级", g_m: "男", g_f: "女", btn_next: "下一步", reg_err: "请把信息填完整",
             t1_title: "记词挑战", t1_instr: "看仔细并记住这些词哦！", btn_mem: "开始",
             t1_recall_title: "告诉我", btn_add: "记住了", btn_finish: "做完了", task_mem: "记词游戏", ph_input: "输入一个词",
@@ -464,7 +535,7 @@ let state = {
     t2: { level: 2, trials: 0, score: 0, sequence: [], userSeq: [], history:[] },
     t3: { details: [], score: 0, time: 0 },
     t4: { entered: [], time: 0 }, 
-    t5: { hits: 0, false_alarms: 0, time: 0, selected_words: [] }, // v5.9新增: selected_words
+    t5: { hits: 0, false_alarms: 0, time: 0, selected_words: [] },
     t6: { score: 0, errors: 0, time: 60, responses: [], keyMap: [] },
     admin: { place: "Hospital", city: "Beijing", aiKey: "", cloudUrl: "" }
 };
@@ -479,9 +550,9 @@ window.onload = () => {
     document.getElementById('set-city').value = state.admin.city;
     document.getElementById('set-ai-key').value = state.admin.aiKey || "";
     document.getElementById('set-cloud-url').value = state.admin.cloudUrl || "";
-    document.getElementById('p_dob').max = new Date().toISOString().split("T")[0]; // V5.7 特性保持
+    document.getElementById('p_dob').max = new Date().toISOString().split("T")[0];
 
-    // --- v5.8 IME Patch (输入法锁机制，保持功能一致) ---
+    // --- IME Patch ---
     ['t1-input', 't4-input'].forEach(id => {
         const el = document.getElementById(id);
         if(el) {
@@ -608,7 +679,7 @@ function addWord(phase) {
     if(!val) return;
     let store = phase === 't1' ? state.t1.entered : state.t4.entered;
     store.push(val); renderChips(phase); inp.value = '';
-    updateProgress(phase==='t1'?'t1-recall-bar':'t4-recall-bar', phase==='t1'?'t1-timer':'t4-timer', store.length); // Use timer text for debug or just bar
+    updateProgress(phase==='t1'?'t1-recall-bar':'t4-recall-bar', phase==='t1'?'t1-timer':'t4-timer', store.length);
 }
 function renderChips(phase) {
     const box = document.getElementById(phase+'-chips'); box.innerHTML = '';
@@ -731,10 +802,7 @@ function startT5Test() {
 function finishT5() {
     state.t5.time = ((Date.now() - state.t5.startTime)/1000).toFixed(1);
     state.t5.hits = 0; state.t5.false_alarms = 0;
-    
-    // v5.9新增：保存具体选择，用于语义错误分析
-    state.t5.selected_words = Array.from(t5Sel); 
-
+    state.t5.selected_words = Array.from(t5Sel); // v5.9: Save selection
     t5Sel.forEach(w => { if(state.targets.includes(w)) state.t5.hits++; else state.t5.false_alarms++; });
     showView('view-t6-intro');
 }
@@ -758,7 +826,6 @@ function drawSDMTKey() {
 function nextSDMT() { t6Target = state.t6.keyMap[Math.floor(Math.random()*9)]; document.getElementById('t6-target').innerText = t6Target.s; state.t6.lastStimTime = Date.now(); }
 function inputSDMT(n) {
     const now = Date.now(); const correct = n === t6Target.n;
-    // v5.9: 这里已经记录了latency，后续CSV生成会用到
     state.t6.responses.push({ target: t6Target.n, response: n, correct: correct, latency: now - state.t6.lastStimTime });
     const btn = document.querySelectorAll('.key-btn')[n-1];
     if(correct) { state.t6.score++; btn.classList.add('correct-flash'); setTimeout(()=>btn.classList.remove('correct-flash'), 100); }
@@ -823,7 +890,6 @@ function showReport() {
     document.querySelector('.backup-box').style.display = 'block';
 }
 
-// v5.9: 重构CSV生成逻辑，输出高颗粒度原始数据
 function generateCSVString() {
     let h = state.mode === 'en' ? "Section,Metric,Value,Raw_Data_Sequence\n" : "模块,指标,数值,原始数据序列\n";
     let csv = `\uFEFF${h}`; 
@@ -834,7 +900,6 @@ function generateCSVString() {
     let t1hits = state.t1.entered.filter(w => state.targets.includes(w)).length;
     csv += `T1,Score_Immediate,${t1hits},${state.t1.entered.join(';')}\n`;
 
-    // 导出T2每级通过情况
     let t2History = state.t2.history.map(h => `L${h.level}:${h.success?'P':'F'}`).join(';');
     csv += `T2,Span_Max_Level,${state.t2.score},${t2History}\n`;
 
@@ -846,13 +911,11 @@ function generateCSVString() {
     csv += `T4,Score_Delayed,${t4hits},${state.t4.entered.join(';')}\n`;
     csv += `T4,Retention_Rate,${retention},-\n`;
 
-    // 导出T5所有选择，用于语义错误分析
     let selectedWords = state.t5.selected_words ? state.t5.selected_words.join(';') : ""; 
     let net_recog = Math.max(0, state.t5.hits - state.t5.false_alarms);
     csv += `T5,Net_Score,${net_recog},${selectedWords}\n`;
     csv += `T5,Hits_vs_FA,${state.t5.hits}/${state.t5.false_alarms},-\n`;
 
-    // 导出T6所有反应时，用于微观波动分析
     let latencies = state.t6.responses.map(r => r.latency);
     let latString = latencies.join(';');
     let mean = 0, sd = 0, cv = 0;
@@ -875,8 +938,6 @@ async function analyzeWithAI() {
     const loading = document.getElementById('ai-loading');
     reportArea.style.display = 'block'; loading.style.display = 'block'; contentArea.innerHTML = '';
     const dataPrompt = generateCSVString();
-    
-    // v5.9: 提示词专业化，要求临床解释
     const prompt = `Act as a clinical neuropsychologist. Analyze this assessment data:\n${dataPrompt}\n\nProvide a clinical interpretation covering: 1. Memory Profile (Encoding vs Retention), 2. Attention & Executive Function (Processing Speed & Variability). 3. Clinical Impression (Normal, MCI risk, or other). Concise. Language: ${state.mode === 'zh' ? 'Chinese' : 'English'}.`;
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${state.admin.aiKey}`, {
