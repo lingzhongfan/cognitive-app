@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAS v5.9.7 (Visual Fix)</title>
+    <title>CAS v6.0 (Clinical & Scientific)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         /* =========================================
@@ -78,7 +78,7 @@
         .t-hint { font-size: 0.75rem; color: var(--accent); margin-top: 8px; font-style: italic; background: rgba(255,112,67,0.1); padding: 4px 8px; border-radius: 4px; display: inline-block; }
 
         /* =========================================
-           3. SDMT Linear Key (Visual Fix v5.9.7)
+           3. SDMT Linear Key (Visual Fix)
            ========================================= */
         .sdmt-legend { 
             display: flex; gap: 10px; padding: 12px; 
@@ -90,20 +90,19 @@
         .sdmt-legend::-webkit-scrollbar { display: none; }
 
         .sdmt-legend-item { 
-            flex: 0 0 auto; width: 68px; /* Slightly wider for bigger symbols */
+            flex: 0 0 auto; width: 68px; 
             display: flex; flex-direction: column; align-items: center; 
             background: white; border-radius: 12px; overflow: hidden; 
             box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid white;
         }
         
-        /* v5.9.7: INCREASED SIZE for better visibility & consistency */
         .sdmt-legend-sym { 
-            font-size: 2.8rem; /* Up from 2.2rem */
-            font-weight: 500; /* Standard weight to avoid "blobbing" on symbols */
+            font-size: 2.8rem; 
+            font-weight: 500; 
             color: var(--primary); 
             height: 65px; width: 100%; display: flex; align-items: center; justify-content: center; 
             background: #FFFFFF;
-            font-family: "Segoe UI Symbol", "Apple Symbols", sans-serif; /* Force symbol font */
+            font-family: "Segoe UI Symbol", "Apple Symbols", sans-serif; 
         }
         
         .sdmt-legend-num { 
@@ -112,7 +111,6 @@
             background: #DFE6E9; border-top: 1px solid #eee;
         }
 
-        /* Demo SDMT Styles */
         .demo-sdmt-container { display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; max-width: 300px; }
         .demo-sdmt-key { display: flex; gap: 5px; justify-content: center; margin-bottom: 5px; }
         .demo-key-pair { border: 1px solid #ccc; border-radius: 6px; padding: 4px 8px; background: white; text-align: center; font-size: 0.9rem; transition: transform 0.2s, border-color 0.2s; }
@@ -125,12 +123,13 @@
         @keyframes fingerTap { 0% { top: 70%; left: 60%; opacity: 0; transform: scale(1); } 10% { opacity: 1; } 30% { top: 30%; left: 50%; } 40% { transform: scale(0.8); } 50% { transform: scale(1); } 60% { top: 70%; left: 40%; } 70% { transform: scale(0.8); } 80% { transform: scale(1); opacity: 1; } 100% { top: 70%; left: 40%; opacity: 0; } }
 
         /* =========================================
-           4. Enhanced Visual Feedback & Interaction
+           4. Enhanced Visual Feedback (10rem Size)
            ========================================= */
         .sdmt-overlay-feedback { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            font-size: 8rem; font-weight: 900; opacity: 0; pointer-events: none; z-index: 20; 
-            text-shadow: 0 0 30px rgba(255,255,255,1);
+            font-size: 10rem; /* v6.0: Huge Feedback */
+            font-weight: 900; opacity: 0; pointer-events: none; z-index: 100; 
+            text-shadow: 0 0 40px rgba(255,255,255,1);
         }
         .sdmt-overlay-feedback.show-correct { color: var(--success); animation: popOut 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         .sdmt-overlay-feedback.show-wrong { color: var(--error); animation: shakeFade 0.5s ease-in-out forwards; }
@@ -150,7 +149,6 @@
         .corsi-block.user-tap { background: var(--primary); }
         
         .sdmt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 400px; margin: 15px auto; }
-        /* Target Symbol Style */
         #t6-target { 
             filter: drop-shadow(0 4px 0px rgba(0,0,0,0.1)); 
             transition: all 0.2s; 
@@ -181,7 +179,7 @@
 <header>
     <div class="brand">
         <span style="font-size:1.5rem;">🧠</span>
-        <span id="txt-app-title">CAS v5.9.7</span>
+        <span id="txt-app-title">CAS v6.0</span>
     </div>
     <div class="mode-switch">
         <button onclick="setMode('zh')" id="btn-mode-zh" class="active">中文</button>
@@ -195,7 +193,7 @@
     <div id="view-home" class="view-section active">
         <div class="card text-center">
             <h1 id="txt-home-title" style="margin-bottom: 10px;">认知评估系统</h1>
-            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Scientific Research Edition (v5.9.7)</p>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Clinical & Scientific Edition (v6.0)</p>
             <div style="max-width:500px; margin:0 auto 30px auto; color:#666; font-size:0.9rem; line-height:1.6;">
                 <p id="txt-home-intro">本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境。</p>
             </div>
@@ -265,7 +263,7 @@
             </div>
             <div class="form-row">
                 <div><label id="lbl-gender">性别 *</label><select id="p_gender"><option value="">--Select--</option></select></div>
-                <div><label id="lbl-dob">出生日期 *</label><input type="date" id="p_dob" min="1900-01-01" onchange="calcAge()" required></div>
+                <div><label id="lbl-dob">出生日期 *</label><input type="date" id="p_dob" min="1900-01-01" lang="zh-CN" onchange="calcAge()" required></div>
             </div>
             <div class="form-row">
                 <div><label id="lbl-age">年龄</label><input type="number" id="p_age" readonly></div>
@@ -513,11 +511,11 @@ const DB = {
         en: { w1:"Apple", w2:"Banana" },
         child: { w1:"苹果", w2:"香蕉" }
     },
-    // Updated Symbols: Distinct, Directional-Invariant Geometrics
+    // v6.0: Abstract Geometric Symbols (Psychometric Standard)
     symbols: ['⊏', '⊐', '⊓', '⊔', '△', '▽', '◁', '▷', '○'],
     text: {
         zh: {
-            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "科研专业版 (v5.9.7)",
+            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "科研专业版 (v6.0)",
             home_intro: "本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境。",
             btn_tutorial: "📖 查看演示 (Demo)", btn_start_real: "我明白了，开始登记", btn_settings: "🔧 设置",
             tut_title: "测试内容演示",
@@ -534,16 +532,17 @@ const DB = {
             t5_title: "再认", t5_hint: "从下方列表中，选出 T1 学过的单词。", btn_finish_t5: "完成本节", btn_start_recog: "开始选择", t5_test_title: "再认测试",
             t6_title: "处理速度 (SDMT)", t6_instr: "参照图例，点击数字。", btn_start_test: "开始测试", score: "得分",
             report_title: "评估报告", btn_restart: "新受试者", backup_hint: "显示原始数据",
-            edu_opts: ["小学","初中","高中","大学","研究生"],
+            edu_opts: ["小学","初中","高中","大学","研究生"], select_def: "--请选择--",
             t3q: ["今年是哪一年?","现在是几月份?","今天是几号?","今天是星期几?","我们现在在哪(地点)?","我们在哪个城市?"],
             t3_opts_m: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],
             t3_opts_d: ["周一","周二","周三","周四","周五","周六","周日"],
             lbl_demo: "演示", t2_watch: "请观察...", t2_go: "请点击!", t2_timeout: "超时",
-            // Admin Settings
-            admin_title: "⚙️ 系统设置", admin_place: "📍 地点 (关键词)", admin_city: "🏙️ 城市 (关键词)", admin_cloud: "☁️ Google Script URL", admin_key: "🤖 Gemini API Key"
+            admin_title: "⚙️ 系统设置", admin_place: "📍 地点 (关键词)", admin_city: "🏙️ 城市 (关键词)", admin_cloud: "☁️ Google Script URL", admin_key: "🤖 Gemini API Key",
+            // Report Labels
+            rep_t1: "言语学习", rep_t4: "延迟回忆", rep_t5: "再认记忆", rep_t2: "空间广度", rep_t3: "定向力", rep_t6: "加工速度", rep_note: "备注"
         },
         en: { 
-            app_title: "CAS v5.9.7", home_title: "Cognitive Assessment System", home_desc: "Scientific Research Edition (v5.9.7)",
+            app_title: "CAS v6.0", home_title: "Cognitive Assessment System", home_desc: "Scientific Research Edition (v6.0)",
             home_intro: "This battery consists of 6 neuropsychological tasks.<br>Estimated time: 10-15 mins. Please ensure a quiet environment.",
             btn_tutorial: "📖 View Demo", btn_start_real: "Proceed to Register", btn_settings: "🔧 Settings",
             tut_title: "Task Demonstration",
@@ -560,16 +559,17 @@ const DB = {
             t5_title: "Recognition Memory", t5_hint: "Select the words that were presented in the first section.", btn_finish_t5: "Finish Section", btn_start_recog: "Start Recognition", t5_test_title: "Recognition Phase",
             t6_title: "Processing Speed (SDMT)", t6_instr: "Match symbols to numbers.", btn_start_test: "Start SDMT", score: "Score",
             report_title: "Clinical Report", btn_restart: "New Subject", backup_hint: "Show Raw Data",
-            edu_opts: ["Primary","Secondary","High School","Bachelor","Master/PhD"],
+            edu_opts: ["Primary","Secondary","High School","Bachelor","Master/PhD"], select_def: "--Select--",
             t3q: ["Current Year?","Current Month?","Current Date?","Day of Week?","Current Place?","Current City?"],
             t3_opts_m: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
             t3_opts_d: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
             lbl_demo: "Demo", t2_watch: "Watch...", t2_go: "Go!", t2_timeout: "Timeout",
-            // Admin Settings
-            admin_title: "⚙️ Settings", admin_place: "📍 Place (Keywords)", admin_city: "🏙️ City (Keywords)", admin_cloud: "☁️ Google Script URL", admin_key: "🤖 Gemini API Key"
+            admin_title: "⚙️ Settings", admin_place: "📍 Place (Keywords)", admin_city: "🏙️ City (Keywords)", admin_cloud: "☁️ Google Script URL", admin_key: "🤖 Gemini API Key",
+            // Report Labels
+            rep_t1: "Verbal Learning", rep_t4: "Delayed Recall", rep_t5: "Recognition", rep_t2: "Spatial Span", rep_t3: "Orientation", rep_t6: "Proc. Speed", rep_note: "Note"
         },
         child: {
-            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v5.9.7)",
+            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v6.0)",
             home_intro: "我们来玩几个小游戏吧！<br>先看看怎么玩哦。",
             btn_tutorial: "📖 看看怎么玩", btn_start_real: "准备好了！", btn_settings: "🔧 设置",
             tut_title: "游戏演示",
@@ -586,13 +586,13 @@ const DB = {
             t5_title: "找朋友", t5_hint: "把刚才学的词找出来。", btn_finish_t5: "完成", btn_start_recog: "开始找", t5_test_title: "找词游戏",
             t6_title: "眼疾手快", t6_instr: "看图找数字！", btn_start_test: "开始", score: "分数",
             report_title: "成绩单", btn_restart: "下一个", backup_hint: "数据备份",
-            edu_opts: ["幼儿园","一年级","二年级","三年级","四年级","五年级","六年级","初中"],
+            edu_opts: ["幼儿园","一年级","二年级","三年级","四年级","五年级","六年级","初中"], select_def: "--请选择--",
             t3q: ["今年是哪一年?","现在是几月份?","今天是几号?","今天是星期几?","这是什么地方?","我们在哪个城市?"],
             t3_opts_m: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],
             t3_opts_d: ["周一","周二","周三","周四","周五","周六","周日"],
             lbl_demo: "演示", t2_watch: "看好了...", t2_go: "该你了!", t2_timeout: "太慢啦",
-            // Admin Settings
-            admin_title: "⚙️ 设置", admin_place: "📍 地点", admin_city: "🏙️ 城市", admin_cloud: "☁️ 云端地址", admin_key: "🤖 AI 密钥"
+            admin_title: "⚙️ 设置", admin_place: "📍 地点", admin_city: "🏙️ 城市", admin_cloud: "☁️ 云端地址", admin_key: "🤖 AI 密钥",
+            rep_t1: "记词分数", rep_t4: "背书分数", rep_t5: "找词分数", rep_t2: "方块分数", rep_t3: "问答分数", rep_t6: "反应速度", rep_note: "说明"
         }
     }
 };
@@ -675,8 +675,14 @@ function setMode(m) {
     document.getElementById('lbl-set-key').innerText = T.admin_key;
 
     if(T.ph_input) { document.getElementById('t1-input').placeholder = T.ph_input; document.getElementById('t4-input').placeholder = T.ph_input; }
-    const gs=document.getElementById('p_gender'); gs.innerHTML=''; gs.add(new Option(m==='en'?"--Select--":"--请选择--", "")); gs.add(new Option(T.g_m,'M')); gs.add(new Option(T.g_f,'F'));
-    const es=document.getElementById('p_edu'); es.innerHTML=''; es.add(new Option(m==='en'?"--Select--":"--请选择--", "")); T.edu_opts.forEach(e=>es.add(new Option(e,e)));
+    
+    // Update Select defaults
+    const gs=document.getElementById('p_gender'); gs.innerHTML=''; gs.add(new Option(T.select_def, "")); gs.add(new Option(T.g_m,'M')); gs.add(new Option(T.g_f,'F'));
+    const es=document.getElementById('p_edu'); es.innerHTML=''; es.add(new Option(T.select_def, "")); T.edu_opts.forEach(e=>es.add(new Option(e,e)));
+    
+    // v6.0 Fix: Date Input Language Hint
+    document.getElementById('p_dob').setAttribute('lang', m === 'en' ? 'en-US' : 'zh-CN');
+
     updateDemoText();
 }
 
@@ -831,7 +837,7 @@ function corsiResult(success) {
     } else { if(state.t2.trials === 0) { state.t2.trials++; setTimeout(nextCorsiTrial, 1000); } else { startT3(); } }
 }
 
-/* T3 Orientation (Fuzzy) */
+/* T3 Orientation */
 let t3Idx = 0;
 function startT3() { t3Idx = 0; state.t3.startTime = Date.now(); showView('view-t3'); loadT3Q(); }
 function loadT3Q() {
@@ -904,7 +910,7 @@ function finishT5() {
     showView('view-t6-intro');
 }
 
-/* T6 SDMT (Visual Feedback V5.9.7) */
+/* T6 SDMT (Standardized Linear Version) */
 let t6Target = null;
 function startSDMT() { showView('view-t6-test'); drawSDMTKey(); nextSDMT(); let time = 60; t6Interval = setInterval(() => { time--; document.getElementById('t6-timer').innerText = time; if(time <= 0) endSDMT(); }, 1000); }
 function drawSDMTKey() {
@@ -959,9 +965,10 @@ function toggleSpeech(phase) {
     recognition.start();
 }
 
-/* Report & AI & Data Export */
+/* Report & AI & Data Export (v6.0 Localized Report) */
 function showReport() {
     showView('view-report');
+    const T = DB.text[state.mode]; // Get current language dictionary
     const t1hits = state.t1.entered.filter(w => state.targets.includes(w)).length;
     const t4hits = state.t4.entered.filter(w => state.targets.includes(w)).length;
     const retention = t1hits > 0 ? ((t4hits / t1hits) * 100).toFixed(0) + "%" : "0%";
@@ -971,13 +978,13 @@ function showReport() {
     
     let html = `
     <table class="res-table">
-        <tr><th>Metric</th><th>Value</th><th>Note</th></tr>
-        <tr><td>Verbal Learning</td><td>${t1hits}/10</td><td>Immediate</td></tr>
-        <tr><td>Delayed Recall</td><td>${t4hits}/10</td><td>Retention: <b>${retention}</b></td></tr>
-        <tr><td>Recognition</td><td>${state.t5.hits}/10</td><td>Net: ${net_recog} (FA:${state.t5.false_alarms})</td></tr>
-        <tr><td>Spatial Span</td><td>${state.t2.score}</td><td>Corsi Level</td></tr>
-        <tr><td>Orientation</td><td>${state.t3.score}/6</td><td>Place & Time</td></tr>
-        <tr><td>Proc. Speed</td><td>${state.t6.score}</td><td>Var (SD): ${sd.toFixed(0)}ms</td></tr>
+        <tr><th>Metric</th><th>Value</th><th>${T.rep_note}</th></tr>
+        <tr><td>${T.rep_t1}</td><td>${t1hits}/10</td><td>Immediate</td></tr>
+        <tr><td>${T.rep_t4}</td><td>${t4hits}/10</td><td>Ret: <b>${retention}</b></td></tr>
+        <tr><td>${T.rep_t5}</td><td>${state.t5.hits}/10</td><td>Net: ${net_recog} (FA:${state.t5.false_alarms})</td></tr>
+        <tr><td>${T.rep_t2}</td><td>${state.t2.score}</td><td>Corsi Level</td></tr>
+        <tr><td>${T.rep_t3}</td><td>${state.t3.score}/6</td><td>Place & Time</td></tr>
+        <tr><td>${T.rep_t6}</td><td>${state.t6.score}</td><td>Var (SD): ${sd.toFixed(0)}ms</td></tr>
     </table>`;
     document.getElementById('report-body').innerHTML = html;
     document.getElementById('raw-data').value = generateCSVString();
