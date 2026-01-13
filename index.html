@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAS v5.9.4 (Golden Master)</title>
+    <title>CAS v5.9.6 (Scientific)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* --- 核心变量 --- */
+        /* =========================================
+           1. Core Variables & Base Styles
+           ========================================= */
         :root {
             --primary: #2A5C82; --primary-light: #5A8AB0; --accent: #FF7043;
             --bg-color: #F8F9FA; --card-bg: #FFFFFF; --text-main: #2D3436;
@@ -23,18 +25,20 @@
         }
         .container { flex: 1; max-width: 800px; margin: 0 auto; padding: 20px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; }
         
-        /* 视图与动画 */
+        /* Views & Animations */
         .view-section { display: none; animation: slideUp 0.4s ease-out; }
         .view-section.active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
         .card { background: var(--card-bg); padding: 30px; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.02); position: relative; }
         
+        /* Header */
         header { background: rgba(255,255,255,0.95); padding: 15px 30px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); backdrop-filter: blur(10px); }
         .brand { font-size: 1.2rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
         .mode-switch button { border: 1px solid #eee; background: white; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: 600; color: var(--text-light); margin-left: 5px; transition: all 0.2s; }
         .mode-switch button.active { background: var(--primary); color: white; border-color: var(--primary); }
         
+        /* Buttons & Inputs */
         .btn { padding: 12px 30px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; -webkit-appearance: none; }
         .btn:active { transform: scale(0.96); }
         .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -46,23 +50,65 @@
         input:focus, select:focus { border-color: var(--primary); outline: none; background: #FFF; }
         input.error, select.error { border-color: var(--error); background: #FFF0F0; }
         
+        /* Progress & Layouts */
         .progress-container { margin: 20px 0; }
         .progress-track { height: 8px; background: #EEE; border-radius: 4px; overflow: hidden; }
         .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         
-        /* === Visual Demos === */
+        /* =========================================
+           2. Visual Demos (Corsi, Words)
+           ========================================= */
         .micro-demo-box { background: #F0F4F8; border-radius: 12px; padding: 20px; margin: 20px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed #DCE4EA; position: relative; overflow: hidden; min-height: 100px; }
         .demo-label { font-size: 0.8rem; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .demo-word-dynamic { font-size: 1.5rem; font-weight: bold; color: var(--primary); transition: opacity 0.5s; }
 
-        /* Corsi Demo */
         .demo-corsi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 80px; }
         .demo-block { width: 100%; padding-bottom: 100%; background: #CBD5E0; border-radius: 4px; }
         .demo-block.lit { animation: demoFlash 2s infinite; }
         .demo-block:nth-child(1) { animation-delay: 0s; } .demo-block:nth-child(5) { animation-delay: 0.6s; } .demo-block:nth-child(9) { animation-delay: 1.2s; }
         @keyframes demoFlash { 0%, 100% { background: #CBD5E0; transform: scale(1); } 20%, 40% { background: var(--accent); transform: scale(1.1); } }
 
-        /* SDMT Demo */
+        .tutorial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; margin-top: 20px; }
+        .tutorial-card { background: #f8f9fa; border: 1px solid #eee; border-radius: 12px; padding: 20px; text-align: left; transition: transform 0.2s; position: relative; overflow: hidden; }
+        .tutorial-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .t-icon { font-size: 1.8rem; margin-bottom: 10px; display: block; }
+        .t-title { font-weight: bold; color: var(--primary); margin-bottom: 5px; font-size: 1rem; }
+        .t-desc { font-size: 0.85rem; color: #666; line-height: 1.5; }
+        .t-hint { font-size: 0.75rem; color: var(--accent); margin-top: 8px; font-style: italic; background: rgba(255,112,67,0.1); padding: 4px 8px; border-radius: 4px; display: inline-block; }
+
+        /* =========================================
+           3. SDMT Linear Key (Modern Card Style)
+           ========================================= */
+        .sdmt-legend { 
+            display: flex; gap: 12px; padding: 15px; 
+            background: #F0F4F8; border-radius: 16px; margin-bottom: 30px; 
+            overflow-x: auto; 
+            scrollbar-width: none; -ms-overflow-style: none; /* Hide scrollbar */
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.05);
+        }
+        .sdmt-legend::-webkit-scrollbar { display: none; }
+
+        .sdmt-legend-item { 
+            flex: 0 0 auto; width: 60px; 
+            display: flex; flex-direction: column; align-items: center; 
+            background: white; border-radius: 12px; overflow: hidden; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid white;
+        }
+        
+        .sdmt-legend-sym { 
+            font-size: 2.2rem; font-weight: 800; color: var(--primary); 
+            height: 55px; width: 100%; display: flex; align-items: center; justify-content: center; 
+            background: #FFFFFF;
+        }
+        
+        .sdmt-legend-num { 
+            font-size: 1.4rem; font-weight: 700; color: #636E72; 
+            height: 35px; width: 100%; display: flex; align-items: center; justify-content: center; 
+            background: #DFE6E9; border-top: 1px solid #eee;
+        }
+
+        /* Demo SDMT Styles */
         .demo-sdmt-container { display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; max-width: 300px; }
         .demo-sdmt-key { display: flex; gap: 5px; justify-content: center; margin-bottom: 5px; }
         .demo-key-pair { border: 1px solid #ccc; border-radius: 6px; padding: 4px 8px; background: white; text-align: center; font-size: 0.9rem; transition: transform 0.2s, border-color 0.2s; }
@@ -74,53 +120,34 @@
         .demo-finger { font-size: 1.8rem; position: absolute; animation: fingerTap 3s infinite; pointer-events: none; }
         @keyframes fingerTap { 0% { top: 70%; left: 60%; opacity: 0; transform: scale(1); } 10% { opacity: 1; } 30% { top: 30%; left: 50%; } 40% { transform: scale(0.8); } 50% { transform: scale(1); } 60% { top: 70%; left: 40%; } 70% { transform: scale(0.8); } 80% { transform: scale(1); opacity: 1; } 100% { top: 70%; left: 40%; opacity: 0; } }
 
-        /* Tutorial Grid */
-        .tutorial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; margin-top: 20px; }
-        .tutorial-card { background: #f8f9fa; border: 1px solid #eee; border-radius: 12px; padding: 20px; text-align: left; transition: transform 0.2s; position: relative; overflow: hidden; }
-        .tutorial-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .t-icon { font-size: 1.8rem; margin-bottom: 10px; display: block; }
-        .t-title { font-weight: bold; color: var(--primary); margin-bottom: 5px; font-size: 1rem; }
-        .t-desc { font-size: 0.85rem; color: #666; line-height: 1.5; }
-        .t-hint { font-size: 0.75rem; color: var(--accent); margin-top: 8px; font-style: italic; background: rgba(255,112,67,0.1); padding: 4px 8px; border-radius: 4px; display: inline-block; }
+        /* =========================================
+           4. Enhanced Visual Feedback & Interaction
+           ========================================= */
+        .sdmt-overlay-feedback { 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            font-size: 8rem; font-weight: 900; opacity: 0; pointer-events: none; z-index: 20; 
+            text-shadow: 0 0 30px rgba(255,255,255,1);
+        }
+        .sdmt-overlay-feedback.show-correct { color: var(--success); animation: popOut 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .sdmt-overlay-feedback.show-wrong { color: var(--error); animation: shakeFade 0.5s ease-in-out forwards; }
+        @keyframes popOut { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); } }
+        @keyframes shakeFade { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } 20% { opacity: 1; transform: translate(-55%, -50%) scale(1); } 40% { transform: translate(-45%, -50%) scale(1); } 60% { transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -20%) scale(0.8); } }
 
-        /* General Components */
         .key-btn { background: #FFF; border: 1px solid #DDD; border-radius: 12px; padding: 20px; font-size: 1.5rem; font-weight: bold; box-shadow: 0 3px 0 #CCC; cursor: pointer; color: #333; transition: all 0.1s; -webkit-tap-highlight-color: transparent; }
         .key-btn:active { transform: translateY(3px); box-shadow: none; }
         .key-btn.correct-flash { background-color: var(--success) !important; color: white; border-color: var(--success); transform: scale(1.1); }
         .key-btn.wrong-flash { background-color: var(--error) !important; color: white; border-color: var(--error); animation: shake 0.3s; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        
-        /* v5.9.4 SDMT Feedback Enhancement (Bigger & Glow) */
-        .sdmt-overlay-feedback { 
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            font-size: 8rem; /* 巨大尺寸 */
-            font-weight: 900; opacity: 0; pointer-events: none; z-index: 20; 
-            text-shadow: 0 0 20px rgba(255,255,255,0.9);
-        }
-        .sdmt-overlay-feedback.show-correct { color: var(--success); animation: popOut 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        .sdmt-overlay-feedback.show-wrong { color: var(--error); animation: shakeFade 0.6s ease-in-out forwards; }
-        
-        @keyframes popOut { 
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 
-            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); } 
-        }
-        @keyframes shakeFade { 
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-            15% { opacity: 1; transform: translate(-55%, -50%) scale(1); }
-            30% { transform: translate(-45%, -50%) scale(1); }
-            45% { transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -20%) scale(0.8); }
-        }
 
+        /* General Components */
         .corsi-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; max-width: 360px; margin: 20px auto; }
         .corsi-block { background: #E0E0E0; border-radius: 12px; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 0 #CCC; height: 0; padding-bottom: 100%; position: relative; }
         .corsi-block:active { transform: translateY(2px); box-shadow: 0 2px 0 #CCC; }
         .corsi-block.active { background: var(--accent) !important; box-shadow: 0 0 15px var(--accent); }
         .corsi-block.user-tap { background: var(--primary); }
-        .svg-wrapper { width: 100%; max-width: 680px; margin: 0 auto; height: 0; padding-bottom: 58%; position: relative; }
-        .svg-wrapper svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+        
         .sdmt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 400px; margin: 15px auto; }
+        #t6-target { filter: drop-shadow(0 4px 0px rgba(0,0,0,0.1)); transition: all 0.2s; }
+
         .word-display { font-size: 3.5rem; text-align: center; height: 180px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); }
         .chips-area { display: flex; flex-wrap: wrap; gap: 8px; min-height: 60px; padding: 15px; background: #F4F6F8; border-radius: 10px; margin-bottom: 20px; border: 1px dashed #DDD; }
         .chip { background: var(--primary); color: white; padding: 6px 14px; border-radius: 20px; cursor: pointer; animation: pop 0.3s; font-size: 0.9rem; }
@@ -128,7 +155,6 @@
         .backup-box { display: none; margin-top: 10px; }
         textarea.raw-data { width: 100%; height: 150px; font-family: monospace; font-size: 12px; padding: 10px; border: 1px solid #DDD; background: #FAFAFA; border-radius: 8px; -webkit-appearance: none; }
         .hidden { display: none; } .text-center { text-align: center; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         .mic-btn { font-size: 1.5rem; padding: 0 15px; background: #FFF; border: 1px solid #DDD; border-radius: 8px; cursor: pointer; }
         .mic-btn.recording { border-color: var(--accent); color: var(--accent); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 112, 67, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
@@ -146,7 +172,7 @@
 <header>
     <div class="brand">
         <span style="font-size:1.5rem;">🧠</span>
-        <span id="txt-app-title">CAS v5.9.4</span>
+        <span id="txt-app-title">CAS v5.9.6</span>
     </div>
     <div class="mode-switch">
         <button onclick="setMode('zh')" id="btn-mode-zh" class="active">中文</button>
@@ -160,7 +186,7 @@
     <div id="view-home" class="view-section active">
         <div class="card text-center">
             <h1 id="txt-home-title" style="margin-bottom: 10px;">认知评估系统</h1>
-            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Scientific Research Edition (v5.9.4)</p>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Scientific Research Edition (v5.9.6)</p>
             <div style="max-width:500px; margin:0 auto 30px auto; color:#666; font-size:0.9rem; line-height:1.6;">
                 <p id="txt-home-intro">本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境。</p>
             </div>
@@ -361,23 +387,20 @@
             <h2 id="txt-t6-title">处理速度</h2>
             <div class="micro-demo-box">
                 <div class="demo-label" id="lbl-demo-t6">演示</div>
-                <div class="demo-sdmt-container">
-                    <div class="demo-sdmt-key">
-                        <div class="demo-key-pair" id="demo-key-1"><span>⊏</span>1</div>
-                        <div class="demo-key-pair" id="demo-key-2"><span>⊐</span>2</div>
+                <div style="display:flex; flex-direction:column; align-items:center; gap:15px;">
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div style="border:1px solid #ccc; border-radius:6px; padding:5px 10px; background:white; text-align:center;">
+                            <div style="font-weight:bold;color:var(--primary);font-size:1.5rem;">⊏</div>
+                            <div style="font-size:1rem;color:#555;border-top:1px solid #eee;">1</div>
+                        </div>
+                        <div style="border:1px solid #ccc; border-radius:6px; padding:5px 10px; background:white; text-align:center;">
+                            <div style="font-weight:bold;color:var(--primary);font-size:1.5rem;">⊐</div>
+                            <div style="font-size:1rem;color:#555;border-top:1px solid #eee;">2</div>
+                        </div>
                     </div>
-                    <div class="demo-sdmt-task">
-                        <span class="demo-target-box">⊏</span><span class="demo-arrow">→</span><span style="font-weight:bold;">1</span>
-                    </div>
-                    <div class="demo-finger">👆</div>
+                    <div style="font-size:1.5rem;"><b>⊏</b> ➜ <b>1</b></div>
                 </div>
             </div>
-            <script>
-                setInterval(() => {
-                    const key1 = document.getElementById('demo-key-1');
-                    if(key1) { setTimeout(() => key1.classList.add('highlight'), 1000); setTimeout(() => key1.classList.remove('highlight'), 2000); }
-                }, 3000);
-            </script>
             <p id="txt-t6-instr">参照图例，点击数字。</p>
             <button class="btn btn-primary" onclick="startSDMT()"><span id="txt-btn-start-test">开始测试</span></button>
         </div>
@@ -389,8 +412,10 @@
                 <span>⏱ <span id="t6-timer">60</span>s</span>
                 <span style="color:var(--success)"><span id="txt-score">Score</span>: <span id="t6-score">0</span></span>
             </div>
-            <div class="svg-wrapper"><svg id="sdmt-svg" viewBox="0 0 500 280" preserveAspectRatio="xMidYMax meet"></svg></div>
-            <div class="big-symbol" id="t6-target" style="font-size: 4rem; height:80px; margin:10px 0;">?</div>
+            
+            <div id="sdmt-legend" class="sdmt-legend"></div>
+
+            <div class="big-symbol" id="t6-target" style="font-size: 5rem; height:100px; margin:20px 0; color:var(--primary); font-weight:bold;">?</div>
             <div class="sdmt-grid">
                 <button class="key-btn" onclick="inputSDMT(1)">1</button><button class="key-btn" onclick="inputSDMT(2)">2</button><button class="key-btn" onclick="inputSDMT(3)">3</button>
                 <button class="key-btn" onclick="inputSDMT(4)">4</button><button class="key-btn" onclick="inputSDMT(5)">5</button><button class="key-btn" onclick="inputSDMT(6)">6</button>
@@ -458,7 +483,7 @@
 </div>
 
 <script>
-/* 1. DATA STRUCTURES (Abstract Geometric Symbols) */
+/* 1. DATA STRUCTURES (Standardized) */
 const DB = {
     lists: {
         zh: {
@@ -479,11 +504,11 @@ const DB = {
         en: { w1:"Apple", w2:"Banana" },
         child: { w1:"苹果", w2:"香蕉" }
     },
-    // Updated Symbols: Abstract Geometrics
+    // Updated Symbols: Distinct, Directional-Invariant Geometrics
     symbols: ['⊏', '⊐', '⊓', '⊔', '△', '▽', '◁', '▷', '○'],
     text: {
         zh: {
-            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "科研专业版 (v5.9.4)",
+            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "科研专业版 (v5.9.6)",
             home_intro: "本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境。",
             btn_tutorial: "📖 查看演示 (Demo)", btn_start_real: "我明白了，开始登记", btn_settings: "🔧 设置",
             tut_title: "测试内容演示",
@@ -509,7 +534,7 @@ const DB = {
             admin_title: "⚙️ 系统设置", admin_place: "📍 地点 (关键词)", admin_city: "🏙️ 城市 (关键词)", admin_cloud: "☁️ Google Script URL", admin_key: "🤖 Gemini API Key"
         },
         en: { 
-            app_title: "CAS v5.9.4", home_title: "Cognitive Assessment System", home_desc: "Scientific Research Edition (v5.9.4)",
+            app_title: "CAS v5.9.6", home_title: "Cognitive Assessment System", home_desc: "Scientific Research Edition (v5.9.6)",
             home_intro: "This battery consists of 6 neuropsychological tasks.<br>Estimated time: 10-15 mins. Please ensure a quiet environment.",
             btn_tutorial: "📖 View Demo", btn_start_real: "Proceed to Register", btn_settings: "🔧 Settings",
             tut_title: "Task Demonstration",
@@ -535,7 +560,7 @@ const DB = {
             admin_title: "⚙️ Settings", admin_place: "📍 Place (Keywords)", admin_city: "🏙️ City (Keywords)", admin_cloud: "☁️ Google Script URL", admin_key: "🤖 Gemini API Key"
         },
         child: {
-            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v5.9.4)",
+            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v5.9.6)",
             home_intro: "我们来玩几个小游戏吧！<br>先看看怎么玩哦。",
             btn_tutorial: "📖 看看怎么玩", btn_start_real: "准备好了！", btn_settings: "🔧 设置",
             tut_title: "游戏演示",
@@ -625,7 +650,6 @@ function setMode(m) {
         let el = document.getElementById('txt-' + key.replace(/_/g,'-'));
         if(el) el.innerHTML = T[key];
         
-        // Correctly target labels by splitting key "l_gender" -> "gender"
         let parts = key.split('_');
         if(parts[0] === 'l' && parts.length > 1) {
             let lblId = 'lbl-' + parts[1];
@@ -635,7 +659,6 @@ function setMode(m) {
     }
     document.querySelectorAll('.demo-label').forEach(l => l.innerText = T.lbl_demo);
     
-    // Admin Modal Localization Fix
     document.getElementById('txt-admin-title').innerText = T.admin_title;
     document.getElementById('lbl-set-place').innerText = T.admin_place;
     document.getElementById('lbl-set-city').innerText = T.admin_city;
@@ -799,7 +822,7 @@ function corsiResult(success) {
     } else { if(state.t2.trials === 0) { state.t2.trials++; setTimeout(nextCorsiTrial, 1000); } else { startT3(); } }
 }
 
-/* T3 Orientation */
+/* T3 Orientation (Fuzzy) */
 let t3Idx = 0;
 function startT3() { t3Idx = 0; state.t3.startTime = Date.now(); showView('view-t3'); loadT3Q(); }
 function loadT3Q() {
@@ -872,20 +895,18 @@ function finishT5() {
     showView('view-t6-intro');
 }
 
-/* T6 SDMT (Visual Feedback V5.9.4) */
+/* T6 SDMT (Standardized Linear Version) */
 let t6Target = null;
 function startSDMT() { showView('view-t6-test'); drawSDMTKey(); nextSDMT(); let time = 60; t6Interval = setInterval(() => { time--; document.getElementById('t6-timer').innerText = time; if(time <= 0) endSDMT(); }, 1000); }
 function drawSDMTKey() {
-    const svg = document.getElementById('sdmt-svg'); svg.innerHTML = '';
-    const cx=250, cy=260, rIn=80, rMid=120, rOut=180, step = 144 / 9, startA = -72;
-    state.t6.keyMap.forEach((k, i) => {
-        const a1 = startA + i*step; const a2 = a1 + step; const ac = a1 + step/2;
-        const pStr = arcPath(cx,cy,rIn,rOut,a1,a2);
-        const p = createEl('path', {d:pStr, fill:'white', stroke:'#555', 'stroke-width':1.5});
-        const l = createEl('path', {d:arcLine(cx,cy,rMid,a1,a2), fill:'none', stroke:'#555'});
-        const tSym = textEl(k.s, cx, cy, (rMid+rOut)/2, ac, 28);
-        const tNum = textEl(k.n, cx, cy, (rIn+rMid)/2, ac, 22);
-        const g = document.createElementNS("http://www.w3.org/2000/svg", "g"); g.append(p,l,tSym,tNum); svg.appendChild(g);
+    const legend = document.getElementById('sdmt-legend');
+    legend.innerHTML = '';
+    state.t6.keyMap.forEach(k => {
+        const item = document.createElement('div');
+        item.className = 'sdmt-legend-item';
+        // HTML Structure matching new CSS
+        item.innerHTML = `<div class="sdmt-legend-sym">${k.s}</div><div class="sdmt-legend-num">${k.n}</div>`;
+        legend.appendChild(item);
     });
 }
 function nextSDMT() { t6Target = state.t6.keyMap[Math.floor(Math.random()*9)]; document.getElementById('t6-target').innerText = t6Target.s; state.t6.lastStimTime = Date.now(); }
@@ -928,21 +949,6 @@ function toggleSpeech(phase) {
     recognition.onend = () => { isRecording=false; document.getElementById(phase+'-mic').classList.remove('recording'); };
     recognition.onresult = e => { const t = e.results[0][0].transcript.split(/[\s,，.。]/)[0]; if(t) { document.getElementById(phase+'-input').value = t; document.getElementById(phase+'-input').focus(); } };
     recognition.start();
-}
-function polar(cx,cy,r,a) { const rad=(a-90)*Math.PI/180; return {x:cx+r*Math.cos(rad), y:cy+r*Math.sin(rad)}; }
-function arcPath(cx,cy,r1,r2,a1,a2) {
-    const s1=polar(cx,cy,r2,a2), e1=polar(cx,cy,r2,a1), s2=polar(cx,cy,r1,a2), e2=polar(cx,cy,r1,a1);
-    const la = a2-a1<=180?0:1;
-    return `M ${s1.x} ${s1.y} A ${r2} ${r2} 0 ${la} 0 ${e1.x} ${e1.y} L ${e2.x} ${e2.y} A ${r1} ${r1} 0 ${la} 1 ${s2.x} ${s2.y} Z`;
-}
-function arcLine(cx,cy,r,a1,a2) { const s=polar(cx,cy,r,a2), e=polar(cx,cy,r,a1); return `M ${s.x} ${s.y} A ${r} ${r} 0 0 0 ${e.x} ${e.y}`; }
-function createEl(tag, attrs) { const el = document.createElementNS("http://www.w3.org/2000/svg", tag); for(let k in attrs) el.setAttribute(k, attrs[k]); return el; }
-function textEl(txt,cx,cy,r,a,sz) {
-    const el = createEl('text', {class:'arc-text', 'font-size':sz});
-    const p = polar(cx,cy,r,a);
-    el.setAttribute('x', p.x); el.setAttribute('y', p.y);
-    el.setAttribute('transform', `rotate(${a}, ${p.x}, ${p.y})`);
-    el.textContent = txt; return el;
 }
 
 /* Report & AI & Data Export */
