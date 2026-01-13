@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAS v6.0 (Clinical & Scientific)</title>
+    <title>CAS v6.0.1 (Stable)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         /* =========================================
@@ -127,7 +127,7 @@
            ========================================= */
         .sdmt-overlay-feedback { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-            font-size: 10rem; /* v6.0: Huge Feedback */
+            font-size: 10rem; 
             font-weight: 900; opacity: 0; pointer-events: none; z-index: 100; 
             text-shadow: 0 0 40px rgba(255,255,255,1);
         }
@@ -179,7 +179,7 @@
 <header>
     <div class="brand">
         <span style="font-size:1.5rem;">🧠</span>
-        <span id="txt-app-title">CAS v6.0</span>
+        <span id="txt-app-title">CAS v6.0.1</span>
     </div>
     <div class="mode-switch">
         <button onclick="setMode('zh')" id="btn-mode-zh" class="active">中文</button>
@@ -193,7 +193,7 @@
     <div id="view-home" class="view-section active">
         <div class="card text-center">
             <h1 id="txt-home-title" style="margin-bottom: 10px;">认知评估系统</h1>
-            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Clinical & Scientific Edition (v6.0)</p>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Clinical & Scientific Edition (v6.0.1)</p>
             <div style="max-width:500px; margin:0 auto 30px auto; color:#666; font-size:0.9rem; line-height:1.6;">
                 <p id="txt-home-intro">本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境。</p>
             </div>
@@ -263,14 +263,14 @@
             </div>
             <div class="form-row">
                 <div><label id="lbl-gender">性别 *</label><select id="p_gender"><option value="">--Select--</option></select></div>
-                <div><label id="lbl-dob">出生日期 *</label><input type="date" id="p_dob" min="1900-01-01" lang="zh-CN" onchange="calcAge()" required></div>
+                <div><label id="lbl-dob">出生日期 *</label><input type="date" id="p_dob" min="1900-01-01" onchange="calcAge()" required></div>
             </div>
             <div class="form-row">
                 <div><label id="lbl-age">年龄</label><input type="number" id="p_age" readonly></div>
                 <div><label id="lbl-edu">教育 *</label><select id="p_edu"><option value="">--Select--</option></select></div>
             </div>
             <div class="text-center">
-                <button class="btn btn-primary" id="btn-submit-reg" onclick="validateAndSubmit()"><span id="txt-btn-next">下一步</span></button>
+                <button class="btn btn-primary" id="btn-submit-reg" onclick="submitRegister()"><span id="txt-btn-next">下一步</span></button>
                 <div id="reg-error-msg" style="color:var(--error); margin-top:10px; display:none;">请填写所有必填项</div>
             </div>
         </div>
@@ -511,11 +511,11 @@ const DB = {
         en: { w1:"Apple", w2:"Banana" },
         child: { w1:"苹果", w2:"香蕉" }
     },
-    // v6.0: Abstract Geometric Symbols (Psychometric Standard)
+    // Updated Symbols: Distinct, Directional-Invariant Geometrics
     symbols: ['⊏', '⊐', '⊓', '⊔', '△', '▽', '◁', '▷', '○'],
     text: {
         zh: {
-            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "科研专业版 (v6.0)",
+            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "科研专业版 (v6.0.1)",
             home_intro: "本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境。",
             btn_tutorial: "📖 查看演示 (Demo)", btn_start_real: "我明白了，开始登记", btn_settings: "🔧 设置",
             tut_title: "测试内容演示",
@@ -537,12 +537,13 @@ const DB = {
             t3_opts_m: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],
             t3_opts_d: ["周一","周二","周三","周四","周五","周六","周日"],
             lbl_demo: "演示", t2_watch: "请观察...", t2_go: "请点击!", t2_timeout: "超时",
+            // Admin Settings
             admin_title: "⚙️ 系统设置", admin_place: "📍 地点 (关键词)", admin_city: "🏙️ 城市 (关键词)", admin_cloud: "☁️ Google Script URL", admin_key: "🤖 Gemini API Key",
             // Report Labels
             rep_t1: "言语学习", rep_t4: "延迟回忆", rep_t5: "再认记忆", rep_t2: "空间广度", rep_t3: "定向力", rep_t6: "加工速度", rep_note: "备注"
         },
         en: { 
-            app_title: "CAS v6.0", home_title: "Cognitive Assessment System", home_desc: "Scientific Research Edition (v6.0)",
+            app_title: "CAS v6.0.1", home_title: "Cognitive Assessment System", home_desc: "Scientific Research Edition (v6.0.1)",
             home_intro: "This battery consists of 6 neuropsychological tasks.<br>Estimated time: 10-15 mins. Please ensure a quiet environment.",
             btn_tutorial: "📖 View Demo", btn_start_real: "Proceed to Register", btn_settings: "🔧 Settings",
             tut_title: "Task Demonstration",
@@ -564,12 +565,13 @@ const DB = {
             t3_opts_m: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
             t3_opts_d: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
             lbl_demo: "Demo", t2_watch: "Watch...", t2_go: "Go!", t2_timeout: "Timeout",
+            // Admin Settings
             admin_title: "⚙️ Settings", admin_place: "📍 Place (Keywords)", admin_city: "🏙️ City (Keywords)", admin_cloud: "☁️ Google Script URL", admin_key: "🤖 Gemini API Key",
             // Report Labels
             rep_t1: "Verbal Learning", rep_t4: "Delayed Recall", rep_t5: "Recognition", rep_t2: "Spatial Span", rep_t3: "Orientation", rep_t6: "Proc. Speed", rep_note: "Note"
         },
         child: {
-            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v6.0)",
+            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v6.0.1)",
             home_intro: "我们来玩几个小游戏吧！<br>先看看怎么玩哦。",
             btn_tutorial: "📖 看看怎么玩", btn_start_real: "准备好了！", btn_settings: "🔧 设置",
             tut_title: "游戏演示",
@@ -591,6 +593,7 @@ const DB = {
             t3_opts_m: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],
             t3_opts_d: ["周一","周二","周三","周四","周五","周六","周日"],
             lbl_demo: "演示", t2_watch: "看好了...", t2_go: "该你了!", t2_timeout: "太慢啦",
+            // Admin Settings
             admin_title: "⚙️ 设置", admin_place: "📍 地点", admin_city: "🏙️ 城市", admin_cloud: "☁️ 云端地址", admin_key: "🤖 AI 密钥",
             rep_t1: "记词分数", rep_t4: "背书分数", rep_t5: "找词分数", rep_t2: "方块分数", rep_t3: "问答分数", rep_t6: "反应速度", rep_note: "说明"
         }
@@ -680,8 +683,9 @@ function setMode(m) {
     const gs=document.getElementById('p_gender'); gs.innerHTML=''; gs.add(new Option(T.select_def, "")); gs.add(new Option(T.g_m,'M')); gs.add(new Option(T.g_f,'F'));
     const es=document.getElementById('p_edu'); es.innerHTML=''; es.add(new Option(T.select_def, "")); T.edu_opts.forEach(e=>es.add(new Option(e,e)));
     
-    // v6.0 Fix: Date Input Language Hint
-    document.getElementById('p_dob').setAttribute('lang', m === 'en' ? 'en-US' : 'zh-CN');
+    // v6.0.1 Fix: Force Date Input Language
+    const dobInput = document.getElementById('p_dob');
+    dobInput.setAttribute('lang', m === 'en' ? 'en-US' : 'zh-CN');
 
     updateDemoText();
 }
@@ -703,12 +707,8 @@ function updateDemoText() {
 
 function startTutorial() { showView('view-tutorial'); }
 
+// v6.0.1: Only Reset State here, do NOT generate words yet
 function initSession() {
-    const listSet = DB.lists[state.mode];
-    state.targets = [...listSet.A];
-    state.distractors = [...listSet.B];
-    state.presentationOrder = [...state.targets].sort(() => Math.random() - 0.5);
-
     let syms = [...DB.symbols]; syms.sort(()=>Math.random()-0.5);
     state.t6.keyMap = syms.map((s,i)=>({s:s, n:i+1}));
     state.t1 = { entered: [], time: 0 };
@@ -735,6 +735,7 @@ function validateAndSubmit() {
     if(!valid) { msg.innerText = DB.text[state.mode].reg_err; msg.style.display = 'block'; } else { msg.style.display = 'none'; submitRegister(); }
 }
 
+// v6.0.1: Generate Words HERE (Late Binding) to match current language
 function submitRegister() {
     state.patient = {
         name: document.getElementById('p_name').value, id: document.getElementById('p_id').value,
@@ -742,6 +743,13 @@ function submitRegister() {
         age: document.getElementById('p_age').value, edu: document.getElementById('p_edu').value,
         date: new Date().toISOString().split('T')[0]
     };
+    
+    // GENERATE LISTS NOW
+    const listSet = DB.lists[state.mode];
+    state.targets = [...listSet.A];
+    state.distractors = [...listSet.B];
+    state.presentationOrder = [...state.targets].sort(() => Math.random() - 0.5);
+
     showView('view-t1-intro'); 
 }
 
@@ -837,7 +845,7 @@ function corsiResult(success) {
     } else { if(state.t2.trials === 0) { state.t2.trials++; setTimeout(nextCorsiTrial, 1000); } else { startT3(); } }
 }
 
-/* T3 Orientation */
+/* T3 Orientation (Fuzzy) */
 let t3Idx = 0;
 function startT3() { t3Idx = 0; state.t3.startTime = Date.now(); showView('view-t3'); loadT3Q(); }
 function loadT3Q() {
@@ -910,7 +918,7 @@ function finishT5() {
     showView('view-t6-intro');
 }
 
-/* T6 SDMT (Standardized Linear Version) */
+/* T6 SDMT */
 let t6Target = null;
 function startSDMT() { showView('view-t6-test'); drawSDMTKey(); nextSDMT(); let time = 60; t6Interval = setInterval(() => { time--; document.getElementById('t6-timer').innerText = time; if(time <= 0) endSDMT(); }, 1000); }
 function drawSDMTKey() {
@@ -965,10 +973,10 @@ function toggleSpeech(phase) {
     recognition.start();
 }
 
-/* Report & AI & Data Export (v6.0 Localized Report) */
+/* Report & AI & Data Export */
 function showReport() {
     showView('view-report');
-    const T = DB.text[state.mode]; // Get current language dictionary
+    const T = DB.text[state.mode];
     const t1hits = state.t1.entered.filter(w => state.targets.includes(w)).length;
     const t4hits = state.t4.entered.filter(w => state.targets.includes(w)).length;
     const retention = t1hits > 0 ? ((t4hits / t1hits) * 100).toFixed(0) + "%" : "0%";
