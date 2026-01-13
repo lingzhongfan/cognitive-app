@@ -6,7 +6,7 @@
     <title>CAS v5.9 (Scientific Edition)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* --- 核心变量 (v5.8样式保持不变) --- */
+        /* --- 样式保持 v5.8 原样 --- */
         :root {
             --primary: #2A5C82; --primary-light: #5A8AB0; --accent: #FF7043;
             --bg-color: #F8F9FA; --card-bg: #FFFFFF; --text-main: #2D3436;
@@ -406,7 +406,7 @@ const DB = {
             t3_opts_m: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],
             t3_opts_d: ["周一","周二","周三","周四","周五","周六","周日"]
         },
-        en: { // UNIFIED PROFESSIONAL ENGLISH
+        en: { // UNIFIED PROFESSIONAL ENGLISH (v5.9 Update)
             app_title: "CAS v5.9", home_title: "Cognitive Assessment System", home_desc: "Scientific Research Edition (v5.9)",
             home_intro: "This battery consists of 6 neuropsychological tasks.<br>Estimated time: 10-15 mins. Please ensure a quiet environment.",
             btn_tutorial: "📖 View Demo", btn_start_real: "Proceed to Register",
@@ -464,7 +464,7 @@ let state = {
     t2: { level: 2, trials: 0, score: 0, sequence: [], userSeq: [], history:[] },
     t3: { details: [], score: 0, time: 0 },
     t4: { entered: [], time: 0 }, 
-    t5: { hits: 0, false_alarms: 0, time: 0, selected_words: [] },
+    t5: { hits: 0, false_alarms: 0, time: 0, selected_words: [] }, // v5.9新增: selected_words
     t6: { score: 0, errors: 0, time: 60, responses: [], keyMap: [] },
     admin: { place: "Hospital", city: "Beijing", aiKey: "", cloudUrl: "" }
 };
@@ -479,9 +479,9 @@ window.onload = () => {
     document.getElementById('set-city').value = state.admin.city;
     document.getElementById('set-ai-key').value = state.admin.aiKey || "";
     document.getElementById('set-cloud-url').value = state.admin.cloudUrl || "";
-    document.getElementById('p_dob').max = new Date().toISOString().split("T")[0]; // V5.7 Fix
+    document.getElementById('p_dob').max = new Date().toISOString().split("T")[0]; // V5.7 特性保持
 
-    // --- v5.8 IME Patch ---
+    // --- v5.8 IME Patch (输入法锁机制，保持功能一致) ---
     ['t1-input', 't4-input'].forEach(id => {
         const el = document.getElementById(id);
         if(el) {
@@ -731,7 +731,10 @@ function startT5Test() {
 function finishT5() {
     state.t5.time = ((Date.now() - state.t5.startTime)/1000).toFixed(1);
     state.t5.hits = 0; state.t5.false_alarms = 0;
-    state.t5.selected_words = Array.from(t5Sel); // Save selection
+    
+    // v5.9新增：保存具体选择，用于语义错误分析
+    state.t5.selected_words = Array.from(t5Sel); 
+
     t5Sel.forEach(w => { if(state.targets.includes(w)) state.t5.hits++; else state.t5.false_alarms++; });
     showView('view-t6-intro');
 }
@@ -755,6 +758,7 @@ function drawSDMTKey() {
 function nextSDMT() { t6Target = state.t6.keyMap[Math.floor(Math.random()*9)]; document.getElementById('t6-target').innerText = t6Target.s; state.t6.lastStimTime = Date.now(); }
 function inputSDMT(n) {
     const now = Date.now(); const correct = n === t6Target.n;
+    // v5.9: 这里已经记录了latency，后续CSV生成会用到
     state.t6.responses.push({ target: t6Target.n, response: n, correct: correct, latency: now - state.t6.lastStimTime });
     const btn = document.querySelectorAll('.key-btn')[n-1];
     if(correct) { state.t6.score++; btn.classList.add('correct-flash'); setTimeout(()=>btn.classList.remove('correct-flash'), 100); }
@@ -819,6 +823,7 @@ function showReport() {
     document.querySelector('.backup-box').style.display = 'block';
 }
 
+// v5.9: 重构CSV生成逻辑，输出高颗粒度原始数据
 function generateCSVString() {
     let h = state.mode === 'en' ? "Section,Metric,Value,Raw_Data_Sequence\n" : "模块,指标,数值,原始数据序列\n";
     let csv = `\uFEFF${h}`; 
@@ -829,6 +834,7 @@ function generateCSVString() {
     let t1hits = state.t1.entered.filter(w => state.targets.includes(w)).length;
     csv += `T1,Score_Immediate,${t1hits},${state.t1.entered.join(';')}\n`;
 
+    // 导出T2每级通过情况
     let t2History = state.t2.history.map(h => `L${h.level}:${h.success?'P':'F'}`).join(';');
     csv += `T2,Span_Max_Level,${state.t2.score},${t2History}\n`;
 
@@ -840,11 +846,13 @@ function generateCSVString() {
     csv += `T4,Score_Delayed,${t4hits},${state.t4.entered.join(';')}\n`;
     csv += `T4,Retention_Rate,${retention},-\n`;
 
+    // 导出T5所有选择，用于语义错误分析
     let selectedWords = state.t5.selected_words ? state.t5.selected_words.join(';') : ""; 
     let net_recog = Math.max(0, state.t5.hits - state.t5.false_alarms);
     csv += `T5,Net_Score,${net_recog},${selectedWords}\n`;
     csv += `T5,Hits_vs_FA,${state.t5.hits}/${state.t5.false_alarms},-\n`;
 
+    // 导出T6所有反应时，用于微观波动分析
     let latencies = state.t6.responses.map(r => r.latency);
     let latString = latencies.join(';');
     let mean = 0, sd = 0, cv = 0;
@@ -867,6 +875,8 @@ async function analyzeWithAI() {
     const loading = document.getElementById('ai-loading');
     reportArea.style.display = 'block'; loading.style.display = 'block'; contentArea.innerHTML = '';
     const dataPrompt = generateCSVString();
+    
+    // v5.9: 提示词专业化，要求临床解释
     const prompt = `Act as a clinical neuropsychologist. Analyze this assessment data:\n${dataPrompt}\n\nProvide a clinical interpretation covering: 1. Memory Profile (Encoding vs Retention), 2. Attention & Executive Function (Processing Speed & Variability). 3. Clinical Impression (Normal, MCI risk, or other). Concise. Language: ${state.mode === 'zh' ? 'Chinese' : 'English'}.`;
     try {
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${state.admin.aiKey}`, {
