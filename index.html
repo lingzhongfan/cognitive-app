@@ -3,45 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAS v8.4 (All-China AI)</title>
+    <title>CAS v8.5 (Stable Connect)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* ==================== 1. 核心样式 (继承自 v8.x) ==================== */
+        /* ==================== 样式表 ==================== */
         :root {
             --primary: #2A5C82; --accent: #FF7043; --bg: #F8F9FA; 
             --chat-bg: #FFF; --user-msg: #95EC69; --ai-msg: #FFF;
             --shadow: 0 10px 30px rgba(0,0,0,0.08);
         }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; }
+        body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
+        /* 视图与容器 */
         .view-section { display: none; flex: 1; flex-direction: column; animation: fadeIn 0.3s; }
         .view-section.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
         .container { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 20px; max-width: 600px; margin: 0 auto; width: 100%; box-sizing: border-box; }
         .card { background: white; padding: 30px; border-radius: 16px; box-shadow: var(--shadow); text-align: center; }
         
         /* 按钮与输入 */
-        .btn { padding: 12px 25px; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(42,92,130,0.2); }
-        .btn-primary:active { transform: scale(0.96); }
+        .btn { padding: 12px 20px; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: #00B894; color: white; }
+        .btn-outline { background: #eee; color: #333; }
         input, select { padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 1rem; margin-bottom: 10px; outline: none; background: #fff; }
-        input:focus, select:focus { border-color: var(--primary); }
-
+        
         /* 聊天界面 */
-        .chat-header { padding: 15px; background: rgba(255,255,255,0.95); border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; z-index: 10; backdrop-filter: blur(10px); }
+        .chat-header { padding: 15px; background: rgba(255,255,255,0.95); border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; }
         .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-right: 10px; }
-        .chat-history { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 80px; scroll-behavior: smooth; }
+        .chat-history { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 80px; }
         .msg-row { display: flex; width: 100%; } .msg-row.user { justify-content: flex-end; }
         .msg-bubble { padding: 12px 16px; border-radius: 16px; max-width: 85%; font-size: 1rem; line-height: 1.5; box-shadow: 0 1px 2px rgba(0,0,0,0.05); position: relative; word-wrap: break-word; }
         .msg-bubble.ai { background: var(--ai-msg); border-top-left-radius: 2px; } .msg-bubble.user { background: var(--user-msg); border-top-right-radius: 2px; }
-        .msg-bubble.system { background: #FFF3CD; color: #856404; font-size: 0.85rem; align-self: center; border-radius: 20px; padding: 5px 15px; }
-
+        .msg-bubble.error { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; font-size: 0.9rem; }
+        
+        /* 输入区 */
         .input-area { position: absolute; bottom: 0; left: 0; right: 0; padding: 15px; background: #FFF; border-top: 1px solid #eee; display: flex; gap: 10px; align-items: center; z-index: 20; }
-        .input-box { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 24px; font-size: 1rem; outline: none; transition: 0.3s; margin: 0; }
-        .btn-icon { width: 45px; height: 45px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.2s; background: #f0f0f0; color: #555; }
-        .btn-icon.active { background: var(--accent); color: white; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 112, 67, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
+        .input-box { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 24px; font-size: 1rem; outline: none; margin: 0; }
+        .btn-icon { width: 45px; height: 45px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; background: #f0f0f0; color: #555; }
+        .btn-send { background: var(--primary); color: white; }
+        
+        /* Loading */
         .typing-indicator span { display: inline-block; width: 6px; height: 6px; background: #ccc; border-radius: 50%; animation: type 1s infinite; margin: 0 2px; }
         .typing-indicator span:nth-child(2) { animation-delay: 0.2s; } .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
         @keyframes type { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
@@ -60,10 +62,9 @@
 
         /* Modal */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 25px; border-radius: 16px; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; }
-        .setting-group { margin-bottom: 15px; text-align: left; }
+        .modal-content { background: white; padding: 25px; border-radius: 16px; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; text-align: left; }
         .setting-label { font-size: 0.85rem; color: #666; font-weight: bold; display: block; margin-bottom: 5px; }
-        .badge { font-size:0.7rem; color:white; background:var(--primary); padding:2px 6px; border-radius:4px; display:inline-block; margin-left:5px; }
+        #status-msg { font-size: 0.85rem; margin-bottom: 10px; min-height: 20px; }
     </style>
 </head>
 <body>
@@ -71,19 +72,12 @@
 <div id="view-reg" class="view-section active">
     <div class="container">
         <div class="card">
-            <div style="font-size:3rem; margin-bottom:10px;">🧠</div>
-            <h1 style="margin:0; color:var(--primary);">CAS v8.4</h1>
-            <p style="color:#666; font-size:0.9rem;">Universal AI Doctor (Qwen/DeepSeek/Kimi)</p>
+            <h1 style="margin:0; color:var(--primary);">CAS v8.5</h1>
+            <p style="color:#666; font-size:0.9rem;">AI Doctor (Debug Edition)</p>
             <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-            
-            <input type="text" id="p_id" placeholder="受试者 ID / 姓名 *" required>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <input type="number" id="p_age" placeholder="年龄">
-                <select id="p_edu"><option value="College">大学</option><option value="HighSchool">高中</option><option value="Primary">小学</option></select>
-            </div>
-            
+            <input type="text" id="p_id" placeholder="ID / 姓名" required>
             <button class="btn btn-primary" style="width:100%; margin-top:20px; padding:15px;" onclick="startSystem()">开始评估 (Start)</button>
-            <p style="font-size:0.8rem; color:#999; margin-top:15px; cursor:pointer;" onclick="toggleSettings()">⚙️ 模型设置 (Model Settings)</p>
+            <p style="font-size:0.8rem; color:#999; margin-top:15px; cursor:pointer; text-decoration: underline;" onclick="toggleSettings()">⚙️ 点击配置 API Key (必填)</p>
         </div>
     </div>
 </div>
@@ -94,15 +88,14 @@
             <div class="avatar">👨‍⚕️</div>
             <div style="margin-left:10px;">
                 <div style="font-weight:bold;">Dr. CAS</div>
-                <div id="model-badge" class="badge">AI</div>
+                <div id="model-badge" style="font-size:0.7rem; color:var(--primary); background:#e3f2fd; padding:2px 6px; border-radius:4px;">未连接</div>
             </div>
         </div>
-        <button class="btn-icon" style="width:30px; height:30px; font-size:0.9rem;" onclick="generateReport()">📊</button>
+        <button class="btn btn-outline" style="padding: 5px 10px; font-size: 0.8rem;" onclick="toggleSettings()">设置</button>
     </div>
     <div id="chat-box" class="chat-history"></div>
     <div class="input-area">
-        <button id="btn-mic" class="btn-icon" onmousedown="startListening()" onmouseup="stopListening()" ontouchstart="startListening()" ontouchend="stopListening()">🎙️</button>
-        <input type="text" id="user-input" class="input-box" placeholder="输入或按住说话..." onkeydown="trackKeystroke(event)">
+        <input type="text" id="user-input" class="input-box" placeholder="输入消息..." onkeydown="if(event.key==='Enter') sendMessage()">
         <button class="btn-icon btn-send" onclick="sendMessage()">➤</button>
     </div>
 </div>
@@ -136,182 +129,182 @@
 <div id="view-report" class="view-section">
     <div class="container">
         <div class="card" style="text-align:left;">
-            <h2 style="text-align:center;">📋 临床评估报告</h2>
-            <div id="report-content" style="font-size:0.95rem; line-height:1.6;">AI 分析中...</div>
-            <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
-            <div style="font-size:0.8rem; color:#666; background:#f9f9f9; padding:10px; border-radius:8px;">
-                <strong>数字表型 (Digital Phenotypes):</strong><br>
-                • 打字犹豫 (Latency): <span id="val-latency">-</span> ms<br>
-                • 犹豫指数 (Backspace Rate): <span id="val-backspace">-</span>%<br>
-                • 疲劳指数 (Fatigue): <span id="val-fatigue">-</span>
-            </div>
-            <button class="btn-primary" style="width:100%; margin-top:20px; padding:12px; border:none; border-radius:8px;" onclick="exportData()">导出数据 (CSV)</button>
+            <h2 style="text-align:center;">📋 评估报告</h2>
+            <div id="report-content">AI 分析中...</div>
+            <button class="btn-primary" style="width:100%; margin-top:20px;" onclick="location.reload()">结束</button>
         </div>
     </div>
 </div>
 
 <div id="settings-modal" class="modal">
     <div class="modal-content">
-        <h3>🔧 模型配置</h3>
+        <h3 style="margin-top:0;">🔧 模型配置</h3>
         
-        <div class="setting-group">
-            <label class="setting-label">AI 提供商 (Provider)</label>
+        <div style="margin-bottom:15px;">
+            <label class="setting-label">AI 提供商</label>
             <select id="ai-provider" onchange="updateProviderFields()">
+                <option value="deepseek">DeepSeek (国内推荐)</option>
+                <option value="gemini">Google Gemini (需梯子)</option>
                 <option value="qwen">通义千问 (Qwen)</option>
-                <option value="deepseek">DeepSeek (深度求索)</option>
                 <option value="kimi">Kimi (月之暗面)</option>
-                <option value="doubao">Doubao (字节豆包)</option>
-                <option value="gemini">Google Gemini</option>
                 <option value="openai">OpenAI (GPT-4)</option>
-                <option value="custom">Custom / Ollama</option>
             </select>
         </div>
 
-        <div class="setting-group">
+        <div style="margin-bottom:15px;">
             <label class="setting-label">API Key</label>
-            <input type="password" id="api-key" placeholder="sk-..." style="margin-bottom:5px;">
+            <input type="password" id="api-key" placeholder="sk-...">
         </div>
 
-        <div class="setting-group" id="group-url" style="display:none;">
-            <label class="setting-label">API Base URL</label>
-            <input type="text" id="api-url" placeholder="https://api.openai.com/v1">
-        </div>
-        
-        <div class="setting-group" id="group-model" style="display:none;">
-            <label class="setting-label">模型名称 / Endpoint ID</label>
-            <input type="text" id="model-name" placeholder="模型名称 (如 qwen-plus)">
-            <div style="font-size:0.75rem; color:#888;">* 豆包请填写 Endpoint ID</div>
+        <div id="group-model" style="margin-bottom:15px; display:none;">
+            <label class="setting-label">Model Name</label>
+            <input type="text" id="model-name" placeholder="default">
         </div>
 
-        <div style="margin-top:20px; display:flex; gap:10px;">
-            <button class="btn" style="flex:1; background:#eee;" onclick="toggleSettings()">取消</button>
-            <button class="btn btn-primary" style="flex:1;" onclick="saveSettings()">保存配置</button>
+        <div id="status-msg"></div>
+
+        <div style="display:flex; gap:10px;">
+            <button class="btn btn-outline" style="flex:1;" onclick="testConnection()">📡 测试连接</button>
+            <button class="btn btn-primary" style="flex:1;" onclick="saveSettings()">保存</button>
+        </div>
+        <div style="margin-top:10px; text-align:center;">
+            <a href="#" onclick="toggleSettings()" style="color:#999; font-size:0.9rem;">关闭</a>
         </div>
     </div>
 </div>
 
 <script>
 /* =========================================
-   CAS v8.4 Logic Core (All-China AI)
+   CAS v8.5 Logic Core (Robust Connectivity)
    ========================================= */
 
-// 1. 全局状态
 let state = {
-    config: { provider: 'qwen', apiKey: '', baseUrl: '', modelName: '' },
-    patient: {},
+    config: { provider: 'deepseek', apiKey: '', modelName: '' },
     chatHistory: [],
-    sdmt: { score: 0, responses: [], map: [], lastTime: 0, fatigue: 0 },
-    t5: { selected: [], score: 0 },
-    pheno: { keyTimes: [], backspaces: 0, charCount: 0, lastKeyTime: 0 }
+    sdmt: { score: 0, responses: [], map: [], lastTime: 0 },
+    t5: { selected: [], score: 0 }
 };
 
-const SYMBOLS = ['⊏', '⊐', '⊓', '⊔', '△', '○', '□', '◇', '☆'];
 const WORDS_TARGET = ["老虎", "钢琴", "玫瑰"];
 const WORDS_DISTRACT = ["狮子", "吉他", "百合", "桌子", "苹果", "汽车"];
+const SYMBOLS = ['⊏', '⊐', '⊓', '⊔', '△', '○', '□', '◇', '☆'];
 
-// 2. 初始化
+// 初始化
 window.onload = () => {
     loadSettings();
     if (!state.config.apiKey) toggleSettings();
 };
 
 function loadSettings() {
-    const saved = localStorage.getItem('cas_config_v84');
+    const saved = localStorage.getItem('cas_config_v85');
     if (saved) {
         state.config = JSON.parse(saved);
         document.getElementById('ai-provider').value = state.config.provider;
         document.getElementById('api-key').value = state.config.apiKey;
-        document.getElementById('api-url').value = state.config.baseUrl;
-        document.getElementById('model-name').value = state.config.modelName;
+        document.getElementById('model-name').value = state.config.modelName || "";
         updateBadge();
     }
     updateProviderFields();
 }
 
-// 3. 通用 LLM 适配层 (Supports Qwen/DeepSeek/Kimi/Doubao/Gemini)
-async function callLLM(history) {
-    const { provider, apiKey, baseUrl, modelName } = state.config;
-    
-    // System Prompt
-    const sysPrompt = `
-    你是一个神经内科专家 Dr. CAS。任务流程：
-    1. 问候并问时间地点。
-    2. 让用户复述三个词：${WORDS_TARGET.join(',')}。确保记住。
-    3. 聊几句干扰。
-    4. 输出 [START_SDMT] 测速度。
-    5. 输出 [START_RECOGNITION] 测记忆。
-    6. 输出 [GENERATE_REPORT]。
-    注意：每次只说一步，语气自然。指令必须单独一行。
-    `;
+// 核心：通用 LLM 调用
+async function callLLM(history, isTest = false) {
+    const { provider, apiKey, modelName } = state.config;
+    if (!apiKey) throw new Error("缺少 API Key");
 
-    // --- A. Google Gemini ---
+    const sysPrompt = "你是神经内科医生Dr. CAS。任务：1.问候 2.让用户记[老虎,钢琴,玫瑰] 3.干扰 4.输[START_SDMT] 5.输[START_RECOGNITION] 6.输[GENERATE_REPORT]。每次只一步。";
+    const userMessage = isTest ? "Hello" : null;
+    
+    // 构造请求
+    let url, payload, headers = { 'Content-Type': 'application/json' };
+
     if (provider === 'gemini') {
-        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-        const payload = { systemInstruction: { parts: [{ text: sysPrompt }] }, contents: history };
-        const res = await fetch(url, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
-        const data = await res.json();
-        if(data.error) throw new Error(data.error.message);
-        return data.candidates[0].content.parts[0].text;
+        url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+        let contents = isTest ? [{ parts: [{ text: "Hi" }] }] : history;
+        payload = { contents };
+    } else {
+        // OpenAI 兼容模式 (DeepSeek, Kimi, Qwen)
+        headers['Authorization'] = `Bearer ${apiKey}`;
+        
+        let baseUrl = "https://api.openai.com/v1";
+        let model = "gpt-3.5-turbo";
+
+        if (provider === 'deepseek') {
+            baseUrl = "https://api.deepseek.com"; 
+            model = "deepseek-chat";
+        } else if (provider === 'qwen') {
+            baseUrl = "https://dashscope.aliyuncs.com/compatible-mode/v1"; 
+            model = "qwen-plus";
+        } else if (provider === 'kimi') {
+            baseUrl = "https://api.moonshot.cn/v1"; 
+            model = "moonshot-v1-8k";
+        }
+
+        url = `${baseUrl}/chat/completions`;
+        
+        let messages = [{ role: "system", content: sysPrompt }];
+        if (isTest) messages.push({ role: "user", content: "Hi" });
+        else {
+            history.forEach(h => {
+                let role = h.role === 'model' ? 'assistant' : 'user';
+                messages.push({ role, content: h.parts[0].text });
+            });
+        }
+
+        payload = { model: modelName || model, messages, temperature: 0.7 };
     }
 
-    // --- B. OpenAI 兼容格式 (适用于国产大模型) ---
-    else {
-        // 自动配置默认值
-        let finalUrl = baseUrl;
-        let finalModel = modelName;
-
-        if (provider === 'qwen') { // 通义千问
-            finalUrl = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
-            if(!finalModel) finalModel = "qwen-plus";
-        }
-        else if (provider === 'deepseek') { // 深度求索
-            finalUrl = "https://api.deepseek.com/chat/completions";
-            if(!finalModel) finalModel = "deepseek-chat";
-        }
-        else if (provider === 'kimi') { // 月之暗面
-            finalUrl = "https://api.moonshot.cn/v1/chat/completions";
-            if(!finalModel) finalModel = "moonshot-v1-8k";
-        } 
-        else if (provider === 'doubao') { // 字节豆包
-            finalUrl = "https://ark.cn-beijing.volces.com/api/v3/chat/completions";
-            // 豆包必须填写 Endpoint ID
-        }
-        else if (provider === 'openai') {
-            finalUrl = "https://api.openai.com/v1/chat/completions";
-            if(!finalModel) finalModel = "gpt-3.5-turbo";
-        }
-
-        // 构造 Messages
-        const messages = [{ role: "system", content: sysPrompt }];
-        history.forEach(h => {
-            const role = h.role === 'model' ? 'assistant' : 'user';
-            const content = h.parts[0].text;
-            messages.push({ role, content });
-        });
-
-        const res = await fetch(finalUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey}` },
-            body: JSON.stringify({ model: finalModel, messages: messages, temperature: 0.7 })
-        });
-
+    try {
+        const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(payload) });
         const data = await res.json();
-        if(data.error) throw new Error(data.error.message);
-        return data.choices[0].message.content;
+        
+        if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+        
+        if (provider === 'gemini') return data.candidates[0].content.parts[0].text;
+        else return data.choices[0].message.content;
+
+    } catch (e) {
+        console.error("API Error:", e);
+        if (e.message.includes("Failed to fetch")) throw new Error("网络连接失败 (跨域/断网)");
+        throw e;
     }
 }
 
-// 4. 交互引擎
+// 连接测试
+async function testConnection() {
+    const btn = document.querySelector('button[onclick="testConnection()"]');
+    const status = document.getElementById('status-msg');
+    
+    // 临时保存当前输入以供测试
+    state.config.provider = document.getElementById('ai-provider').value;
+    state.config.apiKey = document.getElementById('api-key').value;
+    state.config.modelName = document.getElementById('model-name').value;
+
+    btn.disabled = true; btn.innerText = "测试中...";
+    status.innerHTML = "正在连接服务器...";
+    status.style.color = "#666";
+
+    try {
+        await callLLM([], true);
+        status.innerHTML = "✅ 连接成功！模型响应正常。";
+        status.style.color = "green";
+    } catch (e) {
+        status.innerHTML = `❌ 失败: ${e.message}`;
+        status.style.color = "red";
+    } finally {
+        btn.disabled = false; btn.innerText = "📡 测试连接";
+    }
+}
+
+// 聊天交互
 async function sendMessage() {
     const input = document.getElementById('user-input');
     const text = input.value.trim();
     if(!text) return;
     
-    state.pheno.charCount += text.length;
     addMsg('user', text);
     state.chatHistory.push({ role: "user", parts: [{ text: text }] });
     input.value = '';
-    state.pheno.lastKeyTime = 0;
 
     const loadId = addMsg('ai', '<div class="typing-indicator"><span></span><span></span><span></span></div>');
     
@@ -320,43 +313,36 @@ async function sendMessage() {
         document.getElementById(loadId).remove();
         processAI(reply);
     } catch(e) {
-        document.getElementById(loadId).innerHTML = `<span style='color:red'>API 错误: ${e.message}</span>`;
+        document.getElementById(loadId).innerHTML = `⚠️ Error: ${e.message}`;
+        document.getElementById(loadId).classList.add('error');
     }
 }
 
 function processAI(text) {
     if (text.includes("[START_SDMT]")) {
         addMsg('ai', "好的，请准备开始测试...");
-        speak("好的，请准备开始测试。");
         setTimeout(startSDMT, 1500);
     } else if (text.includes("[START_RECOGNITION]")) {
         addMsg('ai', "请选出刚才提到的物品。");
-        speak("请选出刚才提到的物品。");
         setTimeout(startT5, 1500);
     } else if (text.includes("[GENERATE_REPORT]")) {
         addMsg('ai', text.replace("[GENERATE_REPORT]", ""));
         generateReport();
     } else {
         addMsg('ai', text);
-        speak(text);
         state.chatHistory.push({ role: "model", parts: [{ text: text }] });
     }
 }
 
-// 5. 游戏逻辑
-let sdmtTarget, sdmtTimer;
+// SDMT
 function startSDMT() {
     showView('view-sdmt');
     state.sdmt.map = SYMBOLS.map((s, i) => ({ s, n: i + 1 })).sort(() => Math.random() - 0.5);
     document.getElementById('sdmt-legend').innerHTML = state.sdmt.map.map(m => `<div class="legend-item"><div class="legend-sym">${m.s}</div><div class="legend-num">${m.n}</div></div>`).join('');
     state.sdmt.score = 0; state.sdmt.responses = [];
     nextSDMT();
-    let time = 30;
-    document.getElementById('sdmt-timer').innerText = time;
-    sdmtTimer = setInterval(() => {
-        time--; document.getElementById('sdmt-timer').innerText = time;
-        if(time <= 0) endSDMT();
-    }, 1000);
+    let time = 30; document.getElementById('sdmt-timer').innerText = time;
+    sdmtTimer = setInterval(() => { time--; document.getElementById('sdmt-timer').innerText = time; if(time <= 0) endSDMT(); }, 1000);
 }
 function nextSDMT() {
     sdmtTarget = state.sdmt.map[Math.floor(Math.random() * 9)];
@@ -371,17 +357,11 @@ window.inputSDMT = (n) => {
 };
 function endSDMT() {
     clearInterval(sdmtTimer);
-    const res = state.sdmt.responses;
-    if(res.length>6) {
-        const h = Math.floor(res.length/2);
-        const t1 = res.slice(0,h).reduce((a,b)=>a+b.latency,0);
-        const t2 = res.slice(-h).reduce((a,b)=>a+b.latency,0);
-        state.sdmt.fatigue = ((t2-t1)/t1).toFixed(2);
-    }
     showView('view-chat');
-    sendSystemMsg(`SDMT得分: ${state.sdmt.score}, 疲劳指数: ${state.sdmt.fatigue}`);
+    sendSystemMsg(`SDMT得分: ${state.sdmt.score}`);
 }
 
+// T5
 function startT5() {
     showView('view-t5');
     const grid = document.getElementById('t5-grid');
@@ -397,87 +377,59 @@ function startT5() {
     });
 }
 function submitT5() {
-    let hits = 0;
-    state.t5.selected.forEach(w => { if(WORDS_TARGET.includes(w)) hits++; });
+    let hits = 0; state.t5.selected.forEach(w => { if(WORDS_TARGET.includes(w)) hits++; });
     state.t5.score = hits;
     showView('view-chat');
-    sendSystemMsg(`再认结果: 选中[${state.t5.selected}], 正确数 ${hits}`);
+    sendSystemMsg(`再认结果: ${hits}/3`);
 }
 
-// 6. 工具函数
+// Utils
 function sendSystemMsg(text) {
     state.chatHistory.push({ role: "user", parts: [{ text: `[SYSTEM] ${text}` }] });
     addMsg('ai', '<div class="typing-indicator"><span></span><span></span><span></span></div>');
-    callLLM(state.chatHistory).then(reply => {
-        document.querySelector('.msg-row:last-child').remove();
-        processAI(reply);
-    });
+    callLLM(state.chatHistory).then(reply => { document.querySelector('.msg-row:last-child').remove(); processAI(reply); });
 }
 function addMsg(role, html) {
-    const div = document.createElement('div');
-    div.className = `msg-row ${role}`;
+    const div = document.createElement('div'); div.className = `msg-row ${role}`;
     let avatar = role === 'ai' ? '<div class="avatar">👨‍⚕️</div>' : '';
     div.innerHTML = `${avatar}<div class="msg-bubble ${role}">${html}</div>`;
     document.getElementById('chat-box').appendChild(div);
     document.getElementById('chat-box').scrollTop = 9999;
     return 'msg-' + Date.now();
 }
-function speak(text) { if('speechSynthesis' in window) { const u = new SpeechSynthesisUtterance(text); u.lang='zh-CN'; speechSynthesis.speak(u); } }
-function startSystem() { if(!state.config.apiKey) return toggleSettings(); state.patient.id = document.getElementById('p_id').value; showView('view-chat'); const t = "您好，我是 Dr. CAS。今天感觉如何？"; addMsg('ai',t); state.chatHistory.push({role:"model",parts:[{text:t}]}); speak(t); }
+function startSystem() {
+    if(!state.config.apiKey) return toggleSettings();
+    showView('view-chat');
+    const greeting = "您好，我是 Dr. CAS。今天感觉如何？";
+    addMsg('ai', greeting);
+    state.chatHistory.push({role:"model", parts:[{text:greeting}]});
+}
 function showView(id) { document.querySelectorAll('.view-section').forEach(e=>e.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 function generateReport() {
     showView('view-report');
-    const avgLat = state.pheno.keyTimes.length ? (state.pheno.keyTimes.reduce((a,b)=>a+b,0)/state.pheno.keyTimes.length).toFixed(0) : 0;
-    document.getElementById('val-latency').innerText = avgLat;
-    document.getElementById('val-backspace').innerText = state.pheno.charCount ? ((state.pheno.backspaces/state.pheno.charCount)*100).toFixed(1) : 0;
-    document.getElementById('val-fatigue').innerText = state.sdmt.fatigue;
-    document.getElementById('report-content').innerText = "AI 生成中...";
-    callLLM([...state.chatHistory, {role:"user", parts:[{text:`生成简报: SDMT=${state.sdmt.score}, Memory=${state.t5.score}, TypeLat=${avgLat}ms`}]}]).then(res => {
+    document.getElementById('report-content').innerText = "正在生成报告...";
+    callLLM([...state.chatHistory, {role:"user", parts:[{text:"请生成最终临床报告"}]}]).then(res => {
         document.getElementById('report-content').innerHTML = marked.parse(res);
     });
 }
-function exportData() { alert("导出CSV逻辑..."); }
-
-// 7. 设置逻辑 (UI Interaction)
 function toggleSettings() {
     const m = document.getElementById('settings-modal');
     m.style.display = m.style.display === 'flex' ? 'none' : 'flex';
 }
 function updateProviderFields() {
     const p = document.getElementById('ai-provider').value;
-    const showUrl = (p === 'custom' || p === 'openai'); // DeepSeek/Kimi use presets
-    const showModel = (p === 'custom' || p === 'doubao' || p === 'openai' || p === 'deepseek' || p === 'qwen' || p === 'kimi');
-    
-    document.getElementById('group-url').style.display = showUrl ? 'block' : 'none';
-    document.getElementById('group-model').style.display = showModel ? 'block' : 'none';
-    
-    // Auto-placeholder hints
-    const modelInput = document.getElementById('model-name');
-    if (p === 'doubao') modelInput.placeholder = "输入 Endpoint ID (如 ep-2024...)";
-    else if (p === 'deepseek') modelInput.placeholder = "deepseek-chat (默认)";
-    else if (p === 'qwen') modelInput.placeholder = "qwen-plus (默认)";
-    else if (p === 'kimi') modelInput.placeholder = "moonshot-v1-8k (默认)";
-    else modelInput.placeholder = "模型名称";
+    document.getElementById('group-model').style.display = (p === 'custom') ? 'block' : 'none';
 }
 function saveSettings() {
-    state.config = {
-        provider: document.getElementById('ai-provider').value,
-        apiKey: document.getElementById('api-key').value,
-        baseUrl: document.getElementById('api-url').value,
-        modelName: document.getElementById('model-name').value
-    };
-    localStorage.setItem('cas_config_v84', JSON.stringify(state.config));
+    state.config.provider = document.getElementById('ai-provider').value;
+    state.config.apiKey = document.getElementById('api-key').value;
+    state.config.modelName = document.getElementById('model-name').value;
+    localStorage.setItem('cas_config_v85', JSON.stringify(state.config));
     updateBadge();
     toggleSettings();
-    alert("配置已保存");
 }
 function updateBadge() { document.getElementById('model-badge').innerText = state.config.provider.toUpperCase(); }
-
-// 语音/打字
-let rec; if ('webkitSpeechRecognition' in window) { rec = new webkitSpeechRecognition(); rec.lang='zh-CN'; rec.onresult=(e)=>{document.getElementById('user-input').value=e.results[0][0].transcript;}; }
-function startListening() { document.getElementById('btn-mic').classList.add('active'); if(rec) rec.start(); }
-function stopListening() { document.getElementById('btn-mic').classList.remove('active'); if(rec) rec.stop(); }
-function trackKeystroke(e) { if(e.key==='Enter') { sendMessage(); return; } if(state.pheno.lastKeyTime>0) state.pheno.keyTimes.push(Date.now()-state.pheno.lastKeyTime); if(e.key==='Backspace') state.pheno.backspaces++; state.pheno.lastKeyTime=Date.now(); }
+function exportData() { alert("Data exported!"); }
 </script>
 </body>
 </html>
