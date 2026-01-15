@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAS v6.8 (Gold Standard)</title>
+    <title>CAS v6.9 (Numpad Fixed)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         /* =========================================
-           1. Core Styles (Inherited from v6.7)
+           1. Core Styles (Same as v6.8)
            ========================================= */
         :root {
             --primary: #2A5C82; --primary-light: #5A8AB0; --accent: #FF7043;
@@ -133,7 +133,7 @@
 <header>
     <div class="brand">
         <span style="font-size:1.5rem;">🧠</span>
-        <span id="txt-app-title">CAS v6.8</span>
+        <span id="txt-app-title">CAS v6.9</span>
     </div>
     <div style="display:flex; align-items:center; gap:10px;">
         <button onclick="toggleAdmin()" style="border:none; background:transparent; font-size:1.2rem; cursor:pointer;" title="Settings">⚙️</button>
@@ -149,7 +149,7 @@
     <div id="view-home" class="view-section active">
         <div class="card text-center">
             <h1 id="txt-home-title" style="margin-bottom: 10px;">认知评估系统</h1>
-            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Gold Standard Edition (v6.8)</p>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Numpad Edition (v6.9)</p>
             <div style="max-width:500px; margin:0 auto 30px auto; color:#666; font-size:0.9rem; line-height:1.6;">
                 <p id="txt-home-intro">本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境。</p>
             </div>
@@ -342,11 +342,19 @@
             <div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.2rem; margin-bottom:15px;"><span>⏱ <span id="t6-timer">--</span>s</span><span style="color:var(--success)"><span id="txt-score">Score</span>: <span id="t6-score">0</span></span></div>
             <div id="sdmt-legend" class="sdmt-legend"></div>
             <div class="big-symbol symbol-font" id="t6-target">?</div>
+            
             <div class="sdmt-grid">
-                <button class="key-btn" onclick="inputSDMT(1, 'Click')">1</button><button class="key-btn" onclick="inputSDMT(2, 'Click')">2</button><button class="key-btn" onclick="inputSDMT(3, 'Click')">3</button>
-                <button class="key-btn" onclick="inputSDMT(4, 'Click')">4</button><button class="key-btn" onclick="inputSDMT(5, 'Click')">5</button><button class="key-btn" onclick="inputSDMT(6, 'Click')">6</button>
-                <button class="key-btn" onclick="inputSDMT(7, 'Click')">7</button><button class="key-btn" onclick="inputSDMT(8, 'Click')">8</button><button class="key-btn" onclick="inputSDMT(9, 'Click')">9</button>
+                <button class="key-btn" onclick="inputSDMT(7, 'Click')">7</button>
+                <button class="key-btn" onclick="inputSDMT(8, 'Click')">8</button>
+                <button class="key-btn" onclick="inputSDMT(9, 'Click')">9</button>
+                <button class="key-btn" onclick="inputSDMT(4, 'Click')">4</button>
+                <button class="key-btn" onclick="inputSDMT(5, 'Click')">5</button>
+                <button class="key-btn" onclick="inputSDMT(6, 'Click')">6</button>
+                <button class="key-btn" onclick="inputSDMT(1, 'Click')">1</button>
+                <button class="key-btn" onclick="inputSDMT(2, 'Click')">2</button>
+                <button class="key-btn" onclick="inputSDMT(3, 'Click')">3</button>
             </div>
+            
             <p style="margin-top:10px; font-size:0.8rem; color:#888;">⌨️ 提示：可使用键盘数字键 1-9 快速作答</p>
         </div>
     </div>
@@ -376,7 +384,6 @@
 <div id="admin-modal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; z-index:200;">
     <div style="background:white; width:90%; max-width:400px; margin:50px auto; padding:25px; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.2);">
         <h3 id="txt-admin-title">Settings</h3>
-        
         <div style="margin-bottom:15px;"><label id="lbl-set-place" style="font-weight:bold; font-size:0.9rem;">Place</label><input type="text" id="set-place" value="Hospital"></div>
         <div style="margin-bottom:15px;"><label id="lbl-set-city" style="font-weight:bold; font-size:0.9rem;">City</label><input type="text" id="set-city" value="Beijing"></div>
         <hr style="margin: 20px 0; border:0; border-top:1px solid #eee;">
@@ -410,7 +417,6 @@
         </div>
 
         <div style="margin-bottom:15px;"><label id="lbl-set-cloud" style="font-weight:bold; font-size:0.9rem;">Cloud URL</label><input type="text" id="set-cloud-url" placeholder="https://script.google..." style="font-size:0.8rem;"></div>
-        
         <div style="margin-top:20px; text-align:right;"><button class="btn btn-outline" onclick="toggleAdmin()">Close</button><button class="btn btn-primary" onclick="saveAdmin()">Save</button></div>
     </div>
 </div>
@@ -423,9 +429,8 @@ const DB = {
     symbols: ['⊏', '⊐', '⊓', '⊔', '○', '□', '◇', '☆', '△'], 
     text: {
         zh: {
-            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "Gold Standard (v6.8)",
+            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "Numpad Edition (v6.9)",
             btn_settings: "系统配置 (Admin)", tut_c3_desc: "看符号，按对应的数字键。<br><b>推荐使用键盘操作！(1-9)</b>",
-            // ... (Preserved)
             home_intro: "本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境。",
             btn_tutorial: "📖 查看演示 (Demo)", btn_start_real: "我明白了，开始登记",
             tut_title: "测试内容演示",
@@ -451,7 +456,7 @@ const DB = {
             t6_prac_phase: "练习阶段 (3题)", t6_test_phase: "正式测试 (60s)", t6_prac_fail: "错误！请重试"
         },
         en: { 
-            app_title: "CAS v6.8", home_title: "Cognitive Assessment System", home_desc: "Gold Standard (v6.8)",
+            app_title: "CAS v6.9", home_title: "Cognitive Assessment System", home_desc: "Numpad Edition (v6.9)",
             btn_settings: "Admin Setup", tut_c3_desc: "Match symbols to numbers.<br><b>Keyboard (1-9) Recommended!</b>",
             // ... (Same for EN)
             home_intro: "This battery consists of 6 neuropsychological tasks.<br>Estimated time: 10-15 mins. Please ensure a quiet environment.",
@@ -479,7 +484,7 @@ const DB = {
             t6_prac_phase: "Practice (3 Trials)", t6_test_phase: "Real Test (60s)", t6_prac_fail: "Wrong! Try Again."
         },
         child: {
-            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v6.8)",
+            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v6.9)",
             btn_settings: "设置", tut_c3_desc: "看上面的图，找对应的数字！<br><b>可以用键盘按 1-9 哦！</b>",
             // ... (Same for Child)
             home_intro: "我们来玩几个小游戏吧！<br>先看看怎么玩哦。",
@@ -646,7 +651,6 @@ function showView(id) {
 }
 
 function validateAndSubmit() {
-    // [v6.8 Added] Added p_hand to validation
     const required = ['p_name', 'p_id', 'p_gender', 'p_dob', 'p_edu', 'p_hand'];
     let valid = true;
     required.forEach(id => { const el = document.getElementById(id); if(!el.value) { el.classList.add('error'); valid = false; } else { el.classList.remove('error'); } });
@@ -659,7 +663,6 @@ function submitRegister() {
         name: document.getElementById('p_name').value, id: document.getElementById('p_id').value,
         gender: document.getElementById('p_gender').value, dob: document.getElementById('p_dob').value,
         age: document.getElementById('p_age').value, edu: document.getElementById('p_edu').value,
-        // [v6.8 Added]
         hand: document.getElementById('p_hand').value,
         date: new Date().toISOString().split('T')[0]
     };
@@ -691,6 +694,8 @@ function startRecallTimer(phase) {
     if(recallTimerInt) clearInterval(recallTimerInt);
     recallTimerInt = setInterval(() => { time--; timerEl.innerText = time; if(time <= 0) { clearInterval(recallTimerInt); phase === 't1' ? finishT1() : finishT4(); } }, 1000);
 }
+
+// [Mod 1: Add Enter Key Re-focus]
 function addWord(phase) {
     const inp = document.getElementById(phase+'-input');
     let val = inp.value.trim().split(/[\s,，.。]/)[0];
@@ -698,9 +703,12 @@ function addWord(phase) {
     let store = phase === 't1' ? state.t1.entered : state.t4.entered;
     store.push(val); 
     logEvent(phase, 'add_word', val);
-    renderChips(phase); inp.value = '';
+    renderChips(phase); 
+    inp.value = '';
+    inp.focus(); // [Fix] Re-focus for continuous entry
     updateProgress(phase==='t1'?'t1-recall-bar':'t4-recall-bar', phase==='t1'?'t1-timer':'t4-timer', store.length);
 }
+
 function renderChips(phase) {
     const box = document.getElementById(phase+'-chips'); box.innerHTML = '';
     let store = phase === 't1' ? state.t1.entered : state.t4.entered;
@@ -898,13 +906,30 @@ function inputSDMT(n, source='Click') {
     const now = Date.now(); const correct = n === t6Target.n;
     state.t6.responses.push({ target: t6Target.n, response: n, correct: correct, latency: now - state.t6.lastStimTime, timestamp: now, practice: state.t6.isPractice, source: source });
     
-    const btn = document.querySelectorAll('.key-btn')[n-1];
+    const btn = document.querySelectorAll('.key-btn')[n-1]; // Note: logic logic for n-1 is correct even with grid reorder IF key-btn order matches logic.
+    // [Fix] Wait! We reordered the HTML. 
+    // Button order in DOM: 7,8,9,4,5,6,1,2,3.
+    // inputSDMT(n) expects linear mapping or ID mapping for feedback?
+    // The existing logic: `const btn = document.querySelectorAll('.key-btn')[n-1];` assumes index 0 is '1'.
+    // BUT in the new HTML, index 0 is '7'.
+    // THIS IS A BUG in simple copy-paste. I must fix the feedback logic for v6.9.
+    
+    // Correct Feedback Logic: Find the button with text 'n'
+    let targetBtn = null;
+    const btns = document.querySelectorAll('.key-btn');
+    for(let b of btns) {
+        if(b.innerText.trim() == n.toString()) {
+            targetBtn = b;
+            break;
+        }
+    }
+
     const overlay = document.getElementById('sdmt-feedback');
     overlay.className = "sdmt-overlay-feedback"; void overlay.offsetWidth; 
 
     if(correct) {
         if(!state.t6.isPractice) state.t6.score++;
-        btn.classList.add('correct-flash'); setTimeout(()=>btn.classList.remove('correct-flash'), 100);
+        if(targetBtn) { targetBtn.classList.add('correct-flash'); setTimeout(()=>targetBtn.classList.remove('correct-flash'), 100); }
         overlay.innerText = "✓"; overlay.classList.add('show-correct');
         if(state.t6.isPractice) {
             state.t6.practiceCount++;
@@ -912,7 +937,7 @@ function inputSDMT(n, source='Click') {
         }
     } else {
         if(!state.t6.isPractice) state.t6.errors++;
-        btn.classList.add('wrong-flash'); setTimeout(()=>btn.classList.remove('wrong-flash'), 200);
+        if(targetBtn) { targetBtn.classList.add('wrong-flash'); setTimeout(()=>targetBtn.classList.remove('wrong-flash'), 200); }
         overlay.innerText = "✗"; overlay.classList.add('show-wrong');
         if(state.t6.isPractice) { alert(DB.text[state.mode].t6_prac_fail); }
     }
@@ -932,13 +957,14 @@ document.addEventListener('keydown', function(event) {
     }
 });
 
+// [Mod 2: Updated for Content-based lookup]
 function simulateBtnClick(num) {
-    const btns = document.querySelectorAll('.sdmt-grid .key-btn'); 
-    if(btns.length >= 9) {
-        const targetBtn = btns[num-1];
-        if(targetBtn) {
-            targetBtn.classList.add('active-key');
-            setTimeout(() => { targetBtn.classList.remove('active-key'); }, 150);
+    const btns = document.querySelectorAll('.sdmt-grid .key-btn');
+    for(let b of btns) {
+        if(b.innerText.trim() == num.toString()) {
+            b.classList.add('active-key');
+            setTimeout(() => { b.classList.remove('active-key'); }, 150);
+            break;
         }
     }
 }
@@ -992,7 +1018,6 @@ function generateCSVString() {
     csv += `T5,Net_Score,${net_recog},${state.t5.selected_words.join(';')}\n`;
     csv += `T5,Hits_vs_FA,${state.t5.hits}/${state.t5.false_alarms},-\n`;
     
-    // [v6.8 Enhanced] T6 Data with Median & Accuracy
     let realResponses = state.t6.responses.filter(r => !r.practice);
     let latencies = realResponses.map(r => r.latency);
     let keyCount = realResponses.filter(r => r.source === 'Keyboard').length;
@@ -1004,7 +1029,6 @@ function generateCSVString() {
         sd = Math.sqrt(latencies.map(x=>Math.pow(x-mean,2)).reduce((a,b)=>a+b,0) / latencies.length);
         cv = mean > 0 ? (sd / mean).toFixed(3) : 0;
         
-        // Median Calculation
         let sortedLat = [...latencies].sort((a,b) => a - b);
         let mid = Math.floor(sortedLat.length / 2);
         median = sortedLat.length % 2 !== 0 ? sortedLat[mid] : (sortedLat[mid - 1] + sortedLat[mid]) / 2;
@@ -1016,19 +1040,16 @@ function generateCSVString() {
             fatigue = ((lastPart - firstPart) / firstPart).toFixed(2);
         }
         
-        // Accuracy Calculation
         let totalAttempts = realResponses.length;
-        if(totalAttempts > 0) {
-            accuracy = ((state.t6.score / totalAttempts) * 100).toFixed(1) + "%";
-        }
+        if(totalAttempts > 0) { accuracy = ((state.t6.score / totalAttempts) * 100).toFixed(1) + "%"; }
     }
     
     csv += `T6,Total_Correct,${state.t6.score},-\n`;
     csv += `T6,Total_Errors,${state.t6.errors},-\n`;
-    csv += `T6,Accuracy_Rate,${accuracy},-\n`; // [v6.8 New]
+    csv += `T6,Accuracy_Rate,${accuracy},-\n`; 
     csv += `T6,Input_Mode,${keyRatio}_Keyboard,${realResponses.map(r=>r.source[0]).join('')}\n`;
     csv += `T6,Mean_Latency_ms,${mean.toFixed(0)},-\n`;
-    csv += `T6,Median_Latency_ms,${median.toFixed(0)},-\n`; // [v6.8 New]
+    csv += `T6,Median_Latency_ms,${median.toFixed(0)},-\n`; 
     csv += `T6,SD_Latency,${sd.toFixed(2)},-\n`;
     csv += `T6,CV_Variability,${cv},${latencies.join(';')}\n`; 
     csv += `T6,Fatigue_Index,${fatigue},-\n`;
@@ -1115,14 +1136,12 @@ async function uploadData() {
 function saveToLocal() { const hist = JSON.parse(localStorage.getItem('cog_history')||'[]'); hist.push({ meta: state.patient, data: state, date: new Date().toLocaleString() }); localStorage.setItem('cog_history', JSON.stringify(hist)); }
 function exportJSON() { const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `CogData_${state.patient.id}.json`; a.click(); }
 
-// [v6.8 Updated] Timestamped Filename
 function exportCSV() { 
     const blob = new Blob([generateCSVString()], {type:'text/csv'}); 
     const a = document.createElement('a'); 
     a.href = URL.createObjectURL(blob); 
-    // Format: Report_ID_YYYYMMDD_HHMM.csv
     const now = new Date();
-    const ts = now.toISOString().replace(/[-:T.]/g, '').slice(0, 12); // Simple timestamp
+    const ts = now.toISOString().replace(/[-:T.]/g, '').slice(0, 12); 
     a.download = `Report_${state.patient.id}_${ts}.csv`; 
     a.click(); 
 }
