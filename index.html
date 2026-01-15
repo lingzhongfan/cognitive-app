@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAS v8.9 (Stable)</title>
+    <title>CAS v9.0 (Auto-Fix)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* ==================== 1. 核心样式 ==================== */
+        /* ==================== 1. 核心样式 (保持一致) ==================== */
         :root {
             --primary: #2A5C82; --accent: #FF7043; --bg: #F8F9FA; 
             --chat-bg: #FFF; --user-msg: #95EC69; --ai-msg: #FFF;
@@ -21,13 +21,11 @@
         .container { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 20px; max-width: 600px; margin: 0 auto; width: 100%; box-sizing: border-box; }
         .card { background: white; padding: 30px; border-radius: 16px; box-shadow: var(--shadow); text-align: center; }
         
-        /* 表单与输入 */
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; text-align: left; }
         .form-group label { display: block; font-size: 0.85rem; color: #666; margin-bottom: 5px; font-weight: bold; }
         
         .btn { padding: 12px 25px; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(42,92,130,0.2); }
-        .btn-primary:active { transform: scale(0.96); }
         .btn-outline { background: #f0f0f0; color: #333; border: 1px solid #ddd; }
         
         input, select { padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 1rem; outline: none; background: #fff; transition: 0.3s; }
@@ -79,8 +77,8 @@
 <div id="view-reg" class="view-section active">
     <div class="container">
         <div class="card">
-            <h1 style="margin:0; color:var(--primary);">CAS v8.9</h1>
-            <p style="color:#666; font-size:0.9rem;">Universal AI Doctor (Corrected)</p>
+            <h1 style="margin:0; color:var(--primary);">CAS v9.0</h1>
+            <p style="color:#666; font-size:0.9rem;">AI Doctor (Auto-Fix Edition)</p>
             <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
             
             <div class="form-row">
@@ -186,9 +184,9 @@
         </div>
 
         <div class="setting-group" id="group-model">
-            <label class="setting-label">模型名称 (Model Name)</label>
-            <input type="text" id="model-name" placeholder="gemini-1.5-flash">
-            <div style="font-size:0.75rem; color:#888;">* 建议保持默认，除非API报错</div>
+            <label class="setting-label">模型名称 / Endpoint ID</label>
+            <input type="text" id="model-name" placeholder="gemini-1.5-flash-001">
+            <div style="font-size:0.75rem; color:#888;">* 如果 Gemini 报错，系统将自动尝试切换</div>
         </div>
 
         <div class="setting-group" id="group-url" style="display:none;">
@@ -210,7 +208,7 @@
 
 <script>
 /* =========================================
-   CAS v8.9 Logic Core (Fixed & Robust)
+   CAS v9.0 Logic Core (Auto-Fix)
    ========================================= */
 
 let state = {
@@ -232,29 +230,35 @@ window.onload = () => {
     if (!state.config.apiKey) toggleSettings();
 };
 
+// [FIX] 强制使用新版本的 LocalStorage Key，避免旧错误缓存干扰
 function loadSettings() {
-    const saved = localStorage.getItem('cas_config_v89'); // Update key version
+    const saved = localStorage.getItem('cas_config_v90'); 
     if (saved) {
         state.config = JSON.parse(saved);
-        document.getElementById('ai-provider').value = state.config.provider;
-        document.getElementById('api-key').value = state.config.apiKey;
-        document.getElementById('model-name').value = state.config.modelName || "";
-        document.getElementById('api-url').value = state.config.baseUrl || "";
-        updateBadge();
+    } else {
+        // 初始化默认值
+        state.config = { provider: 'gemini', apiKey: '', modelName: 'gemini-1.5-flash-001', baseUrl: '' };
     }
+    
+    // Fill UI
+    document.getElementById('ai-provider').value = state.config.provider;
+    document.getElementById('api-key').value = state.config.apiKey;
+    document.getElementById('model-name').value = state.config.modelName || "";
+    document.getElementById('api-url').value = state.config.baseUrl || "";
+    updateBadge();
     updateProviderFields();
 }
 
-// 核心：通用 LLM 调用 (模型名称修复)
+// [FIX] 通用 LLM 调用 & 自动重试逻辑
 async function callLLM(history, isTest = false) {
     const { provider, apiKey, baseUrl } = state.config;
     let { modelName } = state.config;
     
     if (!apiKey) throw new Error("缺少 API Key");
 
-    // [FIX] 更新默认模型名称
+    // 默认模型回退逻辑 (Safety Net)
     if (!modelName) {
-        if (provider === 'gemini') modelName = 'gemini-1.5-flash'; // 修复: 原 gemini-pro 已不可用
+        if (provider === 'gemini') modelName = 'gemini-1.5-flash-001'; // 使用精确版本号
         else if (provider === 'deepseek') modelName = 'deepseek-chat';
         else if (provider === 'qwen') modelName = 'qwen-plus';
         else if (provider === 'kimi') modelName = 'moonshot-v1-8k';
@@ -270,12 +274,25 @@ async function callLLM(history, isTest = false) {
         let contents = isTest ? [{ parts: [{ text: "Hello" }] }] : history;
         payload = { contents };
         
-        const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(payload) });
-        const data = await res.json();
-        
-        if (data.error) throw new Error(data.error.message);
-        if (isTest) return "Success";
-        return data.candidates[0].content.parts[0].text;
+        try {
+            const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(payload) });
+            const data = await res.json();
+            
+            if (data.error) {
+                // [AUTO-FIX] 自动降级逻辑
+                if (data.error.message.includes("not found") || data.error.message.includes("404")) {
+                    console.warn(`Model ${modelName} not found. Trying gemini-pro...`);
+                    // 递归重试：尝试使用 gemini-pro
+                    if (modelName !== 'gemini-pro') {
+                        state.config.modelName = 'gemini-pro'; 
+                        return callLLM(history, isTest);
+                    }
+                }
+                throw new Error(data.error.message);
+            }
+            if (isTest) return "Success";
+            return data.candidates[0].content.parts[0].text;
+        } catch (e) { throw e; }
     } 
     // --- B. OpenAI 兼容接口 ---
     else {
@@ -389,13 +406,10 @@ function toggleSettings() { const m = document.getElementById('settings-modal');
 function updateProviderFields() {
     const p = document.getElementById('ai-provider').value;
     const modelInput = document.getElementById('model-name');
-    
-    // [FIX] 自动填充正确的默认模型
-    if (p === 'gemini') modelInput.placeholder = "gemini-1.5-flash (推荐)";
+    if (p === 'gemini') modelInput.placeholder = "gemini-1.5-flash-001 (推荐)";
     else if (p === 'deepseek') modelInput.placeholder = "deepseek-chat";
     else if (p === 'qwen') modelInput.placeholder = "qwen-plus";
     else if (p === 'kimi') modelInput.placeholder = "moonshot-v1-8k";
-    
     document.getElementById('group-url').style.display = (p === 'custom' || p === 'openai') ? 'block' : 'none';
 }
 function saveSettings() {
@@ -405,7 +419,7 @@ function saveSettings() {
         baseUrl: document.getElementById('api-url').value,
         modelName: document.getElementById('model-name').value
     };
-    localStorage.setItem('cas_config_v89', JSON.stringify(state.config));
+    localStorage.setItem('cas_config_v90', JSON.stringify(state.config));
     updateBadge();
     toggleSettings();
 }
