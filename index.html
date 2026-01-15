@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAS v6.3 (Expert Scientific + Multi-Model)</title>
+    <title>CAS v6.4 (Keyboard Enhanced)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         /* =========================================
-           1. Core Styles (Inherited from v6.0.3/v6.2)
+           1. Core Styles (Inherited from v6.3)
            ========================================= */
         :root {
             --primary: #2A5C82; --primary-light: #5A8AB0; --accent: #FF7043;
@@ -71,7 +71,7 @@
         .t-desc { font-size: 0.85rem; color: #666; line-height: 1.5; }
         .t-hint { font-size: 0.75rem; color: var(--accent); margin-top: 8px; font-style: italic; background: rgba(255,112,67,0.1); padding: 4px 8px; border-radius: 4px; display: inline-block; }
 
-        /* SDMT Linear Key (Responsive) */
+        /* SDMT Linear Key */
         .sdmt-legend { 
             display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; 
             padding: 10px; background: #F0F4F8; border-radius: 16px; margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.05);
@@ -100,24 +100,12 @@
             background: #DFE6E9; border-top: 1px solid #eee;
         }
 
-        @media (max-width: 400px) {
-            .sdmt-legend-item { width: 18%; }
-            .sdmt-legend-sym { font-size: 1.8rem; height: 45px; }
-            .sdmt-legend-num { height: 25px; }
-        }
-
         .demo-sdmt-container { display: flex; flex-direction: column; align-items: center; gap: 15px; width: 100%; max-width: 300px; }
-        .demo-sdmt-key { display: flex; gap: 5px; justify-content: center; margin-bottom: 5px; }
-        .demo-key-pair { border: 1px solid #ccc; border-radius: 6px; padding: 4px 8px; background: white; text-align: center; font-size: 0.9rem; transition: transform 0.2s, border-color 0.2s; }
-        .demo-key-pair.highlight { transform: scale(1.2); border-color: var(--accent); background: #fff5eb; box-shadow: 0 0 10px rgba(255, 112, 67, 0.3); }
-        .demo-key-pair span { display: block; font-weight: bold; color: var(--primary); }
         .demo-sdmt-task { display: flex; align-items: center; gap: 15px; font-size: 1.2rem; background: white; padding: 10px 20px; border-radius: 30px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .demo-target-box { font-size: 1.5rem; font-weight: bold; color: var(--primary); }
-        .demo-arrow { color: #999; }
         .demo-finger { font-size: 1.8rem; position: absolute; animation: fingerTap 3s infinite; pointer-events: none; }
         @keyframes fingerTap { 0% { top: 70%; left: 60%; opacity: 0; transform: scale(1); } 10% { opacity: 1; } 30% { top: 30%; left: 50%; } 40% { transform: scale(0.8); } 50% { transform: scale(1); } 60% { top: 70%; left: 40%; } 70% { transform: scale(0.8); } 80% { transform: scale(1); opacity: 1; } 100% { top: 70%; left: 40%; opacity: 0; } }
 
-        /* Enhanced Feedback (10rem) */
         .sdmt-overlay-feedback { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
             font-size: 10rem; font-weight: 900; opacity: 0; pointer-events: none; z-index: 100; 
@@ -132,8 +120,10 @@
         .key-btn:active { transform: translateY(3px); box-shadow: none; }
         .key-btn.correct-flash { background-color: var(--success) !important; color: white; border-color: var(--success); transform: scale(1.1); }
         .key-btn.wrong-flash { background-color: var(--error) !important; color: white; border-color: var(--error); animation: shake 0.3s; }
+        
+        /* [NEW] Keyboard Feedback Style */
+        .key-btn.active-key { background-color: #e0e0e0 !important; transform: scale(0.95); box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); }
 
-        /* General Components */
         .corsi-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; max-width: 360px; margin: 20px auto; }
         .corsi-block { background: #E0E0E0; border-radius: 12px; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 0 #CCC; height: 0; padding-bottom: 100%; position: relative; }
         .corsi-block:active { transform: translateY(2px); box-shadow: 0 2px 0 #CCC; }
@@ -141,11 +131,7 @@
         .corsi-block.user-tap { background: var(--primary); }
         
         .sdmt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 400px; margin: 15px auto; }
-        #t6-target { 
-            filter: drop-shadow(0 4px 0px rgba(0,0,0,0.1)); 
-            transition: all 0.2s; 
-            font-size: 5rem; height: 100px; margin: 20px 0; color: var(--primary);
-        }
+        #t6-target { filter: drop-shadow(0 4px 0px rgba(0,0,0,0.1)); transition: all 0.2s; font-size: 5rem; height: 100px; margin: 20px 0; color: var(--primary); }
 
         .word-display { font-size: 3.5rem; text-align: center; height: 180px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); }
         .chips-area { display: flex; flex-wrap: wrap; gap: 8px; min-height: 60px; padding: 15px; background: #F4F6F8; border-radius: 10px; margin-bottom: 20px; border: 1px dashed #DDD; }
@@ -171,7 +157,7 @@
 <header>
     <div class="brand">
         <span style="font-size:1.5rem;">🧠</span>
-        <span id="txt-app-title">CAS v6.3</span>
+        <span id="txt-app-title">CAS v6.4</span>
     </div>
     <div class="mode-switch">
         <button onclick="setMode('zh')" id="btn-mode-zh" class="active">中文</button>
@@ -184,7 +170,7 @@
     <div id="view-home" class="view-section active">
         <div class="card text-center">
             <h1 id="txt-home-title" style="margin-bottom: 10px;">认知评估系统</h1>
-            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Expert Scientific + Multi-Model (v6.3)</p>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Expert Scientific + Keyboard (v6.4)</p>
             <div style="max-width:500px; margin:0 auto 30px auto; color:#666; font-size:0.9rem; line-height:1.6;">
                 <p id="txt-home-intro">本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境。</p>
             </div>
@@ -214,11 +200,6 @@
                     <div class="t-desc" id="txt-tut-c2-desc">按顺序点击亮起的方块。</div>
                 </div>
                 <div class="tutorial-card">
-                    <span class="t-icon">📅</span><div class="t-title" id="txt-tut-c4-title">3. 定向力</div>
-                    <div class="t-desc" id="txt-tut-c4-desc">回答时间与地点问题。</div>
-                    <div class="t-hint" id="txt-tut-c4-hint">注：最后两题（地点/城市）的正确答案请在【设置】中预设</div>
-                </div>
-                <div class="tutorial-card">
                     <span class="t-icon">⚡</span><div class="t-title" id="txt-tut-c3-title">4. 处理速度</div>
                     <div class="micro-demo-box" style="margin:5px 0; min-height:80px; padding:10px;">
                         <div class="demo-sdmt-container">
@@ -226,7 +207,7 @@
                             <div class="demo-finger">👆</div>
                         </div>
                     </div>
-                    <div class="t-desc" id="txt-tut-c3-desc">根据符号表点击数字，越快越好。</div>
+                    <div class="t-desc" id="txt-tut-c3-desc">根据符号表点击数字 (支持键盘输入)。</div>
                 </div>
             </div>
             <div style="margin-top:40px;">
@@ -381,7 +362,7 @@
                     <div style="font-size:1.5rem;" class="symbol-font"><b>⊏</b> ➜ <b>1</b></div>
                 </div>
             </div>
-            <p id="txt-t6-instr">参照图例，点击数字。</p>
+            <p id="txt-t6-instr">参照图例，点击数字（支持键盘 1-9）。</p>
             <button class="btn btn-primary" onclick="startSDMTPractice()"><span id="txt-btn-start-test">开始测试</span></button>
         </div>
     </div>
@@ -402,6 +383,7 @@
                 <button class="key-btn" onclick="inputSDMT(4)">4</button><button class="key-btn" onclick="inputSDMT(5)">5</button><button class="key-btn" onclick="inputSDMT(6)">6</button>
                 <button class="key-btn" onclick="inputSDMT(7)">7</button><button class="key-btn" onclick="inputSDMT(8)">8</button><button class="key-btn" onclick="inputSDMT(9)">9</button>
             </div>
+            <p style="margin-top:10px; font-size:0.8rem; color:#888;">⌨️ 提示：可使用键盘数字键 1-9 快速作答</p>
         </div>
     </div>
 
@@ -481,7 +463,7 @@ const DB = {
     symbols: ['⊏', '⊐', '⊓', '⊔', '○', '□', '◇', '☆', '△'], 
     text: {
         zh: {
-            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "科研专业版 (v6.3)",
+            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "科研专业版 (v6.4)",
             home_intro: "本测试包含6个环节，预计耗时10-15分钟。<br>请确保您处于安静环境。",
             btn_tutorial: "📖 查看演示 (Demo)", btn_start_real: "我明白了，开始登记", btn_settings: "🔧 设置",
             tut_title: "测试内容演示",
@@ -508,7 +490,7 @@ const DB = {
             t6_prac_phase: "练习阶段 (3题)", t6_test_phase: "正式测试 (60s)", t6_prac_fail: "错误！请重试"
         },
         en: { 
-            app_title: "CAS v6.3", home_title: "Cognitive Assessment System", home_desc: "Scientific Research Edition (v6.3)",
+            app_title: "CAS v6.4", home_title: "Cognitive Assessment System", home_desc: "Scientific Research Edition (v6.4)",
             home_intro: "This battery consists of 6 neuropsychological tasks.<br>Estimated time: 10-15 mins. Please ensure a quiet environment.",
             btn_tutorial: "📖 View Demo", btn_start_real: "Proceed to Register", btn_settings: "🔧 Settings",
             tut_title: "Task Demonstration",
@@ -535,7 +517,7 @@ const DB = {
             t6_prac_phase: "Practice (3 Trials)", t6_test_phase: "Real Test (60s)", t6_prac_fail: "Wrong! Try Again."
         },
         child: {
-            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v6.3)",
+            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v6.4)",
             home_intro: "我们来玩几个小游戏吧！<br>先看看怎么玩哦。",
             btn_tutorial: "📖 看看怎么玩", btn_start_real: "准备好了！", btn_settings: "🔧 设置",
             tut_title: "游戏演示",
@@ -577,7 +559,7 @@ let state = {
     t6: { score: 0, errors: 0, time: 60, responses: [], keyMap: [], event_log: [], isPractice: false, practiceCount: 0 },
     admin: { 
         place: "Hospital", city: "Beijing", aiKey: "", cloudUrl: "",
-        provider: "gemini", modelName: "", baseUrl: "" // [NEW] Added for Multi-Model
+        provider: "gemini", modelName: "", baseUrl: "" 
     },
     meta: { userAgent: navigator.userAgent, screen: `${window.screen.width}x${window.screen.height}` }
 };
@@ -601,7 +583,6 @@ window.onload = () => {
     document.getElementById('set-city').value = state.admin.city;
     document.getElementById('set-ai-key').value = state.admin.aiKey || "";
     document.getElementById('set-cloud-url').value = state.admin.cloudUrl || "";
-    // New Fields
     if(document.getElementById('set-provider')) document.getElementById('set-provider').value = state.admin.provider || "gemini";
     if(document.getElementById('set-model-name')) document.getElementById('set-model-name').value = state.admin.modelName || "";
     if(document.getElementById('set-base-url')) document.getElementById('set-base-url').value = state.admin.baseUrl || "";
@@ -1000,6 +981,44 @@ function inputSDMT(n) {
     nextSDMT();
 }
 function endSDMT() { clearInterval(t6Interval); showReport(); saveToLocal(); }
+
+/* =========================================
+   [Optimization] Keyboard Support for SDMT
+   认知神经科学优化：消除鼠标运动干扰
+   ========================================= */
+document.addEventListener('keydown', function(event) {
+    // 仅在 SDMT 测试界面激活时生效
+    const sdmtView = document.getElementById('view-t6-test') || document.getElementById('view-sdmt');
+    if (!sdmtView || !sdmtView.classList.contains('active')) return;
+
+    const key = event.key;
+    
+    // 支持主键盘数字 1-9 和 小键盘 Numpad 1-9
+    // 排除其他按键干扰
+    if (['1','2','3','4','5','6','7','8','9'].includes(key)) {
+        const num = parseInt(key);
+        // 视觉反馈：模拟点击了屏幕上的按钮
+        simulateBtnClick(num);
+        // 执行逻辑
+        inputSDMT(num);
+    }
+});
+
+// 增加按键视觉反馈，让用户知道键盘有效
+function simulateBtnClick(num) {
+    // SDMT grid buttons are typically .key-btn or inside .sdmt-grid
+    const btns = document.querySelectorAll('.sdmt-grid .key-btn'); 
+    if(btns.length >= 9) {
+        const targetBtn = btns[num-1]; // 数组索引 0-8 对应 数字 1-9
+        if(targetBtn) {
+            targetBtn.classList.add('active-key'); // 使用新定义的样式
+            // 简单的视觉回退，确保动画能被看到
+            setTimeout(() => {
+                targetBtn.classList.remove('active-key');
+            }, 150);
+        }
+    }
+}
 
 /* Report & Export (v6.1 Expanded) */
 function showReport() {
