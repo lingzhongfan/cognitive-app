@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAS v8.8 (Stable AI)</title>
+    <title>CAS v8.9 (Stable)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         /* ==================== 1. 核心样式 ==================== */
@@ -21,12 +21,18 @@
         .container { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 20px; max-width: 600px; margin: 0 auto; width: 100%; box-sizing: border-box; }
         .card { background: white; padding: 30px; border-radius: 16px; box-shadow: var(--shadow); text-align: center; }
         
-        /* 按钮与输入 */
+        /* 表单与输入 */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; text-align: left; }
+        .form-group label { display: block; font-size: 0.85rem; color: #666; margin-bottom: 5px; font-weight: bold; }
+        
         .btn { padding: 12px 25px; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(42,92,130,0.2); }
         .btn-primary:active { transform: scale(0.96); }
-        input, select { padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 1rem; margin-bottom: 10px; outline: none; background: #fff; }
+        .btn-outline { background: #f0f0f0; color: #333; border: 1px solid #ddd; }
+        
+        input, select { padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 1rem; outline: none; background: #fff; transition: 0.3s; }
         input:focus, select:focus { border-color: var(--primary); }
+        input[readonly] { background-color: #f9f9f9; color: #888; }
 
         /* 聊天界面 */
         .chat-header { padding: 15px; background: rgba(255,255,255,0.95); border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; z-index: 10; backdrop-filter: blur(10px); }
@@ -37,18 +43,18 @@
         .msg-bubble.ai { background: var(--ai-msg); border-top-left-radius: 2px; } .msg-bubble.user { background: var(--user-msg); border-top-right-radius: 2px; }
         
         .input-area { position: absolute; bottom: 0; left: 0; right: 0; padding: 15px; background: #FFF; border-top: 1px solid #eee; display: flex; gap: 10px; align-items: center; z-index: 20; }
-        .input-box { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 24px; font-size: 1rem; outline: none; transition: 0.3s; margin: 0; }
-        .btn-icon { width: 45px; height: 45px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; transition: 0.2s; background: #f0f0f0; color: #555; }
+        .input-box { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 24px; font-size: 1rem; outline: none; margin: 0; }
+        .btn-icon { width: 45px; height: 45px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; background: #f0f0f0; color: #555; }
         .btn-icon.active { background: var(--accent); color: white; animation: pulse 1.5s infinite; }
+        .btn-send { background: var(--primary); color: white; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 112, 67, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
-        
-        .typing-indicator span { display: inline-block; width: 6px; height: 6px; background: #ccc; border-radius: 50%; animation: type 1s infinite; margin: 0 2px; }
-        @keyframes type { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 
-        /* Game Engines */
+        /* 游戏引擎 */
         .sdmt-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; }
         .sdmt-legend { display: flex; gap: 5px; justify-content: center; margin-bottom: 20px; background: #f0f4f8; padding: 10px; border-radius: 12px; overflow-x: auto; }
         .legend-item { display: flex; flex-direction: column; align-items: center; background: white; border: 1px solid #ddd; border-radius: 6px; width: 45px; padding: 5px 0; }
+        .legend-sym { font-size: 1.5rem; color: var(--primary); margin-bottom: 5px; }
+        .legend-num { font-weight: bold; color: #666; border-top: 1px solid #eee; width: 100%; text-align: center; }
         .target-box { font-size: 4rem; text-align: center; margin: 20px 0; color: var(--primary); height: 80px; }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 360px; margin: 0 auto; }
         .key-btn { padding: 20px; font-size: 1.5rem; background: white; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 4px 0 #eee; cursor: pointer; font-weight: bold; }
@@ -62,6 +68,9 @@
         .modal-content { background: white; padding: 25px; border-radius: 16px; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; text-align: left; }
         .setting-label { font-size: 0.85rem; color: #666; font-weight: bold; display: block; margin-bottom: 5px; }
         .badge { font-size:0.7rem; color:white; background:var(--primary); padding:2px 6px; border-radius:4px; display:inline-block; margin-left:5px; }
+        .typing-indicator span { display: inline-block; width: 6px; height: 6px; background: #ccc; border-radius: 50%; animation: type 1s infinite; margin: 0 2px; }
+        @keyframes type { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        
         #status-msg { font-size: 0.85rem; margin-bottom: 10px; min-height: 20px; word-break: break-all; }
     </style>
 </head>
@@ -70,8 +79,8 @@
 <div id="view-reg" class="view-section active">
     <div class="container">
         <div class="card">
-            <h1 style="margin:0; color:var(--primary);">CAS v8.8</h1>
-            <p style="color:#666; font-size:0.9rem;">Universal AI Doctor (Stable)</p>
+            <h1 style="margin:0; color:var(--primary);">CAS v8.9</h1>
+            <p style="color:#666; font-size:0.9rem;">Universal AI Doctor (Corrected)</p>
             <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
             
             <div class="form-row">
@@ -88,7 +97,7 @@
             </div>
             
             <button class="btn btn-primary" style="width:100%; margin-top:20px; padding:15px;" onclick="startSystem()">开始评估 (Start)</button>
-            <p style="font-size:0.8rem; color:#999; margin-top:15px; cursor:pointer; text-decoration:underline; text-align:center;" onclick="toggleSettings()">⚙️ 配置模型 & API Key</p>
+            <p style="font-size:0.8rem; color:#999; margin-top:15px; cursor:pointer; text-decoration:underline; text-align:center;" onclick="toggleSettings()">⚙️ 模型配置 (Model Setup)</p>
         </div>
     </div>
 </div>
@@ -102,12 +111,12 @@
                 <div id="model-badge" class="badge">AI</div>
             </div>
         </div>
-        <button class="btn-icon" style="width:30px; height:30px; font-size:0.9rem;" onclick="generateReport()">📊</button>
+        <button class="btn btn-outline" style="padding: 5px 10px; font-size: 0.8rem;" onclick="toggleSettings()">设置</button>
     </div>
     <div id="chat-box" class="chat-history"></div>
     <div class="input-area">
         <button id="btn-mic" class="btn-icon" onmousedown="startListening()" onmouseup="stopListening()" ontouchstart="startListening()" ontouchend="stopListening()">🎙️</button>
-        <input type="text" id="user-input" class="input-box" placeholder="输入或按住说话..." onkeydown="trackKeystroke(event)">
+        <input type="text" id="user-input" class="input-box" placeholder="输入消息..." onkeydown="trackKeystroke(event)">
         <button class="btn-icon btn-send" onclick="sendMessage()">➤</button>
     </div>
 </div>
@@ -163,10 +172,11 @@
             <label class="setting-label">AI 提供商</label>
             <select id="ai-provider" onchange="updateProviderFields()">
                 <option value="gemini">Google Gemini (默认)</option>
-                <option value="deepseek">DeepSeek</option>
+                <option value="deepseek">DeepSeek (国内推荐)</option>
                 <option value="qwen">通义千问 (Qwen)</option>
-                <option value="kimi">Kimi</option>
-                <option value="openai">OpenAI</option>
+                <option value="kimi">Kimi (月之暗面)</option>
+                <option value="doubao">Doubao (字节豆包)</option>
+                <option value="openai">OpenAI (GPT-4)</option>
             </select>
         </div>
 
@@ -177,13 +187,13 @@
 
         <div class="setting-group" id="group-model">
             <label class="setting-label">模型名称 (Model Name)</label>
-            <input type="text" id="model-name" placeholder="gemini-pro">
-            <div style="font-size:0.75rem; color:#888;">* 如果 Gemini 报错，请尝试改为: gemini-pro 或 gemini-1.5-flash-001</div>
+            <input type="text" id="model-name" placeholder="gemini-1.5-flash">
+            <div style="font-size:0.75rem; color:#888;">* 建议保持默认，除非API报错</div>
         </div>
 
         <div class="setting-group" id="group-url" style="display:none;">
             <label class="setting-label">API Base URL</label>
-            <input type="text" id="api-url" placeholder="https://...">
+            <input type="text" id="api-url" placeholder="https://api.openai.com/v1">
         </div>
 
         <div id="status-msg"></div>
@@ -200,7 +210,7 @@
 
 <script>
 /* =========================================
-   CAS v8.8 Logic Core (Robust)
+   CAS v8.9 Logic Core (Fixed & Robust)
    ========================================= */
 
 let state = {
@@ -223,7 +233,7 @@ window.onload = () => {
 };
 
 function loadSettings() {
-    const saved = localStorage.getItem('cas_config_v88');
+    const saved = localStorage.getItem('cas_config_v89'); // Update key version
     if (saved) {
         state.config = JSON.parse(saved);
         document.getElementById('ai-provider').value = state.config.provider;
@@ -235,16 +245,16 @@ function loadSettings() {
     updateProviderFields();
 }
 
-// 核心：通用 LLM 调用 (修复版)
+// 核心：通用 LLM 调用 (模型名称修复)
 async function callLLM(history, isTest = false) {
     const { provider, apiKey, baseUrl } = state.config;
     let { modelName } = state.config;
     
     if (!apiKey) throw new Error("缺少 API Key");
 
-    // 默认模型回退逻辑 (Safety Net)
+    // [FIX] 更新默认模型名称
     if (!modelName) {
-        if (provider === 'gemini') modelName = 'gemini-pro'; // 最稳的默认值
+        if (provider === 'gemini') modelName = 'gemini-1.5-flash'; // 修复: 原 gemini-pro 已不可用
         else if (provider === 'deepseek') modelName = 'deepseek-chat';
         else if (provider === 'qwen') modelName = 'qwen-plus';
         else if (provider === 'kimi') modelName = 'moonshot-v1-8k';
@@ -256,7 +266,6 @@ async function callLLM(history, isTest = false) {
 
     // --- A. Google Gemini ---
     if (provider === 'gemini') {
-        // 动态插入模型名称
         url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
         let contents = isTest ? [{ parts: [{ text: "Hello" }] }] : history;
         payload = { contents };
@@ -265,7 +274,6 @@ async function callLLM(history, isTest = false) {
         const data = await res.json();
         
         if (data.error) throw new Error(data.error.message);
-        // 如果是测试连接，只返回成功
         if (isTest) return "Success";
         return data.candidates[0].content.parts[0].text;
     } 
@@ -279,6 +287,7 @@ async function callLLM(history, isTest = false) {
             else if (provider === 'qwen') finalUrl = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
             else if (provider === 'kimi') finalUrl = "https://api.moonshot.cn/v1/chat/completions";
             else if (provider === 'openai') finalUrl = "https://api.openai.com/v1/chat/completions";
+            else if (provider === 'doubao') finalUrl = "https://ark.cn-beijing.volces.com/api/v3/chat/completions";
         }
 
         let messages = [{ role: "system", content: sysPrompt }];
@@ -354,7 +363,7 @@ function generateReport() {
     });
 }
 
-// 游戏逻辑 (SDMT/T5) & 辅助 (同 v8.6)
+// 游戏逻辑
 let sdmtTarget, sdmtTimer;
 function startSDMT() { showView('view-sdmt'); state.sdmt.map = SYMBOLS.map((s, i) => ({ s, n: i + 1 })).sort(() => Math.random() - 0.5); document.getElementById('sdmt-legend').innerHTML = state.sdmt.map.map(m => `<div class="legend-item"><div class="legend-sym">${m.s}</div><div class="legend-num">${m.n}</div></div>`).join(''); state.sdmt.score = 0; state.sdmt.responses = []; nextSDMT(); let time = 30; document.getElementById('sdmt-timer').innerText = time; sdmtTimer = setInterval(() => { time--; document.getElementById('sdmt-timer').innerText = time; if(time <= 0) endSDMT(); }, 1000); }
 function nextSDMT() { sdmtTarget = state.sdmt.map[Math.floor(Math.random() * 9)]; document.getElementById('sdmt-target').innerText = sdmtTarget.s; state.sdmt.lastTime = Date.now(); }
@@ -381,8 +390,8 @@ function updateProviderFields() {
     const p = document.getElementById('ai-provider').value;
     const modelInput = document.getElementById('model-name');
     
-    // 自动填充建议值
-    if (p === 'gemini') modelInput.placeholder = "gemini-pro (建议)";
+    // [FIX] 自动填充正确的默认模型
+    if (p === 'gemini') modelInput.placeholder = "gemini-1.5-flash (推荐)";
     else if (p === 'deepseek') modelInput.placeholder = "deepseek-chat";
     else if (p === 'qwen') modelInput.placeholder = "qwen-plus";
     else if (p === 'kimi') modelInput.placeholder = "moonshot-v1-8k";
@@ -396,7 +405,7 @@ function saveSettings() {
         baseUrl: document.getElementById('api-url').value,
         modelName: document.getElementById('model-name').value
     };
-    localStorage.setItem('cas_config_v88', JSON.stringify(state.config));
+    localStorage.setItem('cas_config_v89', JSON.stringify(state.config));
     updateBadge();
     toggleSettings();
 }
