@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAS v7.1 (Stroop Added)</title>
+    <title>CAS v7.2 (UI Polished)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         /* =========================================
-           1. Core Styles (Strictly Inherited from v7.0)
+           1. Core Styles (Inherited from v7.1)
            ========================================= */
         :root {
             --primary: #2A5C82; --primary-light: #5A8AB0; --accent: #FF7043;
@@ -42,7 +42,6 @@
         .btn-success { background: var(--success); color: white; }
         .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
         .btn-ai { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3); }
-        
         .btn-pulse { animation: attentionPulse 2s infinite; border: 2px solid var(--accent); color: var(--accent); }
         @keyframes attentionPulse { 0% { box-shadow: 0 0 0 0 rgba(255, 112, 67, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
 
@@ -56,7 +55,6 @@
         .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         
-        /* Visual Demos */
         .micro-demo-box { background: #F0F4F8; border-radius: 12px; padding: 20px; margin: 20px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed #DCE4EA; position: relative; overflow: hidden; min-height: 120px; }
         .demo-label { font-size: 0.8rem; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
         .demo-word-dynamic { font-size: 1.5rem; font-weight: bold; color: var(--primary); transition: opacity 0.5s; }
@@ -110,15 +108,15 @@
         .sdmt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 400px; margin: 15px auto; }
         #t6-target { filter: drop-shadow(0 4px 0px rgba(0,0,0,0.1)); transition: all 0.2s; font-size: 5rem; height: 100px; margin: 20px 0; color: var(--primary); }
 
-        /* [NEW v7.1] Stroop Styles */
+        /* Stroop Styles */
         #stroop-word { font-size: 6rem; font-weight: 900; margin: 30px 0; transition: all 0.2s; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1)); }
         .stroop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 400px; margin: 20px auto; }
         .btn-color { height: 80px; font-size: 1.5rem; font-weight: bold; border: 2px solid rgba(0,0,0,0.1); color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3); transition: transform 0.1s; cursor: pointer; border-radius: 12px; }
         .btn-color:active { transform: scale(0.95); }
         .bg-red { background-color: #FF5252; } .bg-green { background-color: #2ECC71; }
         .bg-blue { background-color: #3498DB; } .bg-yellow { background-color: #F1C40F; }
-        /* Demo specific */
         .text-red { color: #FF5252; } .text-green { color: #2ECC71; } .text-blue { color: #3498DB; } .text-yellow { color: #F1C40F; }
+        
         .demo-stroop-card { display:flex; flex-direction:column; align-items:center; gap:10px; padding:10px; }
         .demo-stroop-text { font-size:2.5rem; font-weight:bold; }
 
@@ -132,7 +130,7 @@
         .mic-btn { font-size: 1.5rem; padding: 0 15px; background: #FFF; border: 1px solid #DDD; border-radius: 8px; cursor: pointer; }
         .mic-btn.recording { border-color: var(--accent); color: var(--accent); animation: pulse 1.5s infinite; }
         table.res-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        table.res-table th, table.res-table td { padding: 10px; border-bottom: 1px solid #EEE; text-align: left; }
+        table.res-table th, table.res-table th { padding: 10px; border-bottom: 1px solid #EEE; text-align: left; }
         table.res-table th { color: #888; font-size: 0.85rem; }
         #ai-report-area { margin-top: 20px; background: #f0f7ff; padding: 20px; border-radius: 12px; border: 1px solid #cce5ff; text-align: left; display: none; }
         .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(0,0,0,0.1); border-radius: 50%; border-top-color: #2A5C82; animation: spin 1s ease-in-out infinite; margin-right: 10px; vertical-align: middle; }
@@ -145,7 +143,7 @@
 <header>
     <div class="brand">
         <span style="font-size:1.5rem;">🧠</span>
-        <span id="txt-app-title">CAS v7.1</span>
+        <span id="txt-app-title">CAS v7.2</span>
     </div>
     <div style="display:flex; align-items:center; gap:10px;">
         <button onclick="toggleAdmin()" style="border:none; background:transparent; font-size:1.2rem; cursor:pointer;" title="Settings">⚙️</button>
@@ -161,7 +159,7 @@
     <div id="view-home" class="view-section active">
         <div class="card text-center">
             <h1 id="txt-home-title" style="margin-bottom: 10px;">认知评估系统</h1>
-            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Stroop Enhanced (v7.1)</p>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">UI Polished (v7.2)</p>
             <div style="max-width:500px; margin:0 auto 30px auto; color:#666; font-size:0.9rem; line-height:1.6;">
                 <p id="txt-home-intro">本测试包含7个环节，预计耗时15分钟。<br>请确保您处于安静环境。</p>
             </div>
@@ -186,10 +184,24 @@
                     <span class="t-icon">🟩</span><div class="t-title" id="txt-tut-c2-title">2. 空间记忆</div>
                     <div class="t-desc" id="txt-tut-c2-desc">按顺序点击亮起的方块。</div>
                 </div>
+                
                 <div class="tutorial-card">
                     <span class="t-icon">⚡</span><div class="t-title" id="txt-tut-c3-title">4. 处理速度</div>
-                    <div class="t-desc" id="txt-tut-c3-desc">看符号，按对应的数字键 (1-9)。</div>
+                    <div class="micro-demo-box" style="padding:10px;">
+                        <div class="demo-sdmt-visual">
+                            <div class="demo-sdmt-pair">
+                                <div class="symbol-font" style="font-size:1.5rem; color:var(--primary);">⊏</div>
+                                <div style="color:#999;">➡</div>
+                                <div style="font-weight:bold; font-size:1.2rem;">1</div>
+                            </div>
+                            <div class="demo-anim-container">
+                                <div id="demo-key-1" class="demo-keyboard-key">1</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="t-desc" id="txt-tut-c3-desc">看符号，按对应的数字键。<br><b>推荐使用键盘操作！(1-9)</b></div>
                 </div>
+                
                 <div class="tutorial-card">
                     <span class="t-icon">🎨</span><div class="t-title" id="txt-tut-c5-title">5. 抑制控制</div>
                     <div class="micro-demo-box" style="padding:10px;">
@@ -201,6 +213,7 @@
                     </div>
                     <div class="t-desc" id="txt-tut-c5-desc">忽略字的含义，<b>只判断字的颜色</b>！</div>
                 </div>
+                
                 <div class="tutorial-card">
                     <span class="t-icon">📅</span><div class="t-title" id="txt-tut-c4-title">3. 定向力</div>
                     <div class="t-desc" id="txt-tut-c4-desc">回答时间与地点问题。</div>
@@ -331,7 +344,7 @@ const DB = {
     },
     text: {
         zh: {
-            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "Stroop Enhanced (v7.1)",
+            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "UI Polished (v7.2)",
             btn_settings: "系统配置 (Admin)", tut_c3_desc: "看符号，按对应的数字键。<br><b>推荐使用键盘操作！(1-9)</b>",
             // [NEW] Stroop Texts
             tut_c5_title: "5. 抑制控制 (Stroop)", tut_c5_desc: "忽略文字含义，只判断颜色！",
@@ -359,7 +372,7 @@ const DB = {
             t6_prac_phase: "练习阶段 (3题)", t6_test_phase: "正式测试 (60s)", t6_prac_fail: "错误！请重试"
         },
         en: { 
-            app_title: "CAS v7.1", home_title: "Cognitive Assessment System", home_desc: "Stroop Enhanced (v7.1)",
+            app_title: "CAS v7.2", home_title: "Cognitive Assessment System", home_desc: "UI Polished (v7.2)",
             btn_settings: "Admin Setup", tut_c3_desc: "Match symbols to numbers.<br><b>Keyboard (1-9) Recommended!</b>",
             tut_c5_title: "5. Inhibition (Stroop)", tut_c5_desc: "Ignore the word, identify the ink color.",
             t7_title: "Stroop Task", t7_instr: "Click the button matching the INK COLOR.", btn_start_stroop: "Start Task", 
@@ -386,7 +399,7 @@ const DB = {
             t6_prac_phase: "Practice (3 Trials)", t6_test_phase: "Real Test (60s)", t6_prac_fail: "Wrong! Try Again."
         },
         child: {
-            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v7.1)",
+            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v7.2)",
             btn_settings: "设置", tut_c3_desc: "看上面的图，找对应的数字！<br><b>可以用键盘按 1-9 哦！</b>",
             tut_c5_title: "5. 找颜色", tut_c5_desc: "别读字，要看颜色哦！",
             t7_title: "颜色大挑战", t7_instr: "字是红色的就点红按钮！", btn_start_stroop: "开始", 
