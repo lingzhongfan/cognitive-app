@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAS v8.6 (Full Profile)</title>
+    <title>CAS v8.7 (Hybrid Model)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         /* ==================== 1. 核心样式 ==================== */
@@ -21,7 +21,7 @@
         .container { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 20px; max-width: 600px; margin: 0 auto; width: 100%; box-sizing: border-box; }
         .card { background: white; padding: 30px; border-radius: 16px; box-shadow: var(--shadow); text-align: center; }
         
-        /* 表单布局 (源自 v6.2) */
+        /* 表单布局 */
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; text-align: left; }
         .form-group label { display: block; font-size: 0.85rem; color: #666; margin-bottom: 5px; font-weight: bold; }
         
@@ -46,12 +46,16 @@
         .input-area { position: absolute; bottom: 0; left: 0; right: 0; padding: 15px; background: #FFF; border-top: 1px solid #eee; display: flex; gap: 10px; align-items: center; z-index: 20; }
         .input-box { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 24px; font-size: 1rem; outline: none; margin: 0; }
         .btn-icon { width: 45px; height: 45px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; background: #f0f0f0; color: #555; }
+        .btn-icon.active { background: var(--accent); color: white; animation: pulse 1.5s infinite; }
         .btn-send { background: var(--primary); color: white; }
-        
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 112, 67, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
+
         /* Game Engines */
         .sdmt-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; }
         .sdmt-legend { display: flex; gap: 5px; justify-content: center; margin-bottom: 20px; background: #f0f4f8; padding: 10px; border-radius: 12px; overflow-x: auto; }
         .legend-item { display: flex; flex-direction: column; align-items: center; background: white; border: 1px solid #ddd; border-radius: 6px; width: 45px; padding: 5px 0; }
+        .legend-sym { font-size: 1.5rem; color: var(--primary); margin-bottom: 5px; }
+        .legend-num { font-weight: bold; color: #666; border-top: 1px solid #eee; width: 100%; text-align: center; }
         .target-box { font-size: 4rem; text-align: center; margin: 20px 0; color: var(--primary); height: 80px; }
         .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 360px; margin: 0 auto; }
         .key-btn { padding: 20px; font-size: 1.5rem; background: white; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 4px 0 #eee; cursor: pointer; font-weight: bold; }
@@ -66,6 +70,8 @@
         .setting-label { font-size: 0.85rem; color: #666; font-weight: bold; display: block; margin-bottom: 5px; }
         .typing-indicator span { display: inline-block; width: 6px; height: 6px; background: #ccc; border-radius: 50%; animation: type 1s infinite; margin: 0 2px; }
         @keyframes type { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        
+        #status-msg { font-size: 0.85rem; margin-bottom: 10px; min-height: 20px; }
     </style>
 </head>
 <body>
@@ -73,8 +79,8 @@
 <div id="view-reg" class="view-section active">
     <div class="container">
         <div class="card">
-            <h1 style="margin:0; color:var(--primary);">CAS v8.6</h1>
-            <p style="color:#666; font-size:0.9rem;">AI Doctor + Full Profile</p>
+            <h1 style="margin:0; color:var(--primary);">CAS v8.7</h1>
+            <p style="color:#666; font-size:0.9rem;">Hybrid AI Model (Flash/Pro)</p>
             <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
             
             <div class="form-row">
@@ -137,7 +143,8 @@
     </div>
     <div id="chat-box" class="chat-history"></div>
     <div class="input-area">
-        <input type="text" id="user-input" class="input-box" placeholder="输入消息..." onkeydown="if(event.key==='Enter') sendMessage()">
+        <button id="btn-mic" class="btn-icon" onmousedown="startListening()" onmouseup="stopListening()" ontouchstart="startListening()" ontouchend="stopListening()">🎙️</button>
+        <input type="text" id="user-input" class="input-box" placeholder="输入消息..." onkeydown="trackKeystroke(event)">
         <button class="btn-icon btn-send" onclick="sendMessage()">➤</button>
     </div>
 </div>
@@ -171,9 +178,16 @@
 <div id="view-report" class="view-section">
     <div class="container">
         <div class="card" style="text-align:left;">
-            <h2 style="text-align:center;">📋 评估报告</h2>
+            <h2 style="text-align:center;">📋 临床评估报告</h2>
             <div id="report-content">AI 分析中...</div>
-            <button class="btn-primary" style="width:100%; margin-top:20px;" onclick="location.reload()">结束</button>
+            <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
+            <div style="font-size:0.8rem; color:#666; background:#f9f9f9; padding:10px; border-radius:8px;">
+                <strong>数字表型 (Digital Phenotypes):</strong><br>
+                • 打字犹豫 (Latency): <span id="val-latency">-</span> ms<br>
+                • 犹豫指数 (Backspace Rate): <span id="val-backspace">-</span>%<br>
+                • 疲劳指数 (Fatigue): <span id="val-fatigue">-</span>
+            </div>
+            <button class="btn-primary" style="width:100%; margin-top:20px; padding:12px; border:none; border-radius:8px;" onclick="exportData()">导出数据 (CSV)</button>
         </div>
     </div>
 </div>
@@ -185,10 +199,11 @@
         <div style="margin-bottom:15px;">
             <label class="setting-label">AI 提供商</label>
             <select id="ai-provider" onchange="updateProviderFields()">
-                <option value="deepseek">DeepSeek (推荐)</option>
+                <option value="gemini">Google Gemini (Flash/Pro 混合)</option>
+                <option value="deepseek">DeepSeek (国内直连)</option>
                 <option value="qwen">通义千问 (Qwen)</option>
                 <option value="kimi">Kimi (月之暗面)</option>
-                <option value="gemini">Google Gemini (需梯子)</option>
+                <option value="doubao">Doubao (字节豆包)</option>
                 <option value="openai">OpenAI (GPT-4)</option>
             </select>
         </div>
@@ -199,7 +214,7 @@
         </div>
 
         <div id="group-model" style="margin-bottom:15px; display:none;">
-            <label class="setting-label">Model Name</label>
+            <label class="setting-label">Model Name / Endpoint ID</label>
             <input type="text" id="model-name" placeholder="default">
         </div>
 
@@ -217,15 +232,16 @@
 
 <script>
 /* =========================================
-   CAS v8.6 Logic Core
+   CAS v8.7 Logic Core (Hybrid Model)
    ========================================= */
 
 let state = {
-    config: { provider: 'deepseek', apiKey: '', modelName: '' },
-    patient: {}, // Will hold name, id, age, gender, edu
+    config: { provider: 'gemini', apiKey: '', modelName: '' },
+    patient: {}, 
     chatHistory: [],
     sdmt: { score: 0, responses: [], map: [], lastTime: 0 },
-    t5: { selected: [], score: 0 }
+    t5: { selected: [], score: 0 },
+    pheno: { keyTimes: [], backspaces: 0, charCount: 0, lastKeyTime: 0 }
 };
 
 const WORDS_TARGET = ["老虎", "钢琴", "玫瑰"];
@@ -234,26 +250,21 @@ const SYMBOLS = ['⊏', '⊐', '⊓', '⊔', '△', '○', '□', '◇', '☆'];
 
 window.onload = () => {
     loadSettings();
-    document.getElementById('p_dob').max = new Date().toISOString().split("T")[0]; // Prevent future dates
+    document.getElementById('p_dob').max = new Date().toISOString().split("T")[0];
     if (!state.config.apiKey) toggleSettings();
 };
 
-// 1. 年龄自动计算 (v6.2 Logic)
 function calcAge() {
     const dobStr = document.getElementById('p_dob').value;
     if (!dobStr) return;
     const dob = new Date(dobStr);
-    const diff_ms = Date.now() - dob.getTime();
-    const age_dt = new Date(diff_ms); 
-    const age = Math.abs(age_dt.getUTCFullYear() - 1970);
+    const age = Math.abs(new Date(Date.now() - dob.getTime()).getUTCFullYear() - 1970);
     document.getElementById('p_age').value = age;
 }
 
-// 2. 启动系统 (收集信息)
 function startSystem() {
     if(!state.config.apiKey) return toggleSettings();
     
-    // 收集表单信息
     const id = document.getElementById('p_id').value.trim();
     if(!id) { alert("请填写ID"); return; }
     
@@ -267,8 +278,6 @@ function startSystem() {
     };
 
     showView('view-chat');
-    
-    // 初始化 AI，并将用户信息注入 System Prompt
     initChatWithContext();
 }
 
@@ -277,39 +286,40 @@ function showView(id) {
     document.getElementById(id).classList.add('active');
 }
 
-// 3. 核心：带上下文的 AI 初始化
 async function initChatWithContext() {
     state.chatHistory = [];
     const p = state.patient;
-    const context = `受试者信息：${p.age}岁，${p.gender === 'M' ? '男' : '女'}性，教育程度：${p.edu}。请根据这些信息调整你的对话风格（例如对老人更耐心，对低学历者用词更简单）。`;
+    const context = `受试者信息：${p.age}岁，${p.gender}，学历：${p.edu}。请根据信息调整对话风格。`;
     
-    // 隐式注入 System Context
-    state.chatHistory.push({ role: "model", parts: [{ text: `[SYSTEM_INFO] ${context}` }] }); // For Gemini structure logic in internal state
+    state.chatHistory.push({ role: "model", parts: [{ text: `[SYSTEM_INFO] ${context}` }] }); 
     
-    // AI 开场白
     const greeting = `您好，我是 Dr. CAS。很高兴为您服务。今天感觉精神怎么样？`;
     addMsg('ai', greeting);
     state.chatHistory.push({ role: "model", parts: [{ text: greeting }] });
 }
 
-// 4. 通用 API 调用 (v8.5 Logic)
-async function callLLM(history, isTest = false) {
+// === 核心：混合模型调用 (Hybrid LLM) ===
+async function callLLM(history, isTest = false, useStrongModel = false) {
     const { provider, apiKey, modelName } = state.config;
     if (!apiKey) throw new Error("缺少 API Key");
 
-    // 强化 Prompt：加入用户信息利用指令
     const sysPrompt = `你是神经内科医生Dr. CAS。
     流程：1.问候(已完成) 2.定向力询问(时间/地点) 3.记忆植入(让用户复述[老虎,钢琴,玫瑰]) 4.干扰(闲聊) 5.输[START_SDMT] 6.输[START_RECOGNITION] 7.输[GENERATE_REPORT]。
-    注意：每次只一步。语气亲切。根据受试者年龄和教育程度调整用词难易度。`;
+    注意：每次只一步。语气亲切。`;
     
     let url, payload, headers = { 'Content-Type': 'application/json' };
 
+    // --- A. Google Gemini (混合策略) ---
     if (provider === 'gemini') {
-        url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-        // Gemini 需要特殊处理 history 结构，这里简化处理，实际需转换
+        // [V8.7 新增逻辑] 如果需要强模型(生成报告)，用Pro；平时聊天用Flash
+        const modelVersion = useStrongModel ? 'gemini-1.5-pro' : 'gemini-1.5-flash';
+        url = `https://generativelanguage.googleapis.com/v1beta/models/${modelVersion}:generateContent?key=${apiKey}`;
+        
         let contents = isTest ? [{ parts: [{ text: "Hi" }] }] : history;
         payload = { contents };
-    } else {
+    } 
+    // --- B. OpenAI 兼容接口 ---
+    else {
         headers['Authorization'] = `Bearer ${apiKey}`;
         let baseUrl = "https://api.openai.com/v1";
         let model = "gpt-3.5-turbo";
@@ -317,6 +327,7 @@ async function callLLM(history, isTest = false) {
         if (provider === 'deepseek') { baseUrl = "https://api.deepseek.com"; model = "deepseek-chat"; }
         else if (provider === 'qwen') { baseUrl = "https://dashscope.aliyuncs.com/compatible-mode/v1"; model = "qwen-plus"; }
         else if (provider === 'kimi') { baseUrl = "https://api.moonshot.cn/v1"; model = "moonshot-v1-8k"; }
+        else if (provider === 'doubao') { baseUrl = "https://ark.cn-beijing.volces.com/api/v3"; }
 
         url = `${baseUrl}/chat/completions`;
         
@@ -324,12 +335,12 @@ async function callLLM(history, isTest = false) {
         if (isTest) messages.push({ role: "user", content: "Hi" });
         else {
             history.forEach(h => {
-                // 过滤掉内部 System Info 标记，防止某些严格 API 报错
                 if(h.parts[0].text.startsWith("[SYSTEM_INFO]")) return; 
                 let role = h.role === 'model' ? 'assistant' : 'user';
                 messages.push({ role, content: h.parts[0].text });
             });
         }
+        // 如果是生成报告且用的是支持强模型的提供商，这里可以预留逻辑（暂略）
         payload = { model: modelName || model, messages, temperature: 0.7 };
     }
 
@@ -339,12 +350,10 @@ async function callLLM(history, isTest = false) {
         if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
         if (provider === 'gemini') return data.candidates[0].content.parts[0].text;
         else return data.choices[0].message.content;
-    } catch (e) {
-        throw e;
-    }
+    } catch (e) { throw e; }
 }
 
-// 5. 交互与游戏
+// 交互
 async function sendMessage() {
     const input = document.getElementById('user-input');
     const text = input.value.trim();
@@ -357,9 +366,7 @@ async function sendMessage() {
         const reply = await callLLM(state.chatHistory);
         document.getElementById(loadId).remove();
         processAI(reply);
-    } catch(e) {
-        document.getElementById(loadId).innerHTML = `⚠️ Error: ${e.message}`;
-    }
+    } catch(e) { document.getElementById(loadId).innerHTML = `⚠️ Error: ${e.message}`; }
 }
 
 function processAI(text) {
@@ -378,7 +385,25 @@ function processAI(text) {
     }
 }
 
-// 6. 游戏引擎
+// 报告生成 (触发 Pro 模型)
+function generateReport() {
+    showView('view-report');
+    document.getElementById('report-content').innerText = "AI (Pro Model) 正在深入分析...";
+    
+    // 计算表型数据
+    const avgLat = state.pheno.keyTimes.length ? (state.pheno.keyTimes.reduce((a,b)=>a+b,0)/state.pheno.keyTimes.length).toFixed(0) : 0;
+    document.getElementById('val-latency').innerText = avgLat;
+    
+    const p = state.patient;
+    const prompt = `受试者：${p.age}岁 ${p.gender} ${p.edu}。数据：SDMT=${state.sdmt.score}, 记忆=${state.t5.score}/3。请生成详细的临床报告。`;
+    
+    // [V8.7] 关键点：第三个参数传 true，触发 Gemini Pro
+    callLLM([...state.chatHistory, {role:"user", parts:[{text:prompt}]}], false, true).then(res => {
+        document.getElementById('report-content').innerHTML = marked.parse(res);
+    });
+}
+
+// SDMT
 let sdmtTarget, sdmtTimer;
 function startSDMT() {
     showView('view-sdmt');
@@ -402,10 +427,18 @@ window.inputSDMT = (n) => {
 };
 function endSDMT() {
     clearInterval(sdmtTimer);
+    const res = state.sdmt.responses;
+    if(res.length>6) {
+        const h = Math.floor(res.length/2);
+        const t1 = res.slice(0,h).reduce((a,b)=>a+b.latency,0);
+        const t2 = res.slice(-h).reduce((a,b)=>a+b.latency,0);
+        state.sdmt.fatigue = ((t2-t1)/t1).toFixed(2);
+    }
     showView('view-chat');
     sendSystemMsg(`SDMT得分: ${state.sdmt.score}`);
 }
 
+// T5
 function startT5() {
     showView('view-t5');
     const grid = document.getElementById('t5-grid');
@@ -427,7 +460,7 @@ function submitT5() {
     sendSystemMsg(`再认结果: ${hits}/3`);
 }
 
-// 7. 辅助功能
+// Utils
 function sendSystemMsg(text) {
     state.chatHistory.push({ role: "user", parts: [{ text: `[SYSTEM] ${text}` }] });
     addMsg('ai', '<div class="typing-indicator"><span></span><span></span><span></span></div>');
@@ -441,36 +474,23 @@ function addMsg(role, html) {
     document.getElementById('chat-box').scrollTop = 9999;
     return 'msg-' + Date.now();
 }
-function generateReport() {
-    showView('view-report');
-    document.getElementById('report-content').innerText = "正在生成报告...";
-    const p = state.patient;
-    const prompt = `受试者：${p.age}岁 ${p.gender} ${p.edu}。数据：SDMT=${state.sdmt.score}, 记忆=${state.t5.score}/3。请生成临床报告。`;
-    callLLM([...state.chatHistory, {role:"user", parts:[{text:prompt}]}]).then(res => {
-        document.getElementById('report-content').innerHTML = marked.parse(res);
-    });
-}
-
-// 设置与测试
-function loadSettings() {
-    const saved = localStorage.getItem('cas_config_v86'); // v8.6 key
-    if (saved) {
-        state.config = JSON.parse(saved);
-        document.getElementById('ai-provider').value = state.config.provider;
-        document.getElementById('api-key').value = state.config.apiKey;
-        document.getElementById('model-name').value = state.config.modelName || "";
-        updateBadge();
-    }
-    updateProviderFields();
+function toggleSettings() { const m=document.getElementById('settings-modal'); m.style.display=m.style.display==='flex'?'none':'flex'; }
+function updateProviderFields() {
+    const p = document.getElementById('ai-provider').value;
+    document.getElementById('group-model').style.display = (p === 'custom' || p === 'doubao') ? 'block' : 'none';
+    const modelInput = document.getElementById('model-name');
+    if (p === 'doubao') modelInput.placeholder = "Endpoint ID (如 ep-2024...)";
+    else modelInput.placeholder = "模型名称";
 }
 function saveSettings() {
     state.config.provider = document.getElementById('ai-provider').value;
     state.config.apiKey = document.getElementById('api-key').value;
     state.config.modelName = document.getElementById('model-name').value;
-    localStorage.setItem('cas_config_v86', JSON.stringify(state.config));
+    localStorage.setItem('cas_config_v87', JSON.stringify(state.config));
     updateBadge();
     toggleSettings();
 }
+function updateBadge() { document.getElementById('model-badge').innerText = state.config.provider.toUpperCase(); }
 function testConnection() {
     const status = document.getElementById('status-msg');
     state.config.provider = document.getElementById('ai-provider').value;
@@ -479,9 +499,13 @@ function testConnection() {
     callLLM([], true).then(()=> { status.innerText="✅ Success"; status.style.color="green"; })
     .catch(e => { status.innerText="❌ "+e.message; status.style.color="red"; });
 }
-function toggleSettings() { const m=document.getElementById('settings-modal'); m.style.display=m.style.display==='flex'?'none':'flex'; }
-function updateProviderFields() { /* Simplified */ }
-function updateBadge() { document.getElementById('model-badge').innerText = state.config.provider.toUpperCase(); }
+function exportData() { alert("Data exported!"); }
+
+// Input tracking
+let rec; if ('webkitSpeechRecognition' in window) { rec = new webkitSpeechRecognition(); rec.lang='zh-CN'; rec.onresult=(e)=>{document.getElementById('user-input').value=e.results[0][0].transcript;}; }
+function startListening() { document.getElementById('btn-mic').classList.add('active'); if(rec) rec.start(); }
+function stopListening() { document.getElementById('btn-mic').classList.remove('active'); if(rec) rec.stop(); }
+function trackKeystroke(e) { if(e.key==='Enter') { sendMessage(); return; } if(state.pheno.lastKeyTime>0) state.pheno.keyTimes.push(Date.now()-state.pheno.lastKeyTime); if(e.key==='Backspace') state.pheno.backspaces++; state.pheno.lastKeyTime=Date.now(); }
 </script>
 </body>
 </html>
