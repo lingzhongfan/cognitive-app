@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAS v9.4 (Final Fixed)</title>
+    <title>CAS v9.5 (Golden Master)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         /* =========================================
@@ -112,7 +112,6 @@
         .key-btn.wrong-flash { background-color: var(--error) !important; color: white; border-color: var(--error); animation: shake 0.3s; }
         .key-btn.active-key { background-color: #e0e0e0 !important; transform: scale(0.95); box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); }
         
-        /* Geriatric Big Keys */
         body.geriatric-theme .key-btn { padding: 30px; font-size: 2rem; border-width: 3px; border-color: #000; }
 
         .corsi-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; max-width: 360px; margin: 20px auto; }
@@ -121,7 +120,6 @@
         .corsi-block.active { background: var(--accent) !important; box-shadow: 0 0 15px var(--accent); }
         .corsi-block.user-tap { background: var(--primary); }
         
-        /* Geriatric Corsi */
         body.geriatric-theme .corsi-block { border: 2px solid #333; box-shadow: none; }
         
         .sdmt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 400px; margin: 15px auto; }
@@ -138,7 +136,6 @@
         .demo-stroop-card { display:flex; flex-direction:column; align-items:center; gap:10px; padding:10px; }
         .demo-stroop-text { font-size:2.5rem; font-weight:bold; }
         
-        /* Geriatric Stroop */
         body.geriatric-theme .btn-color { border: 4px solid #000; color: #000; text-shadow: none; font-size: 2rem; font-weight: 900; }
         body.geriatric-theme .bg-red { background: #ffaaaa; } body.geriatric-theme .bg-green { background: #99ff99; }
         body.geriatric-theme .bg-blue { background: #99ccff; } body.geriatric-theme .bg-yellow { background: #ffff99; }
@@ -152,7 +149,6 @@
         .tmt-node.next-hint { box-shadow: 0 0 15px rgba(42, 92, 130, 0.4); border-color: var(--primary); }
         .tmt-line { position: absolute; height: 3px; background: var(--success); transform-origin: 0 50%; z-index: 1; pointer-events: none; border-radius: 2px; }
         
-        /* Geriatric TMT */
         body.geriatric-theme .tmt-node { width: 55px; height: 55px; font-size: 1.6rem; border-width: 3px; border-color: #000; }
 
         .word-display { font-size: 3.5rem; text-align: center; height: 180px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); }
@@ -176,7 +172,7 @@
 <body>
 
 <header>
-    <div class="brand"><span style="font-size:1.5rem;">🧠</span><span id="txt-app-title">CAS v9.4</span></div>
+    <div class="brand"><span style="font-size:1.5rem;">🧠</span><span id="txt-app-title">CAS v9.5</span></div>
     <div style="display:flex; align-items:center; gap:10px;">
         <button onclick="toggleAdmin()" style="border:none; background:transparent; font-size:1.2rem; cursor:pointer;" title="Settings">⚙️</button>
         <div class="mode-switch">
@@ -192,7 +188,7 @@
     <div id="view-home" class="view-section active">
         <div class="card text-center">
             <h1 id="txt-home-title" style="margin-bottom: 10px;">认知评估系统</h1>
-            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Geriatric Ready (v9.4)</p>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Final Version (v9.5)</p>
             <div style="max-width:500px; margin:0 auto 30px auto; color:#666; font-size:0.9rem; line-height:1.6;">
                 <p id="txt-home-intro">本测试包含9个环节，预计耗时25分钟。<br>请确保您处于安静环境。</p>
             </div>
@@ -233,7 +229,7 @@
                     <div class="t-title" id="txt-tut-c5-title">5. 抑制控制</div>
                     <div class="micro-demo-box" style="padding:10px; min-height:80px;">
                         <div id="demo-stroop-tut-txt" class="demo-stroop-text text-green" style="font-size:2rem;">红</div>
-                        <div style="font-size:0.8rem; color:#666; margin-top:5px;">(颜色是绿，点绿键)</div>
+                        <div id="demo-stroop-hint" style="font-size:0.8rem; color:#666; margin-top:5px;">(颜色是绿，点绿键)</div>
                     </div>
                     <div class="t-desc" id="txt-tut-c5-desc">忽略文字含义，<b>只判断字的颜色</b>！</div>
                 </div>
@@ -242,7 +238,7 @@
                 <div class="tutorial-card"><span class="t-icon">🦁</span><div class="t-title" id="txt-tut-c8-title">7. 语言流利度</div><div class="t-desc" id="txt-tut-c8-desc">60秒内，说出尽可能多的动物名称。<br><b>支持语音自动输入！</b></div></div>
             </div>
             <div style="margin-top:40px;">
-                <button class="btn btn-success" onclick="startTutorial()"><span id="txt-btn-start-real">开始登记</span></button>
+                <button class="btn btn-success" onclick="initSession()"><span id="txt-btn-start-real">开始登记</span></button>
             </div>
         </div>
     </div>
@@ -268,31 +264,8 @@
 
     <div id="view-t3" class="view-section"><div class="card"><h2 id="txt-t3-title">定向力</h2><div style="min-height: 200px; display:flex; flex-direction:column; justify-content:center;"><h3 id="t3-q" style="font-size: 1.4rem; margin-bottom: 20px; text-align:center;">Question</h3><div id="t3-input-area"></div></div><div class="text-center" style="margin-top:20px;"><button class="btn btn-primary" onclick="nextT3()"><span id="txt-btn-next-q">下一题</span></button></div></div></div>
 
-    <div id="view-t9-intro" class="view-section">
-        <div class="card text-center">
-            <h2 id="txt-t9-title">连线测验 (TMT)</h2>
-            <div style="text-align:left; max-width:500px; margin:0 auto; line-height:1.6; color:#555;">
-                <p><b>任务 A：</b> 按数字顺序点击 (1 ➡ 2 ➡ 3...)</p>
-                <p><b>任务 B：</b> 数字和字母交替点击 (1 ➡ A ➡ 2 ➡ B...)</p>
-            </div>
-            <div class="micro-demo-box" style="margin:20px 0; padding:10px;">
-                <div style="font-size:1.2rem; font-weight:bold; color:var(--primary);">1 ➡ A ➡ 2 ➡ B</div>
-            </div>
-            <button class="btn btn-primary" onclick="startTMTPractice('A')"><span id="txt-btn-start-tmt">开始练习 (Part A)</span></button>
-        </div>
-    </div>
-    
-    <div id="view-t9-test" class="view-section">
-        <div class="card text-center">
-            <div id="tmt-phase-indicator" style="background:#FFEAA7; color:#d35400; padding:5px 10px; border-radius:20px; font-weight:bold; display:inline-block; margin-bottom:10px;">Practice A</div>
-            <div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:10px;">
-                <span>⏱ <span id="t9-timer">0.0</span>s</span>
-                <span style="color:#666" id="t9-next-target">Next: 1</span>
-            </div>
-            <div id="tmt-canvas-area"></div>
-            <div id="tmt-error-msg" style="color:var(--error); font-weight:bold; height:20px; opacity:0; transition:opacity 0.2s;">Wrong!</div>
-        </div>
-    </div>
+    <div id="view-t9-intro" class="view-section"><div class="card text-center"><h2 id="txt-t9-title">连线测验 (TMT)</h2><div style="text-align:left; max-width:500px; margin:0 auto; line-height:1.6; color:#555;"><p><b>任务 A：</b> 按数字顺序点击 (1 ➡ 2 ➡ 3...)</p><p><b>任务 B：</b> 数字和字母交替点击 (1 ➡ A ➡ 2 ➡ B...)</p></div><div class="micro-demo-box" style="margin:20px 0; padding:10px;"><div style="font-size:1.2rem; font-weight:bold; color:var(--primary);">1 ➡ A ➡ 2 ➡ B</div></div><button class="btn btn-primary" onclick="startTMTPractice('A')"><span id="txt-btn-start-tmt">开始练习 (Part A)</span></button></div></div>
+    <div id="view-t9-test" class="view-section"><div class="card text-center"><div id="tmt-phase-indicator" style="background:#FFEAA7; color:#d35400; padding:5px 10px; border-radius:20px; font-weight:bold; display:inline-block; margin-bottom:10px;">Practice A</div><div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:10px;"><span>⏱ <span id="t9-timer">0.0</span>s</span><span style="color:#666" id="t9-next-target">Next: 1</span></div><div id="tmt-canvas-area"></div><div id="tmt-error-msg" style="color:var(--error); font-weight:bold; height:20px; opacity:0; transition:opacity 0.2s;">Wrong!</div></div></div>
 
     <div id="view-t7-intro" class="view-section"><div class="card text-center"><h2 id="txt-t7-title">抑制控制 (Stroop)</h2><div class="micro-demo-box" style="padding:20px;"><div id="demo-stroop-text" class="text-blue" style="font-size:3rem; font-weight:bold; margin-bottom:10px;">红</div><div style="font-size:1rem; color:#666;">字是"红"，但颜色是"蓝"</div><div style="margin-top:15px; font-weight:bold; color:var(--primary);">请点击 [蓝] 按钮</div></div><p id="txt-t7-instr" style="margin:20px 0;">请忽略文字含义，<b>快速判断文字颜色</b>！</p><button class="btn btn-primary" onclick="startStroopPractice()"><span id="txt-btn-start-stroop">开始测试</span></button></div></div>
     <div id="view-t7-test" class="view-section"><div class="card text-center" style="position:relative;"><div id="t7-phase-indicator" style="background:#FFEAA7; color:#d35400; padding:5px 10px; border-radius:20px; font-weight:bold; display:inline-block; margin-bottom:10px;">Practice / 练习</div><div id="stroop-feedback" class="sdmt-overlay-feedback">✓</div><div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.2rem; margin-bottom:15px;"><span>⏱ <span id="t7-timer">--</span>s</span><span style="color:var(--success)">Score: <span id="t7-score">0</span></span></div><div id="stroop-word">准备...</div><div class="stroop-grid"><button class="btn btn-color bg-red" onclick="inputStroop('red')"><span id="btn-red-txt">红</span></button><button class="btn btn-color bg-green" onclick="inputStroop('green')"><span id="btn-green-txt">绿</span></button><button class="btn btn-color bg-blue" onclick="inputStroop('blue')"><span id="btn-blue-txt">蓝</span></button><button class="btn btn-color bg-yellow" onclick="inputStroop('yellow')"><span id="btn-yellow-txt">黄</span></button></div></div></div>
@@ -328,7 +301,7 @@
 </div>
 
 <script>
-// 1. DATA (v9.4)
+// 1. DATA (v9.5 Fixed)
 const DB = {
     lists: { zh: { A: ["老虎", "熊猫", "狮子", "斧头", "锤子", "锯子", "苹果", "香蕉", "葡萄", "汽车"], B: ["豹子", "大象", "狼", "螺丝刀", "钳子", "钻机", "橘子", "梨", "桃子", "卡车"] }, en: { A: ["Tiger", "Panda", "Lion", "Hammer", "Wrench", "Saw", "Apple", "Banana", "Grape", "Car"], B: ["Leopard", "Elephant", "Wolf", "Screwdriver", "Pliers", "Drill", "Orange", "Pear", "Peach", "Truck"] }, child: { A: ["小狗", "小猫", "兔子", "苹果", "香蕉", "西瓜", "汽车", "飞机", "火车", "皮球"], B: ["小猪", "小羊", "熊猫", "葡萄", "橘子", "草莓", "公交车", "轮船", "卡车", "气球"] } },
     demos: { zh: { w1:"苹果", w2:"香蕉" }, en: { w1:"Apple", w2:"Banana" }, child: { w1:"苹果", w2:"香蕉" } },
@@ -337,7 +310,7 @@ const DB = {
     tmt: { A: ['1','2','3','4','5','6','7','8','9','10','11','12'], B: ['1','A','2','B','3','C','4','D','5','E','6','F'] },
     text: {
         zh: {
-            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "Executive Suite (v9.4)",
+            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "Executive Suite (v9.5)",
             btn_settings: "系统配置 (Admin)", 
             // Tutorial Titles
             tut_title: "测试内容演示", tut_c1_title: "1. 记忆力挑战", tut_c1_desc: "屏幕会逐个显示单词。请用心<b>记住</b>它们。", tut_c2_title: "2. 空间记忆", tut_c2_desc: "观察方块亮起的<b>顺序</b>。演示结束后，请按<b>相同顺序</b>点击方块。", tut_c2b_title: "2B. 空间倒背", tut_c2b_desc: "难度升级！请<b>倒序</b>点击方块。", tut_c4_title: "3. 定向问答", tut_c4_desc: "回答时间与地点问题。", tut_c4_hint: "注：最后两题（地点/城市）的正确答案请在【设置】中预设", tut_c9_title: "4. 连线测验 (TMT)", tut_c9_desc: "按顺序点击圆圈：<br>A: 1-2-3...<br>B: 1-A-2-B...", tut_c5_title: "5. 抑制控制 (Stroop)", tut_c5_desc: "忽略文字含义，只判断颜色！", tut_c3_title: "6. 处理速度 (SDMT)", tut_c3_desc: "看符号，按对应的数字键。<br><b>推荐使用键盘操作！(1-9)</b>", tut_c8_title: "7. 语言流利度", tut_c8_desc: "60秒内，说出尽可能多的动物名称。<br><b>支持语音自动输入！</b>",
@@ -365,7 +338,7 @@ const DB = {
             t6_prac_phase: "练习阶段 (3题)", t6_test_phase: "正式测试 (60s)", t6_prac_fail: "错误！请重试"
         },
         en: { 
-            app_title: "CAS v9.4", home_title: "Cognitive Assessment System", home_desc: "Executive Suite (v9.4)",
+            app_title: "CAS v9.5", home_title: "Cognitive Assessment System", home_desc: "Executive Suite (v9.5)",
             btn_settings: "Admin Setup", 
             tut_title: "Task Demonstration", tut_c1_title: "1. Verbal Memory", tut_c1_desc: "Words will be shown sequentially. Memorize them for immediate and delayed recall.", tut_c2_title: "2. Spatial Span", tut_c2_desc: "Observe the sequence of lit blocks, then tap them in the <b>exact same order</b>.", tut_c2b_title: "2B. Corsi Backward", tut_c2b_desc: "Harder! Tap the blocks in <b>reverse order</b>.", tut_c4_title: "3. Orientation", tut_c4_desc: "Standard questions regarding current date and location.", tut_c4_hint: "Note: Preset Place/City in [Settings] for correct scoring.", tut_c9_title: "4. Trail Making (TMT)", tut_c9_desc: "Connect circles in order:<br>A: 1-2-3...<br>B: 1-A-2-B...", tut_c5_title: "5. Inhibition (Stroop)", tut_c5_desc: "Ignore the word, identify the ink color.", tut_c3_title: "6. Processing Speed", tut_c3_desc: "Match symbols to numbers.<br><b>Keyboard (1-9) Recommended!</b>", tut_c8_title: "7. Verbal Fluency", tut_c8_desc: "Name as many animals as possible in 60s.<br><b>Voice Input Supported!</b>",
             reg_title: "Subject Demographics", l_name: "Name", l_id: "Subject ID", l_gender: "Gender", l_dob: "Date of Birth", l_age: "Age", l_edu: "Education", l_hand: "Handedness", g_m: "Male", g_f: "Female", btn_next: "Next", reg_err: "All fields required",
@@ -391,7 +364,7 @@ const DB = {
             t6_prac_phase: "Practice (3 Trials)", t6_test_phase: "Real Test (60s)", t6_prac_fail: "Wrong! Try Again."
         },
         child: {
-            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v9.4)",
+            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v9.5)",
             btn_settings: "设置", 
             tut_title: "游戏演示", tut_c1_title: "1. 记词游戏", tut_c1_desc: "屏幕上会出现词语。要把它们<b>记在脑子里</b>哦。", tut_c2_title: "2. 点方块", tut_c2_desc: "看方块怎么亮，然后照着<b>点一点</b>。", tut_c2b_title: "2B. 倒着点", tut_c2b_desc: "要反过来点哦！比如亮1-2-3，你点3-2-1。", tut_c4_title: "3. 问答时间", tut_c4_desc: "问问你今天是几号，在哪里。", tut_c4_hint: "让大人在【设置】里填好答案哦", tut_c9_title: "4. 连连看", tut_c9_desc: "按顺序点圆圈：1-2-3...", tut_c5_title: "5. 找颜色", tut_c5_desc: "别读字，要看颜色哦！", tut_c3_title: "6. 找数字", tut_c3_desc: "看上面的图，找对应的数字！<br><b>可以用键盘按 1-9 哦！</b>", tut_c8_title: "7. 说动物", tut_c8_desc: "说出你知道的所有动物。",
             reg_title: "小朋友信息", l_name: "姓名", l_id: "学号", l_gender: "性别", l_dob: "生日", l_age: "几岁", l_edu: "年级", l_hand: "常用的手", g_m: "男", g_f: "女", btn_next: "下一步", reg_err: "请把信息填完整",
@@ -417,7 +390,7 @@ const DB = {
             t6_prac_phase: "练习一下", t6_test_phase: "正式开始", t6_prac_fail: "不对哦，再试一次"
         },
         geriatric: {
-            app_title: "老年脑健康筛查", home_title: "老年脑健康筛查", home_desc: "适老版 (v9.4)",
+            app_title: "老年脑健康筛查", home_title: "老年脑健康筛查", home_desc: "适老版 (v9.5)",
             btn_settings: "设置",
             tut_title: "测试演示", tut_c1_title: "1. 记词语", tut_c1_desc: "屏幕会出几个词，请您记在心里。", tut_c2_title: "2. 点方块", tut_c2_desc: "看方块怎么亮，照着点一遍。", tut_c2b_title: "2B. 倒着点", tut_c2b_desc: "这次要倒过来点！", tut_c4_title: "3. 问时间", tut_c4_desc: "问问今天是几号。", tut_c9_title: "4. 连连看", tut_c9_desc: "按顺序点圆圈：1-2-3...", tut_c5_title: "5. 找颜色", tut_c5_desc: "别读字，要看颜色！", tut_c3_title: "6. 找数字", tut_c3_desc: "看上面的图，找对应的数字。", tut_c8_title: "7. 说动物", tut_c8_desc: "说出你知道的所有动物。",
             reg_title: "老人信息", l_name: "姓名", l_id: "编号", l_gender: "性别", l_dob: "生日", l_age: "年龄", l_edu: "文化程度", l_hand: "常用的手", g_m: "男", g_f: "女", btn_next: "下一步", reg_err: "请把信息填完整",
@@ -564,16 +537,28 @@ function updateDemoText() {
     if(el1) { el1.innerText = txt; el1.style.opacity = demoToggle ? 1 : 0.5; }
     if(el2) { el2.innerText = txt; el2.style.opacity = demoToggle ? 1 : 0.5; }
 
-    // [FIXED] Stroop Logic: Dynamic English support
+    // [FIXED] Stroop Logic with Localized Hint
     const stroopEl = document.getElementById('demo-stroop-tut-txt');
+    const hintEl = document.getElementById('demo-stroop-hint');
+    
     if(stroopEl) {
         const sWords = DB.stroop[modeKey].words;
         if(demoToggle) {
-            stroopEl.innerText = sWords[0]; // Red/红
+            // Case A: Red Word (Green Color)
+            stroopEl.innerText = sWords[0]; 
             stroopEl.className = "demo-stroop-text text-green"; 
+            if(hintEl) {
+                if(state.mode === 'en') hintEl.innerText = "(Color is Green, Click Green)";
+                else hintEl.innerText = "(颜色是绿，点绿键)";
+            }
         } else {
-            stroopEl.innerText = sWords[1]; // Green/绿
+            // Case B: Green Word (Red Color)
+            stroopEl.innerText = sWords[1]; 
             stroopEl.className = "demo-stroop-text text-red";
+            if(hintEl) {
+                if(state.mode === 'en') hintEl.innerText = "(Color is Red, Click Red)";
+                else hintEl.innerText = "(颜色是红，点红键)";
+            }
         }
     }
 }
@@ -621,7 +606,11 @@ function initSession() {
     state.t3 = { details: [], score: 0, time: 0 }; 
     state.t8 = { entered: [], time: 0, event_log: [] };
     state.t9 = { stage: 'PracA', startTime: 0, timeA: 0, timeB: 0, errA: 0, errB: 0, nodes: [], nextIdx: 0, history: [] };
-    showView('view-register');
+    try {
+        showView('view-register');
+    } catch(e) {
+        alert("Error starting session: " + e.message);
+    }
 }
 
 function validateAndSubmit() {
