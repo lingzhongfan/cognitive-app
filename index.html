@@ -17,12 +17,12 @@
         }
         body.child-theme { --primary: #FF9F43; --primary-light: #FECA57; --bg-color: #FFF9E6; --text-main: #5F27CD; }
         
-        /* [NEW] Geriatric Theme: High Contrast & Big Fonts */
+        /* [NEW] Geriatric Theme Variables */
         body.geriatric-theme { 
             --primary: #000000; --primary-light: #333333; --accent: #D35400;
-            --bg-color: #F0F0F0; --card-bg: #FFFFFF; --text-main: #000000;
+            --bg-color: #F4F4F4; --card-bg: #FFFFFF; --text-main: #000000;
             --text-light: #333333; --success: #27AE60; --error: #C0392B;
-            font-size: 1.25rem; /* Base font increased by 25% */
+            font-size: 1.25rem; /* Base font increased */
         }
 
         body { 
@@ -39,11 +39,10 @@
         
         .card { background: var(--card-bg); padding: 30px; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.02); position: relative; }
         
-        /* Geriatric Card Overrides */
-        body.geriatric-theme .card { padding: 40px 25px; border: 2px solid #000; box-shadow: none; border-radius: 8px; }
-        body.geriatric-theme .btn { transform: scale(1.15); margin: 10px; font-weight: 900; border-width: 3px; }
-        body.geriatric-theme input, body.geriatric-theme select { font-size: 1.4rem; padding: 18px; border-width: 2px; border-color: #000; color: #000; background: #fff; }
-        body.geriatric-theme .micro-demo-box { border: 3px dashed #000; background: #fff; }
+        /* Geriatric Card Adjustment */
+        body.geriatric-theme .card { padding: 40px 30px; border: 2px solid #000; box-shadow: none; }
+        body.geriatric-theme .btn { transform: scale(1.1); margin: 5px; font-weight: 800; border-width: 3px; }
+        body.geriatric-theme input, body.geriatric-theme select { font-size: 1.3rem; padding: 15px; border-width: 2px; border-color: #000; }
         
         header { background: rgba(255,255,255,0.95); padding: 15px 30px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); backdrop-filter: blur(10px); }
         .brand { font-size: 1.2rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
@@ -113,8 +112,8 @@
         .key-btn.wrong-flash { background-color: var(--error) !important; color: white; border-color: var(--error); animation: shake 0.3s; }
         .key-btn.active-key { background-color: #e0e0e0 !important; transform: scale(0.95); box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); }
         
-        /* Geriatric Big Keys */
-        body.geriatric-theme .key-btn { padding: 30px; font-size: 2rem; border-width: 3px; }
+        /* Geriatric Big Buttons */
+        body.geriatric-theme .key-btn { padding: 30px; font-size: 2rem; border-width: 3px; border-color: #000; }
 
         .corsi-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; max-width: 360px; margin: 20px auto; }
         .corsi-block { background: #E0E0E0; border-radius: 12px; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 0 #CCC; height: 0; padding-bottom: 100%; position: relative; }
@@ -123,7 +122,7 @@
         .corsi-block.user-tap { background: var(--primary); }
         
         /* Geriatric Corsi */
-        body.geriatric-theme .corsi-block { border: 2px solid #333; box-shadow: none; }
+        body.geriatric-theme .corsi-block { border: 2px solid #333; }
         
         .sdmt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 400px; margin: 15px auto; }
         #t6-target { filter: drop-shadow(0 4px 0px rgba(0,0,0,0.1)); transition: all 0.2s; font-size: 5rem; height: 100px; margin: 20px 0; color: var(--primary); }
@@ -139,10 +138,10 @@
         .demo-stroop-card { display:flex; flex-direction:column; align-items:center; gap:10px; padding:10px; }
         .demo-stroop-text { font-size:2.5rem; font-weight:bold; }
         
-        /* Geriatric Stroop High Contrast */
-        body.geriatric-theme .btn-color { border: 4px solid #000; color: #000; text-shadow: none; font-size: 2rem; font-weight: 900; }
-        body.geriatric-theme .bg-red { background: #ffaaaa; } body.geriatric-theme .bg-green { background: #99ff99; }
-        body.geriatric-theme .bg-blue { background: #99ccff; } body.geriatric-theme .bg-yellow { background: #ffff99; }
+        /* Geriatric Stroop: High Contrast Borders */
+        body.geriatric-theme .btn-color { border: 4px solid #000; color: #000; text-shadow: none; font-size: 2rem; }
+        body.geriatric-theme .bg-red { background: #FF9999; } /* Lighter for readability with black text */
+        body.geriatric-theme .bg-blue { background: #99CCFF; }
 
         /* TMT Styles */
         #tmt-canvas-area { position: relative; width: 100%; height: 350px; background: #fff; border: 2px solid #eee; border-radius: 12px; overflow: hidden; margin: 15px 0; touch-action: none; }
@@ -153,8 +152,8 @@
         .tmt-node.next-hint { box-shadow: 0 0 15px rgba(42, 92, 130, 0.4); border-color: var(--primary); }
         .tmt-line { position: absolute; height: 3px; background: var(--success); transform-origin: 0 50%; z-index: 1; pointer-events: none; border-radius: 2px; }
         
-        /* Geriatric TMT Big Nodes */
-        body.geriatric-theme .tmt-node { width: 55px; height: 55px; font-size: 1.6rem; border-width: 3px; border-color: #000; }
+        /* Geriatric TMT */
+        body.geriatric-theme .tmt-node { width: 55px; height: 55px; font-size: 1.6rem; border-width: 3px; }
 
         .word-display { font-size: 3.5rem; text-align: center; height: 180px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); }
         .chips-area { display: flex; flex-wrap: wrap; gap: 8px; min-height: 60px; padding: 15px; background: #F4F6F8; border-radius: 10px; margin-bottom: 20px; border: 1px dashed #DDD; }
@@ -184,7 +183,7 @@
             <button onclick="setMode('zh')" id="btn-mode-zh" class="active">中文</button>
             <button onclick="setMode('en')" id="btn-mode-en">English</button>
             <button onclick="setMode('child')" id="btn-mode-child">👶</button>
-            <button onclick="setMode('geriatric')" id="btn-mode-geriatric" title="老年模式 (Geriatric Mode)" style="font-size:1.2rem;">👴</button>
+            <button onclick="setMode('geriatric')" id="btn-mode-geriatric" title="老年模式">👴</button>
         </div>
     </div>
 </header>
@@ -214,7 +213,6 @@
                 <div class="tutorial-card"><span class="t-icon">🟩</span><div class="t-title" id="txt-tut-c2-title">2. 空间记忆</div><div class="t-desc" id="txt-tut-c2-desc">按顺序点击亮起的方块。</div></div>
                 <div class="tutorial-card"><span class="t-icon">🔄</span><div class="t-title" id="txt-tut-c2b-title">2B. 空间倒背</div><div class="t-desc" id="txt-tut-c2b-desc">难度升级！请<b>倒序</b>点击方块。</div></div>
                 <div class="tutorial-card"><span class="t-icon">📅</span><div class="t-title" id="txt-tut-c4-title">3. 定向力</div><div class="t-desc" id="txt-tut-c4-desc">回答时间与地点问题。</div></div>
-                
                 <div class="tutorial-card">
                     <span class="t-icon">✏️</span><div class="t-title" id="txt-tut-c9-title">4. 连线测验</div>
                     <div class="micro-demo-box" style="padding:10px;">
@@ -228,7 +226,6 @@
                     </div>
                     <div class="t-desc" id="txt-tut-c9-desc">按顺序点击圆圈：<br>A: 1-2-3...<br>B: 1-A-2-B...</div>
                 </div>
-
                 <div class="tutorial-card"><span class="t-icon">🎨</span><div class="t-title" id="txt-tut-c5-title">5. 抑制控制</div><div class="t-desc" id="txt-tut-c5-desc">忽略字的含义，<b>只判断字的颜色</b>！</div></div>
                 <div class="tutorial-card"><span class="t-icon">⚡</span><div class="t-title" id="txt-tut-c3-title">6. 处理速度</div><div class="t-desc" id="txt-tut-c3-desc">看符号，按对应的数字键。<br><b>推荐使用键盘操作！(1-9)</b></div></div>
                 <div class="tutorial-card"><span class="t-icon">🦁</span><div class="t-title" id="txt-tut-c8-title">7. 语言流利度</div><div class="t-desc" id="txt-tut-c8-desc">60秒内，说出尽可能多的动物名称。<br><b>支持语音自动输入！</b></div></div>
@@ -322,28 +319,25 @@
 <script>
 // 1. DATA (v9.2)
 const DB = {
-    lists: { 
-        zh: { A: ["老虎", "熊猫", "狮子", "斧头", "锤子", "锯子", "苹果", "香蕉", "葡萄", "汽车"], B: ["豹子", "大象", "狼", "螺丝刀", "钳子", "钻机", "橘子", "梨", "桃子", "卡车"] }, 
-        en: { A: ["Tiger", "Panda", "Lion", "Hammer", "Wrench", "Saw", "Apple", "Banana", "Grape", "Car"], B: ["Leopard", "Elephant", "Wolf", "Screwdriver", "Pliers", "Drill", "Orange", "Pear", "Peach", "Truck"] }, 
-        child: { A: ["小狗", "小猫", "兔子", "苹果", "香蕉", "西瓜", "汽车", "飞机", "火车", "皮球"], B: ["小猪", "小羊", "熊猫", "葡萄", "橘子", "草莓", "公交车", "轮船", "卡车", "气球"] } 
-    },
-    demos: { 
-        zh: { w1:"苹果", w2:"香蕉" }, 
-        en: { w1:"Apple", w2:"Banana" }, 
-        child: { w1:"苹果", w2:"香蕉" } 
-    },
+    lists: { zh: { A: ["老虎", "熊猫", "狮子", "斧头", "锤子", "锯子", "苹果", "香蕉", "葡萄", "汽车"], B: ["豹子", "大象", "狼", "螺丝刀", "钳子", "钻机", "橘子", "梨", "桃子", "卡车"] }, en: { A: ["Tiger", "Panda", "Lion", "Hammer", "Wrench", "Saw", "Apple", "Banana", "Grape", "Car"], B: ["Leopard", "Elephant", "Wolf", "Screwdriver", "Pliers", "Drill", "Orange", "Pear", "Peach", "Truck"] }, child: { A: ["小狗", "小猫", "兔子", "苹果", "香蕉", "西瓜", "汽车", "飞机", "火车", "皮球"], B: ["小猪", "小羊", "熊猫", "葡萄", "橘子", "草莓", "公交车", "轮船", "卡车", "气球"] } },
+    demos: { zh: { w1:"苹果", w2:"香蕉" }, en: { w1:"Apple", w2:"Banana" }, child: { w1:"苹果", w2:"香蕉" } },
     symbols: ['⊏', '⊐', '⊓', '⊔', '○', '□', '◇', '☆', '△'], 
-    stroop: { 
-        zh: { words: ["红","绿","蓝","黄"], colors: ["red","green","blue","yellow"], btns: ["红","绿","蓝","黄"] }, 
-        en: { words: ["RED","GREEN","BLUE","YELLOW"], colors: ["red","green","blue","yellow"], btns: ["RED","GREEN","BLUE","YELLOW"] }, 
-        child: { words: ["红","绿","蓝","黄"], colors: ["red","green","blue","yellow"], btns: ["红","绿","蓝","黄"] } 
-    },
+    stroop: { zh: { words: ["红","绿","蓝","黄"], colors: ["red","green","blue","yellow"], btns: ["红","绿","蓝","黄"] }, en: { words: ["RED","GREEN","BLUE","YELLOW"], colors: ["red","green","blue","yellow"], btns: ["RED","GREEN","BLUE","YELLOW"] }, child: { words: ["红","绿","蓝","黄"], colors: ["red","green","blue","yellow"], btns: ["红","绿","蓝","黄"] } },
     tmt: { A: ['1','2','3','4','5','6','7','8','9','10','11','12'], B: ['1','A','2','B','3','C','4','D','5','E','6','F'] },
     text: {
         zh: {
             app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "Executive Suite (v9.2)",
+            // ... (Inherited from v9.1 zh, no changes needed)
             btn_settings: "系统配置 (Admin)", 
-            tut_title: "测试内容演示", tut_c1_title: "1. 记忆力挑战", tut_c1_desc: "屏幕会逐个显示单词。请用心<b>记住</b>它们。", tut_c2_title: "2. 空间记忆", tut_c2_desc: "观察方块亮起的<b>顺序</b>。演示结束后，请按<b>相同顺序</b>点击方块。", tut_c2b_title: "2B. 空间倒背", tut_c2b_desc: "难度升级！请<b>倒序</b>点击方块。", tut_c4_title: "3. 定向问答", tut_c4_desc: "回答时间与地点问题。", tut_c4_hint: "注：最后两题（地点/城市）的正确答案请在【设置】中预设", tut_c9_title: "4. 连线测验 (TMT)", tut_c9_desc: "按顺序点击圆圈：<br>A: 1-2-3...<br>B: 1-A-2-B...", tut_c5_title: "5. 抑制控制 (Stroop)", tut_c5_desc: "忽略文字含义，只判断颜色！", tut_c3_title: "6. 处理速度 (SDMT)", tut_c3_desc: "看符号，按对应的数字键。<br><b>推荐使用键盘操作！(1-9)</b>", tut_c8_title: "7. 语言流利度", tut_c8_desc: "60秒内，说出尽可能多的动物名称。<br><b>支持语音自动输入！</b>",
+            tut_title: "测试内容演示", 
+            tut_c1_title: "1. 记忆力挑战", tut_c1_desc: "屏幕会逐个显示单词。请用心<b>记住</b>它们。", 
+            tut_c2_title: "2. 空间记忆", tut_c2_desc: "观察方块亮起的<b>顺序</b>。演示结束后，请按<b>相同顺序</b>点击方块。", 
+            tut_c2b_title: "2B. 空间倒背", tut_c2b_desc: "难度升级！请<b>倒序</b>点击方块。", 
+            tut_c4_title: "3. 定向问答", tut_c4_desc: "回答时间与地点问题。", tut_c4_hint: "注：最后两题（地点/城市）的正确答案请在【设置】中预设",
+            tut_c9_title: "4. 连线测验 (TMT)", tut_c9_desc: "按顺序点击圆圈：<br>A: 1-2-3...<br>B: 1-A-2-B...",
+            tut_c5_title: "5. 抑制控制 (Stroop)", tut_c5_desc: "忽略文字含义，只判断颜色！",
+            tut_c3_title: "6. 处理速度 (SDMT)", tut_c3_desc: "看符号，按对应的数字键。<br><b>推荐使用键盘操作！(1-9)</b>", 
+            tut_c8_title: "7. 语言流利度", tut_c8_desc: "60秒内，说出尽可能多的动物名称。<br><b>支持语音自动输入！</b>",
             reg_title: "受试者信息", l_name: "姓名", l_id: "登记号", l_gender: "性别", l_dob: "出生日期", l_age: "年龄", l_edu: "教育", l_hand: "利手", g_m: "男", g_f: "女", btn_next: "下一步", reg_err: "请填写必填项",
             t1_title: "记忆学习", t1_instr: "屏幕将逐个显示单词。<br>请用心记住它们，稍后需要回忆。", btn_mem: "开始记忆", t1_recall_title: "即时回忆", btn_add: "添加", btn_finish: "完成本节", task_mem: "Memory Task", ph_input: "输入一个词，按回车提交",
             t2_title: "空间记忆", t2_instr: "观察方块点亮顺序，按相同顺序点击。", btn_start_corsi: "开始测试", t2_test_title: "空间记忆", t2b_title: "空间倒背",
@@ -366,10 +360,47 @@ const DB = {
             rep_t1: "言语学习", rep_t4: "延迟回忆", rep_t5: "再认记忆", rep_t2: "空间广度", rep_t3: "定向力", rep_t6: "加工速度", rep_note: "备注",
             t6_prac_phase: "练习阶段 (3题)", t6_test_phase: "正式测试 (60s)", t6_prac_fail: "错误！请重试"
         },
+        // [NEW] Geriatric Mode Text (Simplified Chinese)
+        geriatric: {
+            app_title: "老年脑健康筛查", home_title: "老年脑健康筛查", home_desc: "适老版 (v9.2)",
+            btn_settings: "设置",
+            tut_title: "测试演示", 
+            tut_c1_title: "1. 记词语", tut_c1_desc: "屏幕会出几个词，请您记在心里。", 
+            tut_c2_title: "2. 点方块", tut_c2_desc: "看方块怎么亮，照着点一遍。", 
+            tut_c2b_title: "2B. 倒着点", tut_c2b_desc: "这次要倒过来点！", 
+            tut_c4_title: "3. 问时间", tut_c4_desc: "问问今天是几号。", 
+            tut_c9_title: "4. 连连看", tut_c9_desc: "按顺序点圆圈：1-2-3...",
+            tut_c5_title: "5. 找颜色", tut_c5_desc: "别读字，要看颜色！",
+            tut_c3_title: "6. 找数字", tut_c3_desc: "看上面的图，找对应的数字。", 
+            tut_c8_title: "7. 说动物", tut_c8_desc: "说出你知道的所有动物。",
+            
+            reg_title: "老人信息", l_name: "姓名", l_id: "编号", l_gender: "性别", l_dob: "生日", l_age: "年龄", l_edu: "文化程度", l_hand: "常用的手", g_m: "男", g_f: "女", btn_next: "下一步", reg_err: "请把信息填完整",
+            t1_title: "记词语", t1_instr: "屏幕会出几个词，请您跟着念一遍，记在心里。", btn_mem: "开始记忆", t1_recall_title: "刚才有哪些词？", btn_add: "确认", btn_finish: "记不起来了", task_mem: "记词语", ph_input: "说出词语...",
+            t2_title: "点方块", t2_instr: "看方块怎么亮，照着点一遍。", btn_start_corsi: "开始", t2_test_title: "点方块", t2b_title: "倒着点",
+            t3_title: "问时间", btn_nq: "下一题",
+            t9_title: "连连看", btn_start_tmt: "开始练习", rep_t9: "连线", tmt_prac_A: "练习 (1-5)", tmt_real_A: "正式 (1-12)", tmt_prac_B: "练习 B", tmt_real_B: "正式 B",
+            t7_title: "找颜色", t7_instr: "字是红色的就点红按钮！", btn_start_stroop: "开始", btn_red:"红", btn_green:"绿", btn_blue:"蓝", btn_yellow:"黄", rep_t7: "抗干扰",
+            t6_title: "找数字", t6_instr: "看上面的图，找对应的数字！", btn_start_test: "开始", score: "得分",
+            t4_title: "回忆词语", t4_instr: "刚才学的那些词，还记得哪些？", btn_start_recall: "我记得", t4_test_title: "回忆词语", btn_add_t4: "确认",
+            t8_title: "说动物", btn_start_vft: "开始", btn_add_t8: "确认", btn_finish_t8: "说完了", t8_test_title: "说动物", rep_t8: "动物数量",
+            t5_title: "认词语", t5_hint: "刚才学过这个词吗？", btn_finish_t5: "完成", btn_start_recog: "开始", t5_test_title: "认词语",
+            home_intro: "大爷大妈好！咱们来做几个简单的小游戏，测测脑力。<br>大概20分钟，不用紧张。",
+            btn_tutorial: "先看看怎么玩", btn_start_real: "准备好了",
+            report_title: "评估结果", btn_restart: "下一位", backup_hint: "原始数据",
+            edu_opts: ["小学","初中","高中","大学","研究生"], select_def: "--请选择--",
+            t3q: ["今年是哪一年?","现在是几月份?","今天是几号?","今天是星期几?","这是什么地方?","我们在哪个城市?"],
+            t3_opts_m: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],
+            t3_opts_d: ["周一","周二","周三","周四","周五","周六","周日"],
+            lbl_demo: "演示", t2_watch: "看好了...", t2_go: "该你了!", t2_timeout: "太慢啦",
+            admin_title: "⚙️ 设置", admin_place: "📍 地点", admin_city: "🏙️ 城市", admin_cloud: "☁️ 云端地址", admin_key: "🤖 AI 密钥",
+            rep_t1: "记忆力", rep_t4: "延迟回忆", rep_t5: "再认", rep_t2: "空间广度", rep_t3: "定向力", rep_t6: "反应速度", rep_note: "说明",
+            t6_prac_phase: "练习一下", t6_test_phase: "正式开始", t6_prac_fail: "不对哦，再试一次"
+        },
         en: { 
-            app_title: "CAS v9.2", home_title: "Cognitive Assessment System", home_desc: "Executive Suite (v9.2)",
+            app_title: "CAS v9.1", home_title: "Cognitive Assessment System", home_desc: "Executive Suite (v9.1)",
             btn_settings: "Admin Setup", 
             tut_title: "Task Demonstration", tut_c1_title: "1. Verbal Memory", tut_c1_desc: "Words will be shown sequentially. Memorize them for immediate and delayed recall.", tut_c2_title: "2. Spatial Span", tut_c2_desc: "Observe the sequence of lit blocks, then tap them in the <b>exact same order</b>.", tut_c2b_title: "2B. Corsi Backward", tut_c2b_desc: "Harder! Tap the blocks in <b>reverse order</b>.", tut_c4_title: "3. Orientation", tut_c4_desc: "Standard questions regarding current date and location.", tut_c4_hint: "Note: Preset Place/City in [Settings] for correct scoring.", tut_c9_title: "4. Trail Making (TMT)", tut_c9_desc: "Connect circles in order:<br>A: 1-2-3...<br>B: 1-A-2-B...", tut_c5_title: "5. Inhibition (Stroop)", tut_c5_desc: "Ignore the word, identify the ink color.", tut_c3_title: "6. Processing Speed", tut_c3_desc: "Match symbols to numbers.<br><b>Keyboard (1-9) Recommended!</b>", tut_c8_title: "7. Verbal Fluency", tut_c8_desc: "Name as many animals as possible in 60s.<br><b>Voice Input Supported!</b>",
+            // ... (Rest same as v9.1 EN)
             reg_title: "Subject Demographics", l_name: "Name", l_id: "Subject ID", l_gender: "Gender", l_dob: "Date of Birth", l_age: "Age", l_edu: "Education", l_hand: "Handedness", g_m: "Male", g_f: "Female", btn_next: "Next", reg_err: "All fields required",
             t1_title: "Verbal Learning", t1_instr: "Words will appear one by one.<br>Memorize them.", btn_mem: "Start Encoding", t1_recall_title: "Immediate Recall", btn_add: "Add", btn_finish: "Finish Section", task_mem: "Encoding Phase", ph_input: "Type word, press Enter",
             t2_title: "Spatial Span", t2_instr: "Watch the sequence, then repeat it.", btn_start_corsi: "Start Task", t2_test_title: "Corsi Block Task", t2b_title: "Corsi Backward",
@@ -396,6 +427,7 @@ const DB = {
             app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v9.2)",
             btn_settings: "设置", 
             tut_title: "游戏演示", tut_c1_title: "1. 记词游戏", tut_c1_desc: "屏幕上会出现词语。要把它们<b>记在脑子里</b>哦。", tut_c2_title: "2. 点方块", tut_c2_desc: "看方块怎么亮，然后照着<b>点一点</b>。", tut_c2b_title: "2B. 倒着点", tut_c2b_desc: "要反过来点哦！比如亮1-2-3，你点3-2-1。", tut_c4_title: "3. 问答时间", tut_c4_desc: "问问你今天是几号，在哪里。", tut_c4_hint: "让大人在【设置】里填好答案哦", tut_c9_title: "4. 连连看", tut_c9_desc: "按顺序点圆圈：1-2-3...", tut_c5_title: "5. 找颜色", tut_c5_desc: "别读字，要看颜色哦！", tut_c3_title: "6. 找数字", tut_c3_desc: "看上面的图，找对应的数字！<br><b>可以用键盘按 1-9 哦！</b>", tut_c8_title: "7. 说动物", tut_c8_desc: "说出你知道的所有动物。",
+            // ... (Rest same as v9.1 Child)
             reg_title: "小朋友信息", l_name: "姓名", l_id: "学号", l_gender: "性别", l_dob: "生日", l_age: "几岁", l_edu: "年级", l_hand: "常用的手", g_m: "男", g_f: "女", btn_next: "下一步", reg_err: "请把信息填完整",
             t1_title: "记词挑战", t1_instr: "看仔细并记住这些词哦！", btn_mem: "开始", t1_recall_title: "告诉我", btn_add: "记住了", btn_finish: "做完了", task_mem: "记词游戏", ph_input: "输入一个词",
             t2_title: "方块跳舞", t2_instr: "看方块怎么亮，然后照着点。", btn_start_corsi: "开始", t2_test_title: "记方块", t2b_title: "倒着点",
@@ -417,37 +449,11 @@ const DB = {
             admin_title: "⚙️ 设置", admin_place: "📍 地点", admin_city: "🏙️ 城市", admin_cloud: "☁️ 云端地址", admin_key: "🤖 AI 密钥",
             rep_t1: "记词分数", rep_t4: "背书分数", rep_t5: "找词分数", rep_t2: "方块分数", rep_t3: "问答分数", rep_t6: "反应速度", rep_note: "说明",
             t6_prac_phase: "练习一下", t6_test_phase: "正式开始", t6_prac_fail: "不对哦，再试一次"
-        },
-        geriatric: {
-            app_title: "老年脑健康筛查", home_title: "老年脑健康筛查", home_desc: "适老版 (v9.2)",
-            btn_settings: "设置",
-            tut_title: "测试演示", tut_c1_title: "1. 记词语", tut_c1_desc: "屏幕会出几个词，请您记在心里。", tut_c2_title: "2. 点方块", tut_c2_desc: "看方块怎么亮，照着点一遍。", tut_c2b_title: "2B. 倒着点", tut_c2b_desc: "这次要倒过来点！", tut_c4_title: "3. 问时间", tut_c4_desc: "问问今天是几号。", tut_c9_title: "4. 连连看", tut_c9_desc: "按顺序点圆圈：1-2-3...", tut_c5_title: "5. 找颜色", tut_c5_desc: "别读字，要看颜色！", tut_c3_title: "6. 找数字", tut_c3_desc: "看上面的图，找对应的数字。", tut_c8_title: "7. 说动物", tut_c8_desc: "说出你知道的所有动物。",
-            reg_title: "老人信息", l_name: "姓名", l_id: "编号", l_gender: "性别", l_dob: "生日", l_age: "年龄", l_edu: "文化程度", l_hand: "常用的手", g_m: "男", g_f: "女", btn_next: "下一步", reg_err: "请把信息填完整",
-            t1_title: "记词语", t1_instr: "屏幕会出几个词，请您跟着念一遍，记在心里。", btn_mem: "开始记忆", t1_recall_title: "刚才有哪些词？", btn_add: "确认", btn_finish: "记不起来了", task_mem: "记词语", ph_input: "说出词语...",
-            t2_title: "点方块", t2_instr: "看方块怎么亮，照着点一遍。", btn_start_corsi: "开始", t2_test_title: "点方块", t2b_title: "倒着点",
-            t3_title: "问时间", btn_nq: "下一题",
-            t9_title: "连连看", btn_start_tmt: "开始练习", rep_t9: "连线", tmt_prac_A: "练习 (1-5)", tmt_real_A: "正式 (1-12)", tmt_prac_B: "练习 B", tmt_real_B: "正式 B",
-            t7_title: "找颜色", t7_instr: "字是红色的就点红按钮！", btn_start_stroop: "开始", btn_red:"红", btn_green:"绿", btn_blue:"蓝", btn_yellow:"黄", rep_t7: "抗干扰",
-            t6_title: "找数字", t6_instr: "看上面的图，找对应的数字！", btn_start_test: "开始", score: "得分",
-            t4_title: "回忆词语", t4_instr: "刚才学的那些词，还记得哪些？", btn_start_recall: "我记得", t4_test_title: "回忆词语", btn_add_t4: "确认",
-            t8_title: "说动物", btn_start_vft: "开始", btn_add_t8: "确认", btn_finish_t8: "说完了", t8_test_title: "说动物", rep_t8: "动物数量",
-            t5_title: "认词语", t5_hint: "刚才学过这个词吗？", btn_finish_t5: "完成", btn_start_recog: "开始", t5_test_title: "认词语",
-            home_intro: "大爷大妈好！咱们来做几个简单的小游戏，测测脑力。<br>大概20分钟，不用紧张。",
-            btn_tutorial: "先看看怎么玩", btn_start_real: "准备好了",
-            report_title: "评估结果", btn_restart: "下一位", backup_hint: "原始数据",
-            edu_opts: ["小学","初中","高中","大学","研究生"], select_def: "--请选择--",
-            t3q: ["今年是哪一年?","现在是几月份?","今天是几号?","今天是星期几?","这是什么地方?","我们在哪个城市?"],
-            t3_opts_m: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],
-            t3_opts_d: ["周一","周二","周三","周四","周五","周六","周日"],
-            lbl_demo: "演示", t2_watch: "看好了...", t2_go: "该你了!", t2_timeout: "太慢啦",
-            admin_title: "⚙️ 设置", admin_place: "📍 地点", admin_city: "🏙️ 城市", admin_cloud: "☁️ 云端地址", admin_key: "🤖 AI 密钥",
-            rep_t1: "记忆力", rep_t4: "延迟回忆", rep_t5: "再认", rep_t2: "空间广度", rep_t3: "定向力", rep_t6: "反应速度", rep_note: "说明",
-            t6_prac_phase: "练习一下", t6_test_phase: "正式开始", t6_prac_fail: "不对哦，再试一次"
         }
     }
 };
 
-// ... (Rest of Logic)
+// ... (Rest of JS Logic is identical to v9.1, except setMode updated)
 let state = {
     mode: 'zh',
     patient: {},
@@ -1242,6 +1248,7 @@ function generateCSVString() {
     return csv;
 }
 
+// ... (Rest of utils unchanged)
 function calcAge() { const d = new Date(document.getElementById('p_dob').value); document.getElementById('p_age').value = new Date().getFullYear() - d.getFullYear(); }
 function preloadVoice() { const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if(SR) { try { const r=new SR(); r.start(); setTimeout(()=>r.stop(),100); } catch(e){} } }
 
