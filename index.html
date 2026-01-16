@@ -293,7 +293,7 @@
         <hr style="margin: 20px 0; border:0; border-top:1px solid #eee;">
         <div style="margin-bottom:15px;"><label style="font-weight:bold; font-size:0.9rem; color:#667eea;">AI Provider</label><select id="set-provider" style="font-size:0.9rem;" onchange="updateProviderFields()"><option value="gemini">Google Gemini</option><option value="deepseek">DeepSeek</option><option value="qwen">Qwen</option><option value="kimi">Kimi</option><option value="doubao">Doubao</option><option value="openai">OpenAI</option><option value="custom">Custom / Ollama</option></select></div>
         <div style="margin-bottom:15px;"><label id="lbl-set-key" style="font-weight:bold; font-size:0.9rem; color:#667eea;">API Key</label><input type="password" id="set-ai-key" placeholder="sk-..." style="font-size:0.8rem;"></div>
-        <div id="group-model" style="margin-bottom:15px;"><label class="setting-label" style="font-weight:bold; font-size:0.9rem;">Model Name / Endpoint</label><input type="text" id="set-model-name" placeholder="gemini-1.5-flash" style="font-size:0.8rem;"></div>
+        <div id="group-model" style="margin-bottom:15px;"><label class="setting-label" style="font-weight:bold; font-size:0.9rem;">Model Name / Endpoint</label><input type="text" id="set-model-name" placeholder="gemini-3.0-flash" style="font-size:0.8rem;"></div>
         <div id="group-url" style="margin-bottom:15px; display:none;"><label class="setting-label" style="font-weight:bold; font-size:0.9rem;">API Base URL</label><input type="text" id="set-base-url" placeholder="https://..." style="font-size:0.8rem;"></div>
         <div style="margin-bottom:15px;"><label id="lbl-set-cloud" style="font-weight:bold; font-size:0.9rem;">Cloud URL</label><input type="text" id="set-cloud-url" placeholder="https://script.google..." style="font-size:0.8rem;"></div>
         <div style="margin-top:20px; text-align:right;"><button class="btn btn-outline" onclick="toggleAdmin()">Close</button><button class="btn btn-primary" onclick="saveAdmin()">Save</button></div>
@@ -1240,7 +1240,7 @@ async function analyzeWithAI() {
     
     try {
         if (provider === 'gemini') {
-            const m = modelName || 'gemini-1.5-flash-001';
+            const m = modelName || 'gemini-3.0-flash';
             const url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${key}`;
             const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
             const data = await response.json();
@@ -1314,7 +1314,7 @@ function saveAdmin() {
 function updateProviderFields() {
     const p = document.getElementById('set-provider').value;
     const modelInput = document.getElementById('set-model-name');
-    if (p === 'gemini') modelInput.placeholder = "gemini-1.5-flash-001 (Default)";
+    if (p === 'gemini') modelInput.placeholder = "gemini-3.0-flash (Default)";
     else if (p === 'deepseek') modelInput.placeholder = "deepseek-chat";
     else if (p === 'qwen') modelInput.placeholder = "qwen-plus";
     else if (p === 'kimi') modelInput.placeholder = "moonshot-v1-8k";
