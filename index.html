@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAS v8.0 (Full Battery)</title>
+    <title>CAS v8.1 (Voice Flow)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         /* =========================================
-           1. Core Styles (Inherited from v7.2)
+           1. Core Styles (Inherited from v8.0)
            ========================================= */
         :root {
             --primary: #2A5C82; --primary-light: #5A8AB0; --accent: #FF7043;
@@ -144,7 +144,7 @@
 <header>
     <div class="brand">
         <span style="font-size:1.5rem;">🧠</span>
-        <span id="txt-app-title">CAS v8.0</span>
+        <span id="txt-app-title">CAS v8.1</span>
     </div>
     <div style="display:flex; align-items:center; gap:10px;">
         <button onclick="toggleAdmin()" style="border:none; background:transparent; font-size:1.2rem; cursor:pointer;" title="Settings">⚙️</button>
@@ -160,7 +160,7 @@
     <div id="view-home" class="view-section active">
         <div class="card text-center">
             <h1 id="txt-home-title" style="margin-bottom: 10px;">认知评估系统</h1>
-            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Full Battery (v8.0)</p>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Voice Flow (v8.1)</p>
             <div style="max-width:500px; margin:0 auto 30px auto; color:#666; font-size:0.9rem; line-height:1.6;">
                 <p id="txt-home-intro">本测试包含8个环节，预计耗时20分钟。<br>请确保您处于安静环境。</p>
             </div>
@@ -181,31 +181,9 @@
                 <div class="tutorial-card"><span class="t-icon">🟩</span><div class="t-title" id="txt-tut-c2-title">2. 空间记忆</div><div class="t-desc" id="txt-tut-c2-desc">按顺序点击亮起的方块。</div></div>
                 <div class="tutorial-card"><span class="t-icon">🔄</span><div class="t-title" id="txt-tut-c2b-title">2B. 空间倒背</div><div class="t-desc" id="txt-tut-c2b-desc">难度升级！请<b>倒序</b>点击方块。</div></div>
                 <div class="tutorial-card"><span class="t-icon">📅</span><div class="t-title" id="txt-tut-c4-title">3. 定向力</div><div class="t-desc" id="txt-tut-c4-desc">回答时间与地点问题。</div></div>
-                
-                <div class="tutorial-card">
-                    <span class="t-icon">🎨</span><div class="t-title" id="txt-tut-c5-title">5. 抑制控制</div>
-                    <div class="micro-demo-box" style="padding:10px;">
-                        <div class="demo-stroop-card">
-                            <div class="demo-stroop-text text-green">红</div>
-                            <div style="font-size:0.8rem; color:#666;">字是"红"，但颜色是"绿"</div>
-                            <div style="font-weight:bold; color:var(--success);">➜ 请点 [绿] 按钮</div>
-                        </div>
-                    </div>
-                    <div class="t-desc" id="txt-tut-c5-desc">忽略字的含义，<b>只判断字的颜色</b>！</div>
-                </div>
-
-                <div class="tutorial-card">
-                    <span class="t-icon">⚡</span><div class="t-title" id="txt-tut-c3-title">4. 处理速度</div>
-                    <div class="micro-demo-box" style="padding:10px;">
-                        <div class="demo-sdmt-visual">
-                            <div class="demo-sdmt-pair"><div class="symbol-font" style="font-size:1.5rem; color:var(--primary);">⊏</div><div style="color:#999;">➡</div><div style="font-weight:bold; font-size:1.2rem;">1</div></div>
-                            <div class="demo-anim-container"><div id="demo-key-1" class="demo-keyboard-key">1</div></div>
-                        </div>
-                    </div>
-                    <div class="t-desc" id="txt-tut-c3-desc">看符号，按对应的数字键。<br><b>推荐使用键盘操作！(1-9)</b></div>
-                </div>
-                
-                <div class="tutorial-card"><span class="t-icon">🦁</span><div class="t-title" id="txt-tut-c8-title">7. 语言流利度</div><div class="t-desc" id="txt-tut-c8-desc">60秒内，说出尽可能多的动物名称。</div></div>
+                <div class="tutorial-card"><span class="t-icon">🎨</span><div class="t-title" id="txt-tut-c5-title">5. 抑制控制</div><div class="micro-demo-box" style="padding:10px;"><div class="demo-stroop-card"><div class="demo-stroop-text text-green">红</div><div style="font-size:0.8rem; color:#666;">字是"红"，但颜色是"绿"</div><div style="font-weight:bold; color:var(--success);">➜ 请点 [绿] 按钮</div></div></div><div class="t-desc" id="txt-tut-c5-desc">忽略字的含义，<b>只判断字的颜色</b>！</div></div>
+                <div class="tutorial-card"><span class="t-icon">⚡</span><div class="t-title" id="txt-tut-c3-title">4. 处理速度</div><div class="micro-demo-box" style="padding:10px;"><div class="demo-sdmt-visual"><div class="demo-sdmt-pair"><div class="symbol-font" style="font-size:1.5rem; color:var(--primary);">⊏</div><div style="color:#999;">➡</div><div style="font-weight:bold; font-size:1.2rem;">1</div></div><div class="demo-anim-container"><div id="demo-key-1" class="demo-keyboard-key">1</div></div></div></div><div class="t-desc" id="txt-tut-c3-desc">看符号，按对应的数字键。<br><b>推荐使用键盘操作！(1-9)</b></div></div>
+                <div class="tutorial-card"><span class="t-icon">🦁</span><div class="t-title" id="txt-tut-c8-title">7. 语言流利度</div><div class="t-desc" id="txt-tut-c8-desc">60秒内，说出尽可能多的动物名称。<br><b>支持语音自动输入！</b></div></div>
             </div>
             <div style="margin-top:40px;">
                 <button class="btn btn-success" onclick="initSession()"><span id="txt-btn-start-real">开始登记</span></button>
@@ -245,7 +223,6 @@
     
     <div id="view-t2-intro" class="view-section"><div class="card text-center"><h2 id="txt-t2-title">空间记忆</h2><div class="micro-demo-box"><div class="demo-label" id="lbl-demo-t2">演示</div><div class="demo-corsi-grid"><div class="demo-block lit"></div><div class="demo-block"></div><div class="demo-block"></div><div class="demo-block"></div><div class="demo-block lit" style="animation-delay:0.5s"></div><div class="demo-block"></div><div class="demo-block"></div><div class="demo-block"></div><div class="demo-block lit" style="animation-delay:1s"></div></div></div><p id="txt-t2-instr">观察方块亮起的顺序，按相同顺序点击。</p><button class="btn btn-primary" onclick="startCorsi('forward')"><span id="txt-btn-start-corsi">开始测试</span></button></div></div>
     <div id="view-t2-test" class="view-section"><div class="card text-center"><h2 id="txt-t2-test-title">空间记忆</h2><p id="t2-status" style="font-weight:bold; color:var(--primary);">...</p><div class="corsi-board" id="corsi-board"></div></div></div>
-    
     <div id="view-t2b-intro" class="view-section"><div class="card text-center"><h2 id="txt-t2b-title">空间倒背</h2><div class="micro-demo-box" style="padding:20px;"><div style="font-size:3rem;">🔄</div><div style="margin-top:10px;">难度升级！</div></div><p id="txt-t2b-instr">观察顺序 1-2-3，请<b>倒序点击</b> 3-2-1。</p><button class="btn btn-primary" onclick="startCorsi('backward')">开始倒背测试</button></div></div>
 
     <div id="view-t3" class="view-section"><div class="card"><h2 id="txt-t3-title">定向力</h2><div style="min-height: 200px; display:flex; flex-direction:column; justify-content:center;"><h3 id="t3-q" style="font-size: 1.4rem; margin-bottom: 20px; text-align:center;">Question</h3><div id="t3-input-area"></div></div><div class="text-center" style="margin-top:20px;"><button class="btn btn-primary" onclick="nextT3()"><span id="txt-btn-next-q">下一题</span></button></div></div></div>
@@ -259,8 +236,22 @@
     <div id="view-t4-intro" class="view-section"><div class="card text-center"><h2 id="txt-t4-title">延迟回忆</h2><p id="txt-t4-instr" style="color:var(--text-light); margin:30px 0;">请再次回忆刚才学过的单词。</p><button class="btn btn-primary" onclick="startT4Recall()"><span id="txt-btn-start-recall">开始回忆</span></button></div></div>
     <div id="view-t4-recall" class="view-section"><div class="card"><div style="display:flex; justify-content:space-between;"><h2 id="txt-t4-test-title">延迟回忆</h2><div style="font-weight:bold; color:var(--accent);">⏱ <span id="t4-timer">60</span>s</div></div><div style="display:flex; gap:10px; margin: 20px 0;"><button class="mic-btn" id="t4-mic" onclick="toggleSpeech('t4')">🎤</button><input type="text" id="t4-input" onkeydown="if(event.key==='Enter'){event.preventDefault();addWord('t4');}"><button class="btn btn-primary" onclick="addWord('t4')"><span id="txt-btn-add-t4">添加</span></button></div><div id="t4-chips" class="chips-area"></div><div class="text-center"><button class="btn btn-success" onclick="finishT4()"><span id="txt-btn-finish">完成本节</span></button></div></div></div>
     
-    <div id="view-t8-intro" class="view-section"><div class="card text-center"><h2 id="txt-t8-title">语言流利度</h2><div class="micro-demo-box" style="padding:20px; font-size:3rem;">🦁 🐼 🐱</div><p id="txt-t8-instr">在60秒内，说出尽可能多的<b>动物</b>名称。<br>不要重复。</p><button class="btn btn-primary" onclick="startT8Test()"><span id="txt-btn-start-vft">开始测试</span></button></div></div>
-    <div id="view-t8-test" class="view-section"><div class="card"><div style="display:flex; justify-content:space-between;"><h2 id="txt-t8-test-title">列举动物</h2><div style="font-weight:bold; color:var(--accent);">⏱ <span id="t8-timer">60</span>s</div></div><div style="display:flex; gap:10px; margin: 20px 0;"><button class="mic-btn" id="t8-mic" onclick="toggleSpeech('t8')">🎤</button><input type="text" id="t8-input" onkeydown="if(event.key==='Enter'){event.preventDefault();addWord('t8');}"><button class="btn btn-primary" onclick="addWord('t8')"><span id="txt-btn-add-t8">添加</span></button></div><div id="t8-chips" class="chips-area"></div><div class="text-center"><button class="btn btn-success" onclick="finishT8()"><span id="txt-btn-finish-t8">完成本节</span></button></div></div></div>
+    <div id="view-t8-intro" class="view-section"><div class="card text-center"><h2 id="txt-t8-title">语言流利度</h2><div class="micro-demo-box" style="padding:20px; font-size:3rem;">🦁 🐼 🐱</div><p id="txt-t8-instr">在60秒内，说出尽可能多的<b>动物</b>名称。<br>支持语音连续输入。</p><button class="btn btn-primary" onclick="startT8Test()"><span id="txt-btn-start-vft">开始测试</span></button></div></div>
+    <div id="view-t8-test" class="view-section">
+        <div class="card">
+            <div style="display:flex; justify-content:space-between;">
+                <h2 id="txt-t8-test-title">列举动物</h2>
+                <div style="font-weight:bold; color:var(--accent);">⏱ <span id="t8-timer">60</span>s</div>
+            </div>
+            <div style="display:flex; gap:10px; margin: 20px 0;">
+                <button class="mic-btn" id="t8-mic" onclick="toggleSpeech('t8')">🎤</button>
+                <input type="text" id="t8-input" onkeydown="if(event.key==='Enter'){event.preventDefault();addWord('t8');}">
+                <button class="btn btn-primary" onclick="addWord('t8')"><span id="txt-btn-add-t8">添加</span></button>
+            </div>
+            <div id="t8-chips" class="chips-area"></div>
+            <div class="text-center"><button class="btn btn-success" onclick="finishT8()"><span id="txt-btn-finish-t8">完成本节</span></button></div>
+        </div>
+    </div>
 
     <div id="view-t5-intro" class="view-section"><div class="card text-center"><h2 id="txt-t5-title">再认</h2><p id="txt-t5-hint">从下方列表中，选出 T1 学过的单词。</p><button class="btn btn-primary" onclick="startT5Test()"><span id="txt-btn-start-recog">开始选择</span></button></div></div>
     <div id="view-t5-test" class="view-section"><div class="card"><div style="display:flex; justify-content:space-between;"><h2 id="txt-t5-test-title">再认</h2><div id="t5-progress-txt">0 / 10</div></div><div id="t5-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:20px;"></div><div class="text-center" style="margin-top:30px;"><button class="btn btn-success" onclick="finishT5()"><span id="txt-btn-finish-t5">完成本节</span></button></div></div></div>
@@ -292,16 +283,13 @@ const DB = {
     stroop: { zh: { words: ["红","绿","蓝","黄"], colors: ["red","green","blue","yellow"], btns: ["红","绿","蓝","黄"] }, en: { words: ["RED","GREEN","BLUE","YELLOW"], colors: ["red","green","blue","yellow"], btns: ["RED","GREEN","BLUE","YELLOW"] }, child: { words: ["红","绿","蓝","黄"], colors: ["red","green","blue","yellow"], btns: ["红","绿","蓝","黄"] } },
     text: {
         zh: {
-            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "Full Battery (v8.0)",
+            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "Voice Flow (v8.1)",
             btn_settings: "系统配置 (Admin)", tut_c3_desc: "看符号，按对应的数字键。<br><b>推荐使用键盘操作！(1-9)</b>",
             tut_c5_title: "5. 抑制控制 (Stroop)", tut_c5_desc: "忽略文字含义，只判断颜色！",
             t7_title: "抑制控制 (Stroop)", t7_instr: "忽略文字含义，快速点击文字颜色。", btn_start_stroop: "开始测试", 
             btn_red:"红", btn_green:"绿", btn_blue:"蓝", btn_yellow:"黄", rep_t7: "抑制控制",
-            
-            // [NEW] T2B & T8 Texts
             tut_c2b_title: "2B. 空间倒背", tut_c2b_desc: "难度升级！请<b>倒序</b>点击方块。", t2b_title: "空间倒背",
-            tut_c8_title: "7. 语言流利度", tut_c8_desc: "60秒内，说出尽可能多的动物名称。", t8_title: "语言流利度", btn_start_vft: "开始测试", btn_add_t8: "添加", btn_finish_t8: "完成本节", t8_test_title: "列举动物", rep_t8: "语言流利度",
-
+            tut_c8_title: "7. 语言流利度", tut_c8_desc: "60秒内，说出尽可能多的动物名称。<br><b>支持语音自动输入！</b>", t8_title: "语言流利度", btn_start_vft: "开始测试", btn_add_t8: "添加", btn_finish_t8: "完成本节", t8_test_title: "列举动物", rep_t8: "语言流利度",
             home_intro: "本测试包含8个环节，预计耗时20分钟。<br>请确保您处于安静环境。",
             btn_tutorial: "📖 查看演示 (Demo)", btn_start_real: "我明白了，开始登记",
             tut_title: "测试内容演示", tut_c1_title: "1. 记忆力挑战", tut_c1_desc: "屏幕会逐个显示单词。请用心<b>记住</b>它们。", tut_c2_title: "2. 空间记忆", tut_c2_desc: "观察方块亮起的<b>顺序</b>。演示结束后，请按<b>相同顺序</b>点击方块。", tut_c4_title: "3. 定向问答", tut_c4_desc: "回答时间与地点问题。", tut_c4_hint: "注：最后两题（地点/城市）的正确答案请在【设置】中预设",
@@ -323,14 +311,13 @@ const DB = {
             t6_prac_phase: "练习阶段 (3题)", t6_test_phase: "正式测试 (60s)", t6_prac_fail: "错误！请重试"
         },
         en: { 
-            app_title: "CAS v8.0", home_title: "Cognitive Assessment System", home_desc: "Full Battery (v8.0)",
+            app_title: "CAS v8.1", home_title: "Cognitive Assessment System", home_desc: "Voice Flow (v8.1)",
             btn_settings: "Admin Setup", tut_c3_desc: "Match symbols to numbers.<br><b>Keyboard (1-9) Recommended!</b>",
             tut_c5_title: "5. Inhibition (Stroop)", tut_c5_desc: "Ignore the word, identify the ink color.",
             t7_title: "Stroop Task", t7_instr: "Click the button matching the INK COLOR.", btn_start_stroop: "Start Task", 
             btn_red:"RED", btn_green:"GREEN", btn_blue:"BLUE", btn_yellow:"YEL", rep_t7: "Inhibition",
-            // [NEW] T2B & T8 Texts
             tut_c2b_title: "2B. Corsi Backward", tut_c2b_desc: "Harder! Tap the blocks in <b>reverse order</b>.", t2b_title: "Corsi Backward",
-            tut_c8_title: "7. Verbal Fluency", tut_c8_desc: "Name as many animals as possible in 60s.", t8_title: "Verbal Fluency", btn_start_vft: "Start Task", btn_add_t8: "Add", btn_finish_t8: "Finish", t8_test_title: "Animal Naming", rep_t8: "Verbal Fluency",
+            tut_c8_title: "7. Verbal Fluency", tut_c8_desc: "Name as many animals as possible in 60s.<br><b>Voice Input Supported!</b>", t8_title: "Verbal Fluency", btn_start_vft: "Start Task", btn_add_t8: "Add", btn_finish_t8: "Finish", t8_test_title: "Animal Naming", rep_t8: "Verbal Fluency",
             // ... (rest same)
             home_intro: "This battery consists of 8 neuropsychological tasks.<br>Estimated time: 20 mins. Please ensure a quiet environment.",
             btn_tutorial: "📖 View Demo", btn_start_real: "Proceed to Register",
@@ -353,15 +340,14 @@ const DB = {
             t6_prac_phase: "Practice (3 Trials)", t6_test_phase: "Real Test (60s)", t6_prac_fail: "Wrong! Try Again."
         },
         child: {
-            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v8.0)",
+            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v8.1)",
             btn_settings: "设置", tut_c3_desc: "看上面的图，找对应的数字！<br><b>可以用键盘按 1-9 哦！</b>",
             tut_c5_title: "5. 找颜色", tut_c5_desc: "别读字，要看颜色哦！",
             t7_title: "颜色大挑战", t7_instr: "字是红色的就点红按钮！", btn_start_stroop: "开始", 
             btn_red:"红", btn_green:"绿", btn_blue:"蓝", btn_yellow:"黄", rep_t7: "抗干扰",
-            // [NEW]
             tut_c2b_title: "2B. 倒着点", tut_c2b_desc: "要反过来点哦！比如亮1-2-3，你点3-2-1。", t2b_title: "倒着点",
             tut_c8_title: "7. 说动物", tut_c8_desc: "说出你知道的所有动物。", t8_title: "说动物", btn_start_vft: "开始", btn_add_t8: "记下来", btn_finish_t8: "完成", t8_test_title: "动物园", rep_t8: "动物数量",
-            // ... (rest same)
+            // ...
             home_intro: "我们来玩几个小游戏吧！<br>先看看怎么玩哦。",
             btn_tutorial: "📖 看看怎么玩", btn_start_real: "准备好了！",
             tut_title: "游戏演示", tut_c1_title: "1. 记词游戏", tut_c1_desc: "屏幕上会出现词语。要把它们<b>记在脑子里</b>哦。", tut_c2_title: "2. 点方块", tut_c2_desc: "看方块怎么亮，然后照着<b>点一点</b>。", tut_c4_title: "3. 问答时间", tut_c4_desc: "问问你今天是几号，在哪里。", tut_c4_hint: "让大人在【设置】里填好答案哦",
@@ -396,7 +382,6 @@ let state = {
     t5: { hits: 0, false_alarms: 0, time: 0, selected_words: [], event_log: [] },
     t6: { score: 0, errors: 0, time: 60, responses: [], keyMap: [], event_log: [], isPractice: false, practiceCount: 0 },
     t7: { score: 0, errors: 0, time: 45, responses: [], event_log: [], isPractice: false, practiceCount: 0, lastStimTime: 0 },
-    // [NEW] T8 State
     t8: { entered: [], time: 0, event_log: [] },
     
     admin: { place: "Hospital", city: "Beijing", aiKey: "", cloudUrl: "", provider: "gemini", modelName: "", baseUrl: "" },
@@ -478,7 +463,6 @@ function setMode(m) {
             if(lbl) lbl.innerText = T[key];
         }
     }
-    // Update Stroop Button Texts
     document.getElementById('btn-red-txt').innerText = T.btn_red;
     document.getElementById('btn-green-txt').innerText = T.btn_green;
     document.getElementById('btn-blue-txt').innerText = T.btn_blue;
@@ -511,16 +495,14 @@ function startTutorial() { showView('view-tutorial'); }
 function initSession() {
     let syms = [...DB.symbols]; syms.sort(()=>Math.random()-0.5);
     state.t6.keyMap = syms.map((s,i)=>({s:s, n:i+1}));
-    // Reset all state for new session
     state.t1 = { entered: [], time: 0, event_log: [] };
-    state.t2 = { level: 2, trials: 0, score: 0, sequence: [], userSeq: [], history:[], event_log: [], isBackward: false };
-    state.t3 = { details: [], score: 0, time: 0 }; 
     state.t4 = { entered: [], time: 0, event_log: [] };
     state.t5 = { hits: 0, false_alarms: 0, time: 0, selected_words: [], event_log: [] };
     state.t6 = { score: 0, errors: 0, time: 60, responses: [], keyMap: state.t6.keyMap, event_log: [], isPractice: false, practiceCount: 0 };
     state.t7 = { score: 0, errors: 0, time: 45, responses: [], event_log: [], isPractice: false, practiceCount: 0 };
+    state.t2 = { level: 2, trials: 0, score: 0, sequence: [], userSeq: [], history:[], event_log: [] };
+    state.t3 = { details: [], score: 0, time: 0 }; 
     state.t8 = { entered: [], time: 0, event_log: [] };
-    
     showView('view-register');
 }
 
@@ -572,7 +554,14 @@ function startT1Recall() { showView('view-t1-recall'); state.t1.startTime = Date
 function startRecallTimer(phase) {
     let time = 60; const timerEl = document.getElementById(phase+'-timer'); timerEl.innerText = time;
     if(recallTimerInt) clearInterval(recallTimerInt);
-    recallTimerInt = setInterval(() => { time--; timerEl.innerText = time; if(time <= 0) { clearInterval(recallTimerInt); phase === 't1' ? finishT1() : finishT4(); } }, 1000);
+    recallTimerInt = setInterval(() => { time--; timerEl.innerText = time; 
+        if(time <= 0) { 
+            clearInterval(recallTimerInt); 
+            if(phase === 't1') finishT1();
+            else if(phase === 't4') finishT4();
+            else if(phase === 't8') finishT8();
+        } 
+    }, 1000);
 }
 function addWord(phase) {
     const inp = document.getElementById(phase+'-input');
@@ -608,13 +597,10 @@ function finishT1() {
 }
 function updateProgress(barId, txtId, val) { if(document.getElementById(barId)) document.getElementById(barId).style.width = Math.min(100, (val/10)*100) + "%"; }
 
-/* T2 Corsi - Forward & Backward */
+/* T2 Corsi */
 function startCorsi(mode) {
     state.t2.isBackward = (mode === 'backward');
-    state.t2.level = 2; 
-    state.t2.trials = 0; 
-    state.t2.score = 0;
-    // Separate history for Bwd could be better, but appending with flag works for CSV
+    state.t2.level = 2; state.t2.trials = 0; state.t2.score = 0;
     showView('view-t2-test'); 
     document.getElementById('txt-t2-test-title').innerText = state.t2.isBackward ? DB.text[state.mode].t2b_title : DB.text[state.mode].t2_test_title;
     nextCorsiTrial(); 
@@ -658,58 +644,27 @@ function handleCorsiTap(id) {
     state.t2.userSeq.push(id);
     logEvent('t2', 'tap', id);
     let idx = state.t2.userSeq.length - 1;
-    
-    // Check correctness immediately if we know the direction? 
-    // Corsi validation usually happens after sequence is done or immediately. 
-    // We check immediately against the sequence (reversed if backward)
-    
-    // Construct expected sequence based on mode
     let targetSeq = state.t2.sequence;
     if(state.t2.isBackward) {
-        // For Backward, we can't check index-by-index easily until user finishes?
-        // Actually we can, if user is inputting 1st item, it must match LAST item of sequence.
-        // Wait, Backward means: Shown 1-2-3. User taps 3-2-1.
-        // So user's 1st tap (idx 0) must match target's last (len-1).
-        // User's 2nd tap (idx 1) must match target's 2nd to last (len-2).
         let targetVal = targetSeq[targetSeq.length - 1 - idx];
         if (state.t2.userSeq[idx] !== targetVal) corsiResult(false);
     } else {
         if (state.t2.userSeq[idx] !== targetSeq[idx]) corsiResult(false);
     }
-
     if(state.t2.userSeq.length === state.t2.sequence.length) corsiResult(true);
 }
 function corsiResult(success) {
     if(corsiTimeout) clearTimeout(corsiTimeout);
     document.querySelectorAll('.corsi-block').forEach(b=>b.style.pointerEvents='none');
-    
-    // Store result with mode tag
     state.t2.history.push({ level: state.t2.level, success: success, mode: state.t2.isBackward ? 'Bwd' : 'Fwd' });
     logEvent('t2', 'trial_result', {level:state.t2.level, success:success, mode:state.t2.isBackward});
-    
     if(success) {
-        // Logic: Keep highest score for current mode
-        // Note: score variable is shared, we might want separate. 
-        // For simplicity in this structure, we just track level progression.
-        if(state.t2.level >= 9) { 
-            // End of this phase
-            if(!state.t2.isBackward) showView('view-t2b-intro'); else startT3(); 
-            return; 
-        }
+        if(state.t2.level >= 9) { if(!state.t2.isBackward) showView('view-t2b-intro'); else startT3(); return; }
         if(state.t2.trials === 0) { state.t2.level++; state.t2.trials = 0; } else { state.t2.level++; state.t2.trials = 0; }
         setTimeout(nextCorsiTrial, 1000);
     } else { 
-        if(state.t2.trials === 0) { 
-            state.t2.trials++; 
-            setTimeout(nextCorsiTrial, 1000); 
-        } else { 
-            // Phase failed. 
-            if(!state.t2.isBackward) {
-                showView('view-t2b-intro'); // Go to Backward
-            } else {
-                startT3(); // Go to T3
-            }
-        } 
+        if(state.t2.trials === 0) { state.t2.trials++; setTimeout(nextCorsiTrial, 1000); } 
+        else { if(!state.t2.isBackward) showView('view-t2b-intro'); else startT3(); } 
     }
 }
 
@@ -883,25 +838,7 @@ function finishT4() {
 function startT8Test() {
     showView('view-t8-test');
     state.t8.startTime = Date.now();
-    startRecallTimer('t8'); // Reusing timer logic but mapping IDs
-}
-// Helper to bridge generic timer to t8 specific
-function startRecallTimer(phase) {
-    // Standard function adapted for T8
-    let time = 60; 
-    const timerEl = document.getElementById(phase+'-timer'); 
-    timerEl.innerText = time;
-    if(recallTimerInt) clearInterval(recallTimerInt);
-    recallTimerInt = setInterval(() => { 
-        time--; 
-        timerEl.innerText = time; 
-        if(time <= 0) { 
-            clearInterval(recallTimerInt); 
-            if(phase === 't1') finishT1();
-            else if(phase === 't4') finishT4();
-            else if(phase === 't8') finishT8();
-        } 
-    }, 1000);
+    startRecallTimer('t8'); 
 }
 function finishT8() {
     if(recallTimerInt) clearInterval(recallTimerInt);
@@ -932,7 +869,41 @@ function finishT5() {
     state.t5.hits = 0; state.t5.false_alarms = 0;
     state.t5.selected_words = Array.from(t5Sel);
     t5Sel.forEach(w => { if(state.targets.includes(w)) state.t5.hits++; else state.t5.false_alarms++; });
-    showReport(); // End of Battery
+    showReport(); 
+}
+
+// [UPDATED] toggleSpeech for T8
+function toggleSpeech(phase) {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SR) return alert("Browser not supported");
+    if(isRecording) { recognition.stop(); return; }
+    recognition = new SR();
+    recognition.lang = state.mode === 'en' ? 'en-US' : 'zh-CN';
+    recognition.onstart = () => { isRecording=true; document.getElementById(phase+'-mic').classList.add('recording'); };
+    recognition.onend = () => { isRecording=false; document.getElementById(phase+'-mic').classList.remove('recording'); };
+    
+    recognition.onresult = e => { 
+        const transcript = e.results[0][0].transcript; 
+        
+        if(phase === 't8') {
+            // [v8.1] Smart splitting for T8
+            const words = transcript.split(/[\s,，.。;；]+/);
+            words.forEach(w => {
+                if(w && w.trim().length > 0) {
+                    document.getElementById(phase+'-input').value = w.trim();
+                    addWord(phase);
+                }
+            });
+        } else {
+            // Standard behavior for T1/T4
+            const t = transcript.split(/[\s,，.。]/)[0]; 
+            if(t) { 
+                document.getElementById(phase+'-input').value = t; 
+                document.getElementById(phase+'-input').focus(); 
+            }
+        }
+    };
+    recognition.start();
 }
 
 document.addEventListener('keydown', function(event) {
@@ -1053,7 +1024,6 @@ function generateCSVString() {
     csv += `T4,Retention_Rate,${retention},-\n`;
     
     // T8 VFT
-    // Unique count logic
     let uniqueAnimals = [...new Set(state.t8.entered)];
     csv += `T8,VFT_Animals_Total,${uniqueAnimals.length},${state.t8.entered.join(';')}\n`;
 
@@ -1067,17 +1037,6 @@ function generateCSVString() {
 /* Utils */
 function calcAge() { const d = new Date(document.getElementById('p_dob').value); document.getElementById('p_age').value = new Date().getFullYear() - d.getFullYear(); }
 function preloadVoice() { const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if(SR) { try { const r=new SR(); r.start(); setTimeout(()=>r.stop(),100); } catch(e){} } }
-function toggleSpeech(phase) {
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if(!SR) return alert("Browser not supported");
-    if(isRecording) { recognition.stop(); return; }
-    recognition = new SR();
-    recognition.lang = state.mode === 'en' ? 'en-US' : 'zh-CN';
-    recognition.onstart = () => { isRecording=true; document.getElementById(phase+'-mic').classList.add('recording'); };
-    recognition.onend = () => { isRecording=false; document.getElementById(phase+'-mic').classList.remove('recording'); };
-    recognition.onresult = e => { const t = e.results[0][0].transcript.split(/[\s,，.。]/)[0]; if(t) { document.getElementById(phase+'-input').value = t; document.getElementById(phase+'-input').focus(); } };
-    recognition.start();
-}
 
 async function analyzeWithAI() {
     const provider = state.admin.provider || "gemini";
