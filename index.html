@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAS v9.5 (Golden Master)</title>
+    <title>CAS v10.0 (Universal)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         /* =========================================
@@ -86,6 +86,11 @@
         .t-desc { font-size: 0.85rem; color: #666; line-height: 1.5; }
         .t-hint { font-size: 0.75rem; color: var(--accent); margin-top: 8px; font-style: italic; background: rgba(255,112,67,0.1); padding: 4px 8px; border-radius: 4px; display: inline-block; }
 
+        /* [NEW v10] Quick Guide Steps */
+        .guide-steps { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px; font-size: 0.85rem; }
+        .guide-step { flex: 1; background: #FFF; padding: 10px; border-radius: 8px; border: 1px solid #E3F2FD; text-align: center; }
+        .gs-num { display: inline-block; width: 20px; height: 20px; background: var(--primary); color: white; border-radius: 50%; font-size: 0.75rem; line-height: 20px; margin-bottom: 5px; }
+
         /* SDMT Visuals */
         .demo-sdmt-visual { display: flex; flex-direction: column; align-items: center; gap: 10px; }
         .demo-sdmt-pair { display: flex; gap: 10px; align-items: center; border: 1px solid #ccc; padding: 5px 15px; border-radius: 8px; background: white; }
@@ -166,13 +171,32 @@
         #ai-report-area { margin-top: 20px; background: #f0f7ff; padding: 20px; border-radius: 12px; border: 1px solid #cce5ff; text-align: left; display: none; }
         .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(0,0,0,0.1); border-radius: 50%; border-top-color: #2A5C82; animation: spin 1s ease-in-out infinite; margin-right: 10px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        @media (max-width: 600px) { .card { padding: 25px 20px; } .form-row { grid-template-columns: 1fr; } .word-display { font-size: 2.5rem; height: 120px; } .key-btn { padding: 15px; } .tutorial-grid { grid-template-columns: 1fr; } }
+        
+        /* [NEW v10] Universal Responsive Adaptation */
+        @media (max-width: 768px) { 
+            .card { padding: 20px 15px; } 
+            .form-row { grid-template-columns: 1fr; } 
+            .word-display { font-size: 2.5rem; height: 120px; } 
+            .key-btn { padding: 15px; font-size: 1.2rem; }
+            .tutorial-grid { grid-template-columns: 1fr; }
+            .sdmt-legend-sym { font-size: 1.8rem; height: 40px; }
+            .sdmt-legend-num { height: 25px; }
+            /* TMT & Stroop adjustments for small touch screens */
+            .tmt-node { width: 35px; height: 35px; font-size: 1rem; }
+            .btn-color { height: 70px; font-size: 1.3rem; }
+        }
+        @media (orientation: landscape) and (max-height: 600px) {
+            header { padding: 5px 20px; }
+            .container { padding: 10px; }
+            .card { padding: 15px; }
+            #tmt-canvas-area { height: 250px; }
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="brand"><span style="font-size:1.5rem;">🧠</span><span id="txt-app-title">CAS v9.5</span></div>
+    <div class="brand"><span style="font-size:1.5rem;">🧠</span><span id="txt-app-title">CAS v10.0</span></div>
     <div style="display:flex; align-items:center; gap:10px;">
         <button onclick="toggleAdmin()" style="border:none; background:transparent; font-size:1.2rem; cursor:pointer;" title="Settings">⚙️</button>
         <div class="mode-switch">
@@ -188,11 +212,16 @@
     <div id="view-home" class="view-section active">
         <div class="card text-center">
             <h1 id="txt-home-title" style="margin-bottom: 10px;">认知评估系统</h1>
-            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Final Version (v9.5)</p>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Universal Edition (v10.0)</p>
             <div style="max-width:500px; margin:0 auto 30px auto; color:#666; font-size:0.9rem; line-height:1.6;">
                 <p id="txt-home-intro">本测试包含9个环节，预计耗时25分钟。<br>请确保您处于安静环境。</p>
             </div>
-            <button class="btn btn-primary" onclick="startTutorial()"><span id="txt-btn-tutorial">📖 查看演示 (Demo)</span></button>
+            
+            <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;">
+                <button class="btn btn-primary" onclick="startTutorial()"><span id="txt-btn-tutorial">📖 查看演示 (Demo)</span></button>
+                <button class="btn btn-ai" onclick="startQuickRun()"><span id="txt-btn-quick">⚡ 快速体验 (Quick)</span></button>
+            </div>
+
             <div style="margin-top: 20px;">
                 <button id="btn-home-settings" class="btn btn-outline" style="font-size: 0.9rem; padding: 10px 25px; display:inline-flex; align-items:center; gap:5px;" onclick="toggleAdmin()">
                     <span id="icon-settings">⚙️</span> <span id="txt-btn-settings">系统配置 (Admin Setup)</span>
@@ -202,13 +231,23 @@
     </div>
 
     <div id="view-tutorial" class="view-section">
+        <div class="card" style="margin-bottom:20px; background:#e3f2fd; border:1px solid #bbdefb;">
+            <h3 style="margin-top:0; color:#2A5C82;">🚀 <span id="txt-guide-title">快速使用指南</span></h3>
+            <div class="guide-steps">
+                <div class="guide-step"><span class="gs-num">1</span><br><span id="txt-step-1">登记信息</span></div>
+                <div class="guide-step"><span class="gs-num">2</span><br><span id="txt-step-2">阅读/收听指令</span></div>
+                <div class="guide-step"><span class="gs-num">3</span><br><span id="txt-step-3">完成测试</span></div>
+                <div class="guide-step"><span class="gs-num">4</span><br><span id="txt-step-4">获取报告</span></div>
+            </div>
+        </div>
+
         <div class="card text-center">
             <h2 id="txt-tut-title" style="margin-bottom:20px;">测试演示</h2>
             <div class="tutorial-grid">
-                <div class="tutorial-card"><span class="t-icon">🧠</span><div class="t-title" id="txt-tut-c1-title">1. 记忆力</div><div class="t-desc" id="txt-tut-c1-desc">记住屏幕显示的单词。</div></div>
+                <div class="tutorial-card"><span class="t-icon">🧠</span><div class="t-title" id="txt-tut-c1-title">1. 记忆力挑战</div><div class="t-desc" id="txt-tut-c1-desc">记住屏幕显示的单词。</div></div>
                 <div class="tutorial-card"><span class="t-icon">🟩</span><div class="t-title" id="txt-tut-c2-title">2. 空间记忆</div><div class="t-desc" id="txt-tut-c2-desc">按顺序点击亮起的方块。</div></div>
                 <div class="tutorial-card"><span class="t-icon">🔄</span><div class="t-title" id="txt-tut-c2b-title">2B. 空间倒背</div><div class="t-desc" id="txt-tut-c2b-desc">难度升级！请<b>倒序</b>点击方块。</div></div>
-                <div class="tutorial-card"><span class="t-icon">📅</span><div class="t-title" id="txt-tut-c4-title">3. 定向力</div><div class="t-desc" id="txt-tut-c4-desc">回答时间与地点问题。</div></div>
+                <div class="tutorial-card"><span class="t-icon">📅</span><div class="t-title" id="txt-tut-c4-title">3. 定向问答</div><div class="t-desc" id="txt-tut-c4-desc">回答时间与地点问题。</div></div>
                 
                 <div class="tutorial-card">
                     <span class="t-icon">✏️</span><div class="t-title" id="txt-tut-c9-title">4. 连线测验</div>
@@ -238,7 +277,7 @@
                 <div class="tutorial-card"><span class="t-icon">🦁</span><div class="t-title" id="txt-tut-c8-title">7. 语言流利度</div><div class="t-desc" id="txt-tut-c8-desc">60秒内，说出尽可能多的动物名称。<br><b>支持语音自动输入！</b></div></div>
             </div>
             <div style="margin-top:40px;">
-                <button class="btn btn-success" onclick="initSession()"><span id="txt-btn-start-real">开始登记</span></button>
+                <button class="btn btn-success" onclick="try{initSession()}catch(e){alert(e)}"><span id="txt-btn-start-real">开始登记</span></button>
             </div>
         </div>
     </div>
@@ -293,7 +332,7 @@
         <hr style="margin: 20px 0; border:0; border-top:1px solid #eee;">
         <div style="margin-bottom:15px;"><label style="font-weight:bold; font-size:0.9rem; color:#667eea;">AI Provider</label><select id="set-provider" style="font-size:0.9rem;" onchange="updateProviderFields()"><option value="gemini">Google Gemini</option><option value="deepseek">DeepSeek</option><option value="qwen">Qwen</option><option value="kimi">Kimi</option><option value="doubao">Doubao</option><option value="openai">OpenAI</option><option value="custom">Custom / Ollama</option></select></div>
         <div style="margin-bottom:15px;"><label id="lbl-set-key" style="font-weight:bold; font-size:0.9rem; color:#667eea;">API Key</label><input type="password" id="set-ai-key" placeholder="sk-..." style="font-size:0.8rem;"></div>
-        <div id="group-model" style="margin-bottom:15px;"><label class="setting-label" style="font-weight:bold; font-size:0.9rem;">Model Name / Endpoint</label><input type="text" id="set-model-name" placeholder="gemini-3.0-flash" style="font-size:0.8rem;"></div>
+        <div id="group-model" style="margin-bottom:15px;"><label class="setting-label" style="font-weight:bold; font-size:0.9rem;">Model Name / Endpoint</label><input type="text" id="set-model-name" placeholder="gemini-2.0-flash (Default)" style="font-size:0.8rem;"></div>
         <div id="group-url" style="margin-bottom:15px; display:none;"><label class="setting-label" style="font-weight:bold; font-size:0.9rem;">API Base URL</label><input type="text" id="set-base-url" placeholder="https://..." style="font-size:0.8rem;"></div>
         <div style="margin-bottom:15px;"><label id="lbl-set-cloud" style="font-weight:bold; font-size:0.9rem;">Cloud URL</label><input type="text" id="set-cloud-url" placeholder="https://script.google..." style="font-size:0.8rem;"></div>
         <div style="margin-top:20px; text-align:right;"><button class="btn btn-outline" onclick="toggleAdmin()">Close</button><button class="btn btn-primary" onclick="saveAdmin()">Save</button></div>
@@ -301,7 +340,7 @@
 </div>
 
 <script>
-// 1. DATA (v9.5 Fixed)
+// 1. DATA (v10.0 Universal)
 const DB = {
     lists: { zh: { A: ["老虎", "熊猫", "狮子", "斧头", "锤子", "锯子", "苹果", "香蕉", "葡萄", "汽车"], B: ["豹子", "大象", "狼", "螺丝刀", "钳子", "钻机", "橘子", "梨", "桃子", "卡车"] }, en: { A: ["Tiger", "Panda", "Lion", "Hammer", "Wrench", "Saw", "Apple", "Banana", "Grape", "Car"], B: ["Leopard", "Elephant", "Wolf", "Screwdriver", "Pliers", "Drill", "Orange", "Pear", "Peach", "Truck"] }, child: { A: ["小狗", "小猫", "兔子", "苹果", "香蕉", "西瓜", "汽车", "飞机", "火车", "皮球"], B: ["小猪", "小羊", "熊猫", "葡萄", "橘子", "草莓", "公交车", "轮船", "卡车", "气球"] } },
     demos: { zh: { w1:"苹果", w2:"香蕉" }, en: { w1:"Apple", w2:"Banana" }, child: { w1:"苹果", w2:"香蕉" } },
@@ -310,11 +349,10 @@ const DB = {
     tmt: { A: ['1','2','3','4','5','6','7','8','9','10','11','12'], B: ['1','A','2','B','3','C','4','D','5','E','6','F'] },
     text: {
         zh: {
-            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "Executive Suite (v9.5)",
-            btn_settings: "系统配置 (Admin)", 
-            // Tutorial Titles
+            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "Universal (v10.0)",
+            btn_settings: "系统配置 (Admin)", btn_quick: "⚡ 快速体验 (Quick)",
             tut_title: "测试内容演示", tut_c1_title: "1. 记忆力挑战", tut_c1_desc: "屏幕会逐个显示单词。请用心<b>记住</b>它们。", tut_c2_title: "2. 空间记忆", tut_c2_desc: "观察方块亮起的<b>顺序</b>。演示结束后，请按<b>相同顺序</b>点击方块。", tut_c2b_title: "2B. 空间倒背", tut_c2b_desc: "难度升级！请<b>倒序</b>点击方块。", tut_c4_title: "3. 定向问答", tut_c4_desc: "回答时间与地点问题。", tut_c4_hint: "注：最后两题（地点/城市）的正确答案请在【设置】中预设", tut_c9_title: "4. 连线测验 (TMT)", tut_c9_desc: "按顺序点击圆圈：<br>A: 1-2-3...<br>B: 1-A-2-B...", tut_c5_title: "5. 抑制控制 (Stroop)", tut_c5_desc: "忽略文字含义，只判断颜色！", tut_c3_title: "6. 处理速度 (SDMT)", tut_c3_desc: "看符号，按对应的数字键。<br><b>推荐使用键盘操作！(1-9)</b>", tut_c8_title: "7. 语言流利度", tut_c8_desc: "60秒内，说出尽可能多的动物名称。<br><b>支持语音自动输入！</b>",
-            // Module Titles & Buttons
+            guide_title: "快速使用指南", step1: "登记信息", step2: "阅读/收听指令", step3: "完成测试", step4: "获取报告",
             reg_title: "受试者信息", l_name: "姓名", l_id: "登记号", l_gender: "性别", l_dob: "出生日期", l_age: "年龄", l_edu: "教育", l_hand: "利手", g_m: "男", g_f: "女", btn_next: "下一步", reg_err: "请填写必填项",
             t1_title: "记忆学习", t1_instr: "屏幕将逐个显示单词。<br>请用心记住它们，稍后需要回忆。", btn_mem: "开始记忆", t1_recall_title: "即时回忆", btn_add: "添加", btn_finish: "完成本节", task_mem: "Memory Task", ph_input: "输入一个词，按回车提交",
             t2_title: "空间记忆", t2_instr: "观察方块点亮顺序，按相同顺序点击。", btn_start_corsi: "开始测试", t2_test_title: "空间记忆", t2b_title: "空间倒背",
@@ -335,12 +373,15 @@ const DB = {
             lbl_demo: "演示", t2_watch: "请观察...", t2_go: "请点击!", t2_timeout: "超时",
             admin_title: "⚙️ 系统设置", admin_place: "📍 地点 (关键词)", admin_city: "🏙️ 城市 (关键词)", admin_cloud: "☁️ Google Script URL", admin_key: "🤖 API Key",
             rep_t1: "言语学习", rep_t4: "延迟回忆", rep_t5: "再认记忆", rep_t2: "空间广度", rep_t3: "定向力", rep_t6: "加工速度", rep_note: "备注",
-            t6_prac_phase: "练习阶段 (3题)", t6_test_phase: "正式测试 (60s)", t6_prac_fail: "错误！请重试"
+            t6_prac_phase: "练习阶段 (3题)", t6_test_phase: "正式测试 (60s)", t6_prac_fail: "错误！请重试",
+            col_m: "指标", col_v: "数值", col_n: "备注", 
+            d_imm: "即时回忆", d_ret: "保持率", d_net: "净分", d_fa: "虚报", d_span: "空间广度", d_pt: "时间地点", d_err: "错误数", d_inh: "抑制能力", d_spd: "加工速度", d_ani: "动物总数"
         },
         en: { 
-            app_title: "CAS v9.5", home_title: "Cognitive Assessment System", home_desc: "Executive Suite (v9.5)",
-            btn_settings: "Admin Setup", 
+            app_title: "CAS v10.0", home_title: "Cognitive Assessment System", home_desc: "Universal (v10.0)",
+            btn_settings: "Admin Setup", btn_quick: "⚡ Quick Run",
             tut_title: "Task Demonstration", tut_c1_title: "1. Verbal Memory", tut_c1_desc: "Words will be shown sequentially. Memorize them for immediate and delayed recall.", tut_c2_title: "2. Spatial Span", tut_c2_desc: "Observe the sequence of lit blocks, then tap them in the <b>exact same order</b>.", tut_c2b_title: "2B. Corsi Backward", tut_c2b_desc: "Harder! Tap the blocks in <b>reverse order</b>.", tut_c4_title: "3. Orientation", tut_c4_desc: "Standard questions regarding current date and location.", tut_c4_hint: "Note: Preset Place/City in [Settings] for correct scoring.", tut_c9_title: "4. Trail Making (TMT)", tut_c9_desc: "Connect circles in order:<br>A: 1-2-3...<br>B: 1-A-2-B...", tut_c5_title: "5. Inhibition (Stroop)", tut_c5_desc: "Ignore the word, identify the ink color.", tut_c3_title: "6. Processing Speed", tut_c3_desc: "Match symbols to numbers.<br><b>Keyboard (1-9) Recommended!</b>", tut_c8_title: "7. Verbal Fluency", tut_c8_desc: "Name as many animals as possible in 60s.<br><b>Voice Input Supported!</b>",
+            guide_title: "Quick Start Guide", step1: "Register", step2: "Follow Instr.", step3: "Complete Task", step4: "Get Report",
             reg_title: "Subject Demographics", l_name: "Name", l_id: "Subject ID", l_gender: "Gender", l_dob: "Date of Birth", l_age: "Age", l_edu: "Education", l_hand: "Handedness", g_m: "Male", g_f: "Female", btn_next: "Next", reg_err: "All fields required",
             t1_title: "Verbal Learning", t1_instr: "Words will appear one by one.<br>Memorize them.", btn_mem: "Start Encoding", t1_recall_title: "Immediate Recall", btn_add: "Add", btn_finish: "Finish Section", task_mem: "Encoding Phase", ph_input: "Type word, press Enter",
             t2_title: "Spatial Span", t2_instr: "Watch the sequence, then repeat it.", btn_start_corsi: "Start Task", t2_test_title: "Corsi Block Task", t2b_title: "Corsi Backward",
@@ -361,12 +402,15 @@ const DB = {
             lbl_demo: "Demo", t2_watch: "Watch...", t2_go: "Go!", t2_timeout: "Timeout",
             admin_title: "⚙️ Settings", admin_place: "📍 Place (Keywords)", admin_city: "🏙️ City (Keywords)", admin_cloud: "☁️ Google Script URL", admin_key: "🤖 API Key",
             rep_t1: "Verbal Learning", rep_t4: "Delayed Recall", rep_t5: "Recognition", rep_t2: "Spatial Span", rep_t3: "Orientation", rep_t6: "Proc. Speed", rep_note: "Note",
-            t6_prac_phase: "Practice (3 Trials)", t6_test_phase: "Real Test (60s)", t6_prac_fail: "Wrong! Try Again."
+            t6_prac_phase: "Practice (3 Trials)", t6_test_phase: "Real Test (60s)", t6_prac_fail: "Wrong! Try Again.",
+            col_m: "Metric", col_v: "Value", col_n: "Note", 
+            d_imm: "Immediate", d_ret: "Retention", d_net: "Net", d_fa: "FA", d_span: "Spatial Span", d_pt: "Time & Place", d_err: "Errors", d_inh: "Inhibition", d_spd: "Speed", d_ani: "Animals"
         },
         child: {
-            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v9.5)",
-            btn_settings: "设置", 
+            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v10.0)",
+            btn_settings: "设置", btn_quick: "⚡ 快速开始",
             tut_title: "游戏演示", tut_c1_title: "1. 记词游戏", tut_c1_desc: "屏幕上会出现词语。要把它们<b>记在脑子里</b>哦。", tut_c2_title: "2. 点方块", tut_c2_desc: "看方块怎么亮，然后照着<b>点一点</b>。", tut_c2b_title: "2B. 倒着点", tut_c2b_desc: "要反过来点哦！比如亮1-2-3，你点3-2-1。", tut_c4_title: "3. 问答时间", tut_c4_desc: "问问你今天是几号，在哪里。", tut_c4_hint: "让大人在【设置】里填好答案哦", tut_c9_title: "4. 连连看", tut_c9_desc: "按顺序点圆圈：1-2-3...", tut_c5_title: "5. 找颜色", tut_c5_desc: "别读字，要看颜色哦！", tut_c3_title: "6. 找数字", tut_c3_desc: "看上面的图，找对应的数字！<br><b>可以用键盘按 1-9 哦！</b>", tut_c8_title: "7. 说动物", tut_c8_desc: "说出你知道的所有动物。",
+            guide_title: "怎么玩？", step1: "写名字", step2: "听指挥", step3: "做游戏", step4: "看分数",
             reg_title: "小朋友信息", l_name: "姓名", l_id: "学号", l_gender: "性别", l_dob: "生日", l_age: "几岁", l_edu: "年级", l_hand: "常用的手", g_m: "男", g_f: "女", btn_next: "下一步", reg_err: "请把信息填完整",
             t1_title: "记词挑战", t1_instr: "看仔细并记住这些词哦！", btn_mem: "开始", t1_recall_title: "告诉我", btn_add: "记住了", btn_finish: "做完了", task_mem: "记词游戏", ph_input: "输入一个词",
             t2_title: "方块跳舞", t2_instr: "看方块怎么亮，然后照着点。", btn_start_corsi: "开始", t2_test_title: "记方块", t2b_title: "倒着点",
@@ -387,12 +431,15 @@ const DB = {
             lbl_demo: "演示", t2_watch: "看好了...", t2_go: "该你了!", t2_timeout: "太慢啦",
             admin_title: "⚙️ 设置", admin_place: "📍 地点", admin_city: "🏙️ 城市", admin_cloud: "☁️ 云端地址", admin_key: "🤖 AI 密钥",
             rep_t1: "记词分数", rep_t4: "背书分数", rep_t5: "找词分数", rep_t2: "方块分数", rep_t3: "问答分数", rep_t6: "反应速度", rep_note: "说明",
-            t6_prac_phase: "练习一下", t6_test_phase: "正式开始", t6_prac_fail: "不对哦，再试一次"
+            t6_prac_phase: "练习一下", t6_test_phase: "正式开始", t6_prac_fail: "不对哦，再试一次",
+            col_m: "项目", col_v: "得分", col_n: "说明", 
+            d_imm: "记词分", d_ret: "遗忘率", d_net: "找词分", d_fa: "看错", d_span: "空间广度", d_pt: "问答分", d_err: "错误", d_inh: "抗干扰", d_spd: "手速", d_ani: "动物数"
         },
         geriatric: {
-            app_title: "老年脑健康筛查", home_title: "老年脑健康筛查", home_desc: "适老版 (v9.5)",
-            btn_settings: "设置",
+            app_title: "老年脑健康筛查", home_title: "老年脑健康筛查", home_desc: "适老版 (v10.0)",
+            btn_settings: "设置", btn_quick: "⚡ 快速筛查",
             tut_title: "测试演示", tut_c1_title: "1. 记词语", tut_c1_desc: "屏幕会出几个词，请您记在心里。", tut_c2_title: "2. 点方块", tut_c2_desc: "看方块怎么亮，照着点一遍。", tut_c2b_title: "2B. 倒着点", tut_c2b_desc: "这次要倒过来点！", tut_c4_title: "3. 问时间", tut_c4_desc: "问问今天是几号。", tut_c9_title: "4. 连连看", tut_c9_desc: "按顺序点圆圈：1-2-3...", tut_c5_title: "5. 找颜色", tut_c5_desc: "别读字，要看颜色！", tut_c3_title: "6. 找数字", tut_c3_desc: "看上面的图，找对应的数字。", tut_c8_title: "7. 说动物", tut_c8_desc: "说出你知道的所有动物。",
+            guide_title: "使用步骤", step1: "简单登记", step2: "听清指令", step3: "开始测试", step4: "查看结果",
             reg_title: "老人信息", l_name: "姓名", l_id: "编号", l_gender: "性别", l_dob: "生日", l_age: "年龄", l_edu: "文化程度", l_hand: "常用的手", g_m: "男", g_f: "女", btn_next: "下一步", reg_err: "请把信息填完整",
             t1_title: "记词语", t1_instr: "屏幕会出几个词，请您跟着念一遍，记在心里。", btn_mem: "开始记忆", t1_recall_title: "刚才有哪些词？", btn_add: "确认", btn_finish: "记不起来了", task_mem: "记词语", ph_input: "说出词语...",
             t2_title: "点方块", t2_instr: "看方块怎么亮，照着点一遍。", btn_start_corsi: "开始", t2_test_title: "点方块", t2b_title: "倒着点",
@@ -413,13 +460,17 @@ const DB = {
             lbl_demo: "演示", t2_watch: "看好了...", t2_go: "该你了!", t2_timeout: "太慢啦",
             admin_title: "⚙️ 设置", admin_place: "📍 地点", admin_city: "🏙️ 城市", admin_cloud: "☁️ 云端地址", admin_key: "🤖 AI 密钥",
             rep_t1: "记忆力", rep_t4: "延迟回忆", rep_t5: "再认", rep_t2: "空间广度", rep_t3: "定向力", rep_t6: "反应速度", rep_note: "说明",
-            t6_prac_phase: "练习一下", t6_test_phase: "正式开始", t6_prac_fail: "不对哦，再试一次"
+            t6_prac_phase: "练习一下", t6_test_phase: "正式开始", t6_prac_fail: "不对哦，再试一次",
+            col_m: "指标", col_v: "数值", col_n: "备注", 
+            d_imm: "即时回忆", d_ret: "保持率", d_net: "净分", d_fa: "虚报", d_span: "空间广度", d_pt: "时间地点", d_err: "错误数", d_inh: "抑制能力", d_spd: "加工速度", d_ani: "动物总数"
         }
     }
 };
 
 let state = {
     mode: 'zh',
+    isQuickRun: false, // [NEW] Quick Run Flag
+    config: { t1_len: 10, t6_time: 60, t7_time: 45, t8_time: 60 }, // [NEW] Config
     patient: {},
     targets: [], distractors: [], presentationOrder: [],
     t1: { entered: [], time: 0, event_log: [] },
@@ -440,6 +491,23 @@ let recognition = null, isRecording = false, recallTimerInt = null, corsiTimeout
 function logEvent(phase, type, data) { if(state[phase] && state[phase].event_log) { state[phase].event_log.push({ t: Date.now(), type: type, d: data }); } }
 
 function startTutorial() { showView('view-tutorial'); }
+
+// [NEW] Quick Run Logic
+function startQuickRun() {
+    state.isQuickRun = true;
+    state.config = { t1_len: 3, t6_time: 15, t7_time: 15, t8_time: 15 }; // Reduced Parameters
+    
+    // Auto-fill dummy registration
+    document.getElementById('p_name').value = "Guest";
+    document.getElementById('p_id').value = "Q" + Date.now().toString().slice(-4);
+    document.getElementById('p_gender').value = "M"; // Default
+    document.getElementById('p_dob').value = "1980-01-01";
+    document.getElementById('p_age').value = "45";
+    document.getElementById('p_edu').value = "大学";
+    document.getElementById('p_hand').value = "R";
+    
+    submitRegister(); // Skip directly to T1
+}
 
 window.onload = () => {
     setMode('zh');
@@ -499,14 +567,17 @@ function setMode(m) {
     document.querySelectorAll('.mode-switch button').forEach(b => b.classList.remove('active'));
     document.getElementById('btn-mode-'+m).classList.add('active');
     const T = DB.text[m];
+    
+    // Update all text IDs
     for(let key in T) {
         let el = document.getElementById('txt-' + key.replace(/_/g,'-'));
         if(el) el.innerHTML = T[key];
+        // Special case for labels like lbl-name
         let parts = key.split('_');
         if(parts[0] === 'l' && parts.length > 1) {
-            let lblId = 'lbl-' + parts[1];
-            let lbl = document.getElementById(lblId);
-            if(lbl) lbl.innerText = T[key];
+             let lblId = 'lbl-' + parts[1];
+             let lbl = document.getElementById(lblId);
+             if(lbl) lbl.innerText = T[key];
         }
     }
     document.getElementById('btn-red-txt').innerText = T.btn_red;
@@ -514,6 +585,7 @@ function setMode(m) {
     document.getElementById('btn-blue-txt').innerText = T.btn_blue;
     document.getElementById('btn-yellow-txt').innerText = T.btn_yellow;
     if(T.btn_settings) document.getElementById('txt-btn-settings').innerText = T.btn_settings;
+    if(T.btn_quick) document.getElementById('txt-btn-quick').innerText = T.btn_quick; // Update Quick Btn Text
     checkConfigHealth(); 
     const gs=document.getElementById('p_gender'); gs.innerHTML=''; gs.add(new Option(T.select_def, "")); gs.add(new Option(T.g_m,'M')); gs.add(new Option(T.g_f,'F'));
     const es=document.getElementById('p_edu'); es.innerHTML=''; es.add(new Option(T.select_def, "")); T.edu_opts.forEach(e=>es.add(new Option(e,e)));
@@ -537,28 +609,19 @@ function updateDemoText() {
     if(el1) { el1.innerText = txt; el1.style.opacity = demoToggle ? 1 : 0.5; }
     if(el2) { el2.innerText = txt; el2.style.opacity = demoToggle ? 1 : 0.5; }
 
-    // [FIXED] Stroop Logic with Localized Hint
+    // Stroop Logic
     const stroopEl = document.getElementById('demo-stroop-tut-txt');
     const hintEl = document.getElementById('demo-stroop-hint');
-    
     if(stroopEl) {
         const sWords = DB.stroop[modeKey].words;
         if(demoToggle) {
-            // Case A: Red Word (Green Color)
             stroopEl.innerText = sWords[0]; 
             stroopEl.className = "demo-stroop-text text-green"; 
-            if(hintEl) {
-                if(state.mode === 'en') hintEl.innerText = "(Color is Green, Click Green)";
-                else hintEl.innerText = "(颜色是绿，点绿键)";
-            }
+            if(hintEl) { if(state.mode === 'en') hintEl.innerText = "(Color is Green, Click Green)"; else hintEl.innerText = "(颜色是绿，点绿键)"; }
         } else {
-            // Case B: Green Word (Red Color)
             stroopEl.innerText = sWords[1]; 
             stroopEl.className = "demo-stroop-text text-red";
-            if(hintEl) {
-                if(state.mode === 'en') hintEl.innerText = "(Color is Red, Click Red)";
-                else hintEl.innerText = "(颜色是红，点红键)";
-            }
+            if(hintEl) { if(state.mode === 'en') hintEl.innerText = "(Color is Red, Click Red)"; else hintEl.innerText = "(颜色是红，点红键)"; }
         }
     }
 }
@@ -606,6 +669,11 @@ function initSession() {
     state.t3 = { details: [], score: 0, time: 0 }; 
     state.t8 = { entered: [], time: 0, event_log: [] };
     state.t9 = { stage: 'PracA', startTime: 0, timeA: 0, timeB: 0, errA: 0, errB: 0, nodes: [], nextIdx: 0, history: [] };
+    
+    // [NEW] Reset config to defaults on standard init
+    state.isQuickRun = false;
+    state.config = { t1_len: 10, t6_time: 60, t7_time: 45, t8_time: 60 };
+    
     try {
         showView('view-register');
     } catch(e) {
@@ -622,6 +690,7 @@ function validateAndSubmit() {
 }
 
 function submitRegister() {
+    // If not QuickRun, populate state from form. If QuickRun, form was auto-filled.
     state.patient = {
         name: document.getElementById('p_name').value, id: document.getElementById('p_id').value,
         gender: document.getElementById('p_gender').value, dob: document.getElementById('p_dob').value,
@@ -631,7 +700,12 @@ function submitRegister() {
     };
     const listSet = DB.lists[state.mode === 'geriatric' ? 'zh' : state.mode]; 
     state.targets = [...listSet.A];
+    // [NEW] Slice targets if Quick Run
+    if(state.isQuickRun) state.targets = state.targets.slice(0, state.config.t1_len);
+    
     state.distractors = [...listSet.B];
+    if(state.isQuickRun) state.distractors = state.distractors.slice(0, state.config.t1_len);
+    
     state.presentationOrder = [...state.targets].sort(() => Math.random() - 0.5);
     showView('view-t1-intro'); 
 }
@@ -653,7 +727,11 @@ function runSerialWords() {
 }
 function startT1Recall() { showView('view-t1-recall'); state.t1.startTime = Date.now(); startRecallTimer('t1'); }
 function startRecallTimer(phase) {
-    let time = 60; const timerEl = document.getElementById(phase+'-timer'); timerEl.innerText = time;
+    let time = 60;
+    // [NEW] Use config for timers
+    if(phase === 't8') time = state.config.t8_time;
+    
+    const timerEl = document.getElementById(phase+'-timer'); timerEl.innerText = time;
     if(recallTimerInt) clearInterval(recallTimerInt);
     recallTimerInt = setInterval(() => { time--; timerEl.innerText = time; 
         if(time <= 0) { 
@@ -696,7 +774,7 @@ function finishT1() {
     state.t1.time = ((Date.now() - state.t1.startTime)/1000).toFixed(1);
     showView('view-t2-intro');
 }
-function updateProgress(barId, txtId, val) { if(document.getElementById(barId)) document.getElementById(barId).style.width = Math.min(100, (val/10)*100) + "%"; }
+function updateProgress(barId, txtId, val) { if(document.getElementById(barId)) document.getElementById(barId).style.width = Math.min(100, (val/state.config.t1_len)*100) + "%"; }
 
 function startCorsi(mode) {
     state.t2.isBackward = (mode === 'backward');
@@ -759,6 +837,9 @@ function corsiResult(success) {
     state.t2.history.push({ level: state.t2.level, success: success, mode: state.t2.isBackward ? 'Bwd' : 'Fwd' });
     logEvent('t2', 'trial_result', {level:state.t2.level, success:success, mode:state.t2.isBackward});
     if(success) {
+        // [NEW] Quick Run limit
+        if(state.isQuickRun && state.t2.level >= 3) { if(!state.t2.isBackward) showView('view-t2b-intro'); else startT3(); return; }
+        
         if(state.t2.level >= 9) { if(!state.t2.isBackward) showView('view-t2b-intro'); else startT3(); return; }
         if(state.t2.trials === 0) { state.t2.level++; state.t2.trials = 0; } else { state.t2.level++; state.t2.trials = 0; }
         setTimeout(nextCorsiTrial, 1000);
@@ -785,6 +866,7 @@ function loadT3Q() {
 }
 function nextT3(val) {
     if (!val) val = document.getElementById('t3-inp')?.value;
+    // Allow empty answer in quick mode? No, better to force input or logic.
     if (!val) return; 
     const now = new Date(); let correct = false;
     const checkFuzzy = (userIn, targetStr) => {
@@ -914,7 +996,7 @@ function startStroopReal() {
     document.getElementById('t7-phase-indicator').innerText = DB.text[state.mode].t6_test_phase;
     document.getElementById('t7-phase-indicator').style.background = "#55efc4";
     document.getElementById('t7-score').innerText = "0";
-    let time = 45; 
+    let time = state.config.t7_time; // [NEW] Configurable
     document.getElementById('t7-timer').innerText = time;
     t7Interval = setInterval(() => { time--; document.getElementById('t7-timer').innerText = time; if(time <= 0) endStroop(); }, 1000);
 }
@@ -971,7 +1053,7 @@ function startSDMTReal() {
     document.getElementById('t6-phase-indicator').innerText = DB.text[state.mode].t6_test_phase;
     document.getElementById('t6-phase-indicator').style.background = "#55efc4";
     document.getElementById('t6-score').innerText = "0";
-    let time = 60; 
+    let time = state.config.t6_time; // [NEW] Configurable
     document.getElementById('t6-timer').innerText = time;
     t6Interval = setInterval(() => { time--; document.getElementById('t6-timer').innerText = time; if(time <= 0) endSDMT(); }, 1000);
 }
@@ -1031,6 +1113,7 @@ function finishT8() {
     showView('view-t5-intro');
 }
 
+let t5Sel = new Set();
 function startT5Test() {
     showView('view-t5-test'); state.t5.startTime = Date.now(); t5Sel = new Set();
     const grid = document.getElementById('t5-grid'); grid.innerHTML = '';
@@ -1128,16 +1211,16 @@ function showReport() {
 
     let html = `
     <table class="res-table">
-        <tr><th>Metric</th><th>Value</th><th>${T.rep_note}</th></tr>
-        <tr><td>${T.rep_t1}</td><td>${t1hits}/10</td><td>Immediate</td></tr>
-        <tr><td>${T.rep_t4}</td><td>${t4hits}/10</td><td>Ret: <b>${retention}</b></td></tr>
-        <tr><td>${T.rep_t5}</td><td>${state.t5.hits}/10</td><td>Net: ${net_recog} (FA:${state.t5.false_alarms})</td></tr>
-        <tr><td>${T.rep_t2}</td><td>F:${t2fwd} / B:${t2bwd}</td><td>Spatial Span</td></tr>
-        <tr><td>${T.rep_t3}</td><td>${state.t3.score}/6</td><td>Place & Time</td></tr>
-        <tr><td>${T.rep_t9}</td><td>A:${t9A} / B:${t9B}</td><td>Errors: A${state.t9.errA}/B${state.t9.errB}</td></tr>
-        <tr><td>${T.rep_t7}</td><td>${state.t7.score}</td><td>Stroop Inh.</td></tr>
-        <tr><td>${T.rep_t6}</td><td>${state.t6.score}</td><td>Speed (SD:${sd.toFixed(0)})</td></tr>
-        <tr><td>${T.rep_t8}</td><td>${state.t8.entered.length}</td><td>Animals</td></tr>
+        <tr><th>${T.col_m}</th><th>${T.col_v}</th><th>${T.col_n}</th></tr>
+        <tr><td>${T.rep_t1}</td><td>${t1hits}/${state.config.t1_len}</td><td>${T.d_imm}</td></tr>
+        <tr><td>${T.rep_t4}</td><td>${t4hits}/${state.config.t1_len}</td><td>${T.d_ret}: <b>${retention}</b></td></tr>
+        <tr><td>${T.rep_t5}</td><td>${state.t5.hits}/${state.config.t1_len}</td><td>${T.d_net}: ${net_recog} (${T.d_fa}:${state.t5.false_alarms})</td></tr>
+        <tr><td>${T.rep_t2}</td><td>F:${t2fwd} / B:${t2bwd}</td><td>${T.d_span}</td></tr>
+        <tr><td>${T.rep_t3}</td><td>${state.t3.score}/6</td><td>${T.d_pt}</td></tr>
+        <tr><td>${T.rep_t9}</td><td>A:${t9A} / B:${t9B}</td><td>${T.d_err}: A${state.t9.errA}/B${state.t9.errB}</td></tr>
+        <tr><td>${T.rep_t7}</td><td>${state.t7.score}</td><td>${T.d_inh}</td></tr>
+        <tr><td>${T.rep_t6}</td><td>${state.t6.score}</td><td>${T.d_spd} (SD:${sd.toFixed(0)})</td></tr>
+        <tr><td>${T.rep_t8}</td><td>${state.t8.entered.length}</td><td>${T.d_ani}</td></tr>
     </table>`;
     document.getElementById('report-body').innerHTML = html;
     document.getElementById('raw-data').value = generateCSVString();
@@ -1240,7 +1323,7 @@ async function analyzeWithAI() {
     
     try {
         if (provider === 'gemini') {
-            const m = modelName || 'gemini-3.0-flash';
+            const m = modelName || 'gemini-2.0-flash';
             const url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${key}`;
             const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
             const data = await response.json();
@@ -1248,6 +1331,7 @@ async function analyzeWithAI() {
             const text = data.candidates[0].content.parts[0].text;
             contentArea.innerHTML = marked.parse(text);
         } else {
+            // (Standard Chat Completion Logic)
             let finalUrl = baseUrl;
             let finalModel = modelName;
             if (!finalUrl) {
@@ -1314,7 +1398,7 @@ function saveAdmin() {
 function updateProviderFields() {
     const p = document.getElementById('set-provider').value;
     const modelInput = document.getElementById('set-model-name');
-    if (p === 'gemini') modelInput.placeholder = "gemini-3.0-flash (Default)";
+    if (p === 'gemini') modelInput.placeholder = "gemini-2.0-flash (Default)";
     else if (p === 'deepseek') modelInput.placeholder = "deepseek-chat";
     else if (p === 'qwen') modelInput.placeholder = "qwen-plus";
     else if (p === 'kimi') modelInput.placeholder = "moonshot-v1-8k";
