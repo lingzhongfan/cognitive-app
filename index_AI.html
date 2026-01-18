@@ -3,437 +3,949 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAS v9.0 (Auto-Fix)</title>
+    <title>CAS v10.8 (Revised Animation)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* ==================== 1. 核心样式 (保持一致) ==================== */
+        /* =========================================
+           1. Core Styles
+           ========================================= */
         :root {
-            --primary: #2A5C82; --accent: #FF7043; --bg: #F8F9FA; 
-            --chat-bg: #FFF; --user-msg: #95EC69; --ai-msg: #FFF;
-            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+            --primary: #2A5C82; --primary-light: #5A8AB0; --accent: #FF7043;
+            --bg-color: #F8F9FA; --card-bg: #FFFFFF; --text-main: #2D3436;
+            --text-light: #636E72; --success: #00B894; --error: #FF7675;
+            --radius: 16px; --shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; -webkit-font-smoothing: antialiased; }
-        
-        .view-section { display: none; flex: 1; flex-direction: column; animation: fadeIn 0.3s; }
-        .view-section.active { display: flex; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        body.child-theme { --primary: #FF9F43; --primary-light: #FECA57; --bg-color: #FFF9E6; --text-main: #5F27CD; }
+        body.geriatric-theme { 
+            --primary: #000000; --primary-light: #333333; --accent: #D35400;
+            --bg-color: #F0F0F0; --card-bg: #FFFFFF; --text-main: #000000;
+            --text-light: #333333; --success: #27AE60; --error: #C0392B;
+            font-size: 1.3rem; 
+        }
 
-        .container { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 20px; max-width: 600px; margin: 0 auto; width: 100%; box-sizing: border-box; }
-        .card { background: white; padding: 30px; border-radius: 16px; box-shadow: var(--shadow); text-align: center; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-color); color: var(--text-main); margin: 0; 
+            display: flex; flex-direction: column; min-height: 100vh; 
+            transition: background 0.3s; -webkit-font-smoothing: antialiased;
+        }
+        .container { flex: 1; max-width: 800px; margin: 0 auto; padding: 20px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; }
         
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; text-align: left; }
-        .form-group label { display: block; font-size: 0.85rem; color: #666; margin-bottom: 5px; font-weight: bold; }
+        .view-section { display: none; animation: slideUp 0.4s ease-out; }
+        .view-section.active { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         
-        .btn { padding: 12px 25px; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(42,92,130,0.2); }
-        .btn-outline { background: #f0f0f0; color: #333; border: 1px solid #ddd; }
+        .card { background: var(--card-bg); padding: 30px; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.02); position: relative; margin-bottom: 20px; }
+        body.geriatric-theme .card { padding: 40px 25px; border: 2px solid #000; box-shadow: none; border-radius: 8px; }
         
-        input, select { padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; box-sizing: border-box; font-size: 1rem; outline: none; background: #fff; transition: 0.3s; }
-        input:focus, select:focus { border-color: var(--primary); }
-        input[readonly] { background-color: #f9f9f9; color: #888; }
+        header { background: rgba(255,255,255,0.95); padding: 15px 30px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); backdrop-filter: blur(10px); }
+        .brand { font-size: 1.2rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        
+        .mode-switch button { border: 1px solid #eee; background: white; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-weight: 600; color: var(--text-light); margin-left: 5px; transition: all 0.2s; }
+        .mode-switch button.active { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        .btn { padding: 12px 30px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; -webkit-appearance: none; }
+        .btn:active { transform: scale(0.96); }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-ai { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3); }
+        .btn-info { background: #17a2b8; color: white; box-shadow: 0 4px 10px rgba(23, 162, 184, 0.2); }
+        body.geriatric-theme .btn { transform: scale(1.15); margin: 10px; font-weight: 900; border-width: 3px; }
 
-        /* 聊天界面 */
-        .chat-header { padding: 15px; background: rgba(255,255,255,0.95); border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; z-index: 10; backdrop-filter: blur(10px); }
-        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin-right: 10px; }
-        .chat-history { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; padding-bottom: 80px; scroll-behavior: smooth; }
-        .msg-row { display: flex; width: 100%; } .msg-row.user { justify-content: flex-end; }
-        .msg-bubble { padding: 12px 16px; border-radius: 16px; max-width: 85%; font-size: 1rem; line-height: 1.5; box-shadow: 0 1px 2px rgba(0,0,0,0.05); position: relative; word-wrap: break-word; }
-        .msg-bubble.ai { background: var(--ai-msg); border-top-left-radius: 2px; } .msg-bubble.user { background: var(--user-msg); border-top-right-radius: 2px; }
+        .btn-back { font-size: 0.9rem; color: #666; background: #eee; padding: 8px 15px; border-radius: 20px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: background 0.2s; }
+        .btn-back:hover { background: #e2e6ea; }
+
+        .btn-home-corner { position: absolute; top: 15px; right: 15px; background: #f1f3f5; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; border: 1px solid #ddd; z-index: 10; transition: transform 0.2s; }
+        .btn-home-corner:hover { background: #e9ecef; transform: scale(1.1); }
         
-        .input-area { position: absolute; bottom: 0; left: 0; right: 0; padding: 15px; background: #FFF; border-top: 1px solid #eee; display: flex; gap: 10px; align-items: center; z-index: 20; }
-        .input-box { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 24px; font-size: 1rem; outline: none; margin: 0; }
-        .btn-icon { width: 45px; height: 45px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; background: #f0f0f0; color: #555; }
-        .btn-icon.active { background: var(--accent); color: white; animation: pulse 1.5s infinite; }
-        .btn-send { background: var(--primary); color: white; }
+        .intro-map { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: left; margin: 20px 0; }
+        .intro-item { background: white; padding: 15px; border-radius: 12px; border-left: 5px solid var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .intro-h { font-weight: bold; color: var(--primary); font-size: 1rem; display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+        .intro-p { font-size: 0.85rem; color: #666; line-height: 1.4; }
+        .intro-tag { font-size: 0.75rem; background: #E3F2FD; color: #2A5C82; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 5px; }
+        
+        .doc-content { text-align: left; }
+        .doc-content h3 { color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 8px; margin-top: 25px; font-size: 1.1rem; }
+        .doc-content h3:first-child { margin-top: 0; }
+        .doc-content p, .doc-content li { line-height: 1.6; color: #444; font-size: 0.95rem; margin-bottom: 8px; }
+        .doc-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.85rem; }
+        .doc-table th, .doc-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .doc-table th { background: #f2f2f2; color: #333; font-weight: bold; }
+        .doc-table tr:nth-child(even) { background-color: #f9f9f9; }
+        
+        input, select { width: 100%; padding: 12px; border: 2px solid #EEE; border-radius: 10px; font-size: 1rem; box-sizing: border-box; background: #FAFAFA; -webkit-appearance: none; transition: border 0.3s; }
+        input:focus, select:focus { border-color: var(--primary); outline: none; background: #FFF; }
+        input.error, select.error { border-color: var(--error); background: #FFF0F0; animation: shake 0.3s; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        
+        .progress-container { margin: 20px 0; }
+        .progress-track { height: 8px; background: #EEE; border-radius: 4px; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        
+        /* === DEMO ANIMATIONS === */
+        .micro-demo-box { background: #F0F4F8; border-radius: 12px; padding: 20px; margin: 20px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed #DCE4EA; position: relative; overflow: hidden; min-height: 100px; }
+        body.geriatric-theme .micro-demo-box { border: 3px dashed #000; background: #fff; }
+        
+        .demo-word-dynamic { font-size: 1.5rem; font-weight: bold; color: var(--primary); transition: all 0.4s; }
+        .anim-pop { animation: popText 0.5s ease-out; }
+        @keyframes popText { 0% { transform: scale(0.5); opacity:0; } 70% { transform: scale(1.1); opacity:1; } 100% { transform: scale(1); opacity:1; } }
+
+        .demo-corsi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 60px; }
+        .demo-block { width: 100%; padding-bottom: 100%; background: #CBD5E0; border-radius: 4px; }
+        .demo-block.lit { animation: demoFlash 2s infinite; }
+        @keyframes demoFlash { 0%, 100% { background: #CBD5E0; transform: scale(1); } 20%, 40% { background: var(--accent); transform: scale(1.1); } }
+        
+        .tmt-demo-line { animation: growLine 2s infinite; transform-origin: left; }
+        @keyframes growLine { 0% { transform: scaleX(0); opacity:0; } 50% { transform: scaleX(1); opacity:1; } 100% { transform: scaleX(1); opacity:1; } }
+        
+        .demo-anim-emoji { font-size: 2rem; animation: popEmoji 2s infinite; display: inline-block; }
+        @keyframes popEmoji { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+
+        .tutorial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; margin-top: 20px; }
+        .tutorial-card { background: #f8f9fa; border: 1px solid #eee; border-radius: 12px; padding: 20px; text-align: left; transition: transform 0.2s; position: relative; overflow: hidden; }
+        .tutorial-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
+        .t-icon { font-size: 1.8rem; margin-bottom: 10px; display: block; }
+        .t-title { font-weight: bold; color: var(--primary); margin-bottom: 5px; font-size: 1rem; }
+        .t-desc { font-size: 0.85rem; color: #666; line-height: 1.5; }
+        .t-hint { font-size: 0.75rem; color: var(--accent); margin-top: 8px; font-style: italic; background: rgba(255,112,67,0.1); padding: 4px 8px; border-radius: 4px; display: inline-block; }
+
+        .guide-steps { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px; font-size: 0.85rem; }
+        .guide-step { flex: 1; background: #FFF; padding: 10px; border-radius: 8px; border: 1px solid #E3F2FD; text-align: center; }
+        .gs-num { display: inline-block; width: 20px; height: 20px; background: var(--primary); color: white; border-radius: 50%; font-size: 0.75rem; line-height: 20px; margin-bottom: 5px; }
+
+        .demo-sdmt-visual { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .demo-keyboard-key { width: 40px; height: 40px; background: #fff; border: 2px solid #bbb; border-radius: 6px; border-bottom-width: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #333; transition: all 0.1s; }
+        .demo-keyboard-key.pressed { transform: translateY(2px); border-bottom-width: 2px; background: var(--primary); color: white; border-color: var(--primary-light); }
+        
+        .sdmt-overlay-feedback { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10rem; font-weight: 900; opacity: 0; pointer-events: none; z-index: 100; text-shadow: 0 0 40px rgba(255,255,255,1); }
+        .sdmt-overlay-feedback.show-correct { color: var(--success); animation: popOut 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .sdmt-overlay-feedback.show-wrong { color: var(--error); animation: shakeFade 0.5s ease-in-out forwards; }
+        @keyframes popOut { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); } }
+        @keyframes shakeFade { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } 20% { opacity: 1; transform: translate(-55%, -50%) scale(1); } 40% { transform: translate(-45%, -50%) scale(1); } 60% { transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -20%) scale(0.8); } }
+
+        .key-btn { background: #FFF; border: 1px solid #DDD; border-radius: 12px; padding: 20px; font-size: 1.5rem; font-weight: bold; box-shadow: 0 3px 0 #CCC; cursor: pointer; color: #333; transition: all 0.1s; -webkit-tap-highlight-color: transparent; }
+        .key-btn:active { transform: translateY(3px); box-shadow: none; }
+        .key-btn.correct-flash { background-color: var(--success) !important; color: white; border-color: var(--success); transform: scale(1.1); }
+        .key-btn.wrong-flash { background-color: var(--error) !important; color: white; border-color: var(--error); animation: shake 0.3s; }
+        .key-btn.active-key { background-color: #e0e0e0 !important; transform: scale(0.95); box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); }
+        
+        .corsi-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; max-width: 360px; margin: 20px auto; }
+        .corsi-block { background: #E0E0E0; border-radius: 12px; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 0 #CCC; height: 0; padding-bottom: 100%; position: relative; }
+        .corsi-block:active { transform: translateY(2px); box-shadow: 0 2px 0 #CCC; }
+        .corsi-block.active { background: var(--accent) !important; box-shadow: 0 0 15px var(--accent); }
+        .corsi-block.user-tap { background: var(--primary); }
+        body.geriatric-theme .corsi-block { border: 2px solid #333; box-shadow: none; }
+        
+        .sdmt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 400px; margin: 15px auto; }
+        #t6-target { filter: drop-shadow(0 4px 0px rgba(0,0,0,0.1)); transition: all 0.2s; font-size: 5rem; height: 100px; margin: 20px 0; color: var(--primary); }
+        .sdmt-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 10px; background: #F0F4F8; border-radius: 16px; margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.05); }
+        .sdmt-legend-item { flex: 0 1 auto; width: 60px; display: flex; flex-direction: column; align-items: center; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.03); border: 1px solid white; }
+        .sdmt-legend-sym { font-size: 2.2rem; color: var(--primary); height: 50px; width: 100%; display: flex; align-items: center; justify-content: center; background: #FFFFFF; font-family: "Segoe UI Symbol", sans-serif; }
+        .sdmt-legend-num { font-size: 1.2rem; font-weight: 700; color: #636E72; height: 30px; width: 100%; display: flex; align-items: center; justify-content: center; background: #DFE6E9; border-top: 1px solid #eee; }
+
+        #stroop-word { font-size: 6rem; font-weight: 900; margin: 30px 0; transition: all 0.2s; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1)); }
+        .stroop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 400px; margin: 20px auto; }
+        .btn-color { height: 80px; font-size: 1.5rem; font-weight: bold; border: 2px solid rgba(0,0,0,0.1); color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3); transition: transform 0.1s; cursor: pointer; border-radius: 12px; }
+        .btn-color:active { transform: scale(0.95); }
+        .bg-red { background-color: #FF5252; } .bg-green { background-color: #2ECC71; } .bg-blue { background-color: #3498DB; } .bg-yellow { background-color: #F1C40F; }
+        .text-red { color: #FF5252; } .text-green { color: #2ECC71; } .text-blue { color: #3498DB; } .text-yellow { color: #F1C40F; }
+        
+        #tmt-canvas-area { position: relative; width: 100%; height: 350px; background: #fff; border: 2px solid #eee; border-radius: 12px; overflow: hidden; margin: 15px 0; touch-action: none; }
+        .tmt-node { position: absolute; width: 40px; height: 40px; border-radius: 50%; border: 2px solid #333; background: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; cursor: pointer; transition: transform 0.1s; user-select: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 2; }
+        .tmt-node.correct { background: var(--success); color: white; border-color: var(--success); }
+        .tmt-node.wrong { background: var(--error); color: white; border-color: var(--error); animation: shake 0.3s; }
+        .tmt-node.next-hint { box-shadow: 0 0 15px rgba(42, 92, 130, 0.4); border-color: var(--primary); }
+        .tmt-line { position: absolute; height: 3px; background: var(--success); transform-origin: 0 50%; z-index: 1; pointer-events: none; border-radius: 2px; }
+        body.geriatric-theme .tmt-node { width: 55px; height: 55px; font-size: 1.6rem; border-width: 3px; border-color: #000; }
+
+        .word-display { font-size: 3.5rem; text-align: center; height: 180px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); }
+        .chips-area { display: flex; flex-wrap: wrap; gap: 8px; min-height: 60px; padding: 15px; background: #F4F6F8; border-radius: 10px; margin-bottom: 20px; border: 1px dashed #DDD; }
+        .chip { background: var(--primary); color: white; padding: 6px 14px; border-radius: 20px; cursor: pointer; animation: pop 0.3s; font-size: 0.9rem; }
+        .backup-section { margin-top: 30px; border-top: 1px solid #EEE; padding-top: 20px; text-align: left; }
+        .backup-box { display: none; margin-top: 10px; }
+        textarea.raw-data { width: 100%; height: 150px; font-family: monospace; font-size: 12px; padding: 10px; border: 1px solid #DDD; background: #FAFAFA; border-radius: 8px; -webkit-appearance: none; }
+        .hidden { display: none; } .text-center { text-align: center; }
+        .mic-btn { font-size: 1.5rem; padding: 0 15px; background: #FFF; border: 1px solid #DDD; border-radius: 8px; cursor: pointer; }
+        .mic-btn.recording { border-color: var(--accent); color: var(--accent); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 112, 67, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
 
-        /* 游戏引擎 */
-        .sdmt-header { display: flex; justify-content: space-between; margin-bottom: 20px; font-weight: bold; }
-        .sdmt-legend { display: flex; gap: 5px; justify-content: center; margin-bottom: 20px; background: #f0f4f8; padding: 10px; border-radius: 12px; overflow-x: auto; }
-        .legend-item { display: flex; flex-direction: column; align-items: center; background: white; border: 1px solid #ddd; border-radius: 6px; width: 45px; padding: 5px 0; }
-        .legend-sym { font-size: 1.5rem; color: var(--primary); margin-bottom: 5px; }
-        .legend-num { font-weight: bold; color: #666; border-top: 1px solid #eee; width: 100%; text-align: center; }
-        .target-box { font-size: 4rem; text-align: center; margin: 20px 0; color: var(--primary); height: 80px; }
-        .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 360px; margin: 0 auto; }
-        .key-btn { padding: 20px; font-size: 1.5rem; background: white; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 4px 0 #eee; cursor: pointer; font-weight: bold; }
-        .key-btn:active { transform: translateY(3px); box-shadow: none; }
-        .t5-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
-        .t5-btn { padding: 15px; border: 2px solid #eee; background: white; border-radius: 10px; font-size: 1.1rem; cursor: pointer; transition: 0.2s; }
-        .t5-btn.selected { border-color: var(--primary); background: #e3f2fd; color: var(--primary); font-weight: bold; }
-
-        /* Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 25px; border-radius: 16px; width: 90%; max-width: 400px; max-height: 90vh; overflow-y: auto; text-align: left; }
-        .setting-label { font-size: 0.85rem; color: #666; font-weight: bold; display: block; margin-bottom: 5px; }
-        .badge { font-size:0.7rem; color:white; background:var(--primary); padding:2px 6px; border-radius:4px; display:inline-block; margin-left:5px; }
-        .typing-indicator span { display: inline-block; width: 6px; height: 6px; background: #ccc; border-radius: 50%; animation: type 1s infinite; margin: 0 2px; }
-        @keyframes type { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        
-        #status-msg { font-size: 0.85rem; margin-bottom: 10px; min-height: 20px; word-break: break-all; }
+        @media (max-width: 768px) { 
+            .card { padding: 20px 15px; } .tutorial-grid { grid-template-columns: 1fr; } .intro-map { grid-template-columns: 1fr; } 
+            .sdmt-legend-sym { font-size: 1.8rem; height: 40px; } .sdmt-legend-num { height: 25px; } .btn-color { height: 70px; font-size: 1.3rem; }
+            .form-row { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
 
-<div id="view-reg" class="view-section active">
-    <div class="container">
-        <div class="card">
-            <h1 style="margin:0; color:var(--primary);">CAS v9.0</h1>
-            <p style="color:#666; font-size:0.9rem;">AI Doctor (Auto-Fix Edition)</p>
-            <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-            
-            <div class="form-row">
-                <div class="form-group"><label>姓名 Name</label><input type="text" id="p_name"></div>
-                <div class="form-group"><label>登记号 ID *</label><input type="text" id="p_id" required></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>性别</label><select id="p_gender"><option value="M">男</option><option value="F">女</option></select></div>
-                <div class="form-group"><label>出生日期</label><input type="date" id="p_dob" onchange="calcAge()"></div>
-            </div>
-            <div class="form-row">
-                <div class="form-group"><label>年龄</label><input type="number" id="p_age" readonly placeholder="自动计算"></div>
-                <div class="form-group"><label>教育</label><select id="p_edu"><option value="College">大学及以上</option><option value="HighSchool">高中</option><option value="Primary">小学</option></select></div>
-            </div>
-            
-            <button class="btn btn-primary" style="width:100%; margin-top:20px; padding:15px;" onclick="startSystem()">开始评估 (Start)</button>
-            <p style="font-size:0.8rem; color:#999; margin-top:15px; cursor:pointer; text-decoration:underline; text-align:center;" onclick="toggleSettings()">⚙️ 模型配置 (Model Setup)</p>
+<header>
+    <div class="brand"><span style="font-size:1.5rem;">🧠</span><span id="txt-app-title">CAS v11.2</span></div>
+    <div style="display:flex; align-items:center; gap:10px;">
+        <button onclick="toggleAdmin()" style="border:none; background:transparent; font-size:1.2rem; cursor:pointer;" title="Settings">⚙️</button>
+        <div class="mode-switch">
+            <button onclick="setMode('zh')" id="btn-mode-zh" class="active">中文</button>
+            <button onclick="setMode('en')" id="btn-mode-en">English</button>
+            <button onclick="setMode('child')" id="btn-mode-child">👶</button>
+            <button onclick="setMode('geriatric')" id="btn-mode-geriatric" title="老年模式">👴</button>
         </div>
     </div>
-</div>
+</header>
 
-<div id="view-chat" class="view-section">
-    <div class="chat-header">
-        <div style="display:flex; align-items:center;">
-            <div class="avatar">👨‍⚕️</div>
-            <div style="margin-left:10px;">
-                <div style="font-weight:bold;">Dr. CAS</div>
-                <div id="model-badge" class="badge">AI</div>
+<div class="container">
+    <div id="view-home" class="view-section active">
+        <div class="card text-center">
+            <h1 id="txt-home-title">认知评估系统</h1>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Universal Edition (v11.2)</p>
+            <div style="max-width:500px; margin:0 auto 30px auto; color:#666; font-size:0.9rem; line-height:1.6;">
+                <p id="txt-home-intro">本测试包含9个环节，预计耗时25分钟。<br>请确保您处于安静环境。</p>
             </div>
-        </div>
-        <button class="btn btn-outline" style="padding: 5px 10px; font-size: 0.8rem;" onclick="toggleSettings()">设置</button>
-    </div>
-    <div id="chat-box" class="chat-history"></div>
-    <div class="input-area">
-        <button id="btn-mic" class="btn-icon" onmousedown="startListening()" onmouseup="stopListening()" ontouchstart="startListening()" ontouchend="stopListening()">🎙️</button>
-        <input type="text" id="user-input" class="input-box" placeholder="输入消息..." onkeydown="trackKeystroke(event)">
-        <button class="btn-icon btn-send" onclick="sendMessage()">➤</button>
-    </div>
-</div>
-
-<div id="view-sdmt" class="view-section">
-    <div class="container">
-        <div class="card">
-            <div class="sdmt-header"><span>快速匹配</span><span style="color:var(--accent);">⏱ <span id="sdmt-timer">--</span>s</span></div>
-            <div id="sdmt-legend" class="sdmt-legend"></div>
-            <div class="target-box" id="sdmt-target">?</div>
-            <div class="keypad">
-                <button class="key-btn" onclick="inputSDMT(1)">1</button><button class="key-btn" onclick="inputSDMT(2)">2</button><button class="key-btn" onclick="inputSDMT(3)">3</button>
-                <button class="key-btn" onclick="inputSDMT(4)">4</button><button class="key-btn" onclick="inputSDMT(5)">5</button><button class="key-btn" onclick="inputSDMT(6)">6</button>
-                <button class="key-btn" onclick="inputSDMT(7)">7</button><button class="key-btn" onclick="inputSDMT(8)">8</button><button class="key-btn" onclick="inputSDMT(9)">9</button>
+            <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;">
+                <button class="btn btn-primary" onclick="startTutorial()"><span id="txt-btn-tutorial">📖 查看演示 (Demo)</span></button>
+                <button class="btn btn-ai" onclick="startQuickRun()"><span id="txt-btn-quick">⚡ 快速体验 (Quick)</span></button>
+            </div>
+            <div style="margin-top: 20px;">
+                <button id="btn-home-settings" class="btn btn-outline" style="font-size: 0.9rem; padding: 10px 25px;" onclick="toggleAdmin()">⚙️ <span id="txt-btn-settings">系统配置</span></button>
             </div>
         </div>
     </div>
-</div>
 
-<div id="view-t5" class="view-section">
-    <div class="container">
-        <div class="card">
-            <h2>再认测试</h2>
-            <p style="color:#666;">请点击刚才对话中我们要买的三样东西：</p>
-            <div id="t5-grid" class="t5-grid"></div>
-            <button class="btn btn-primary" style="margin-top:20px; width:100%;" onclick="submitT5()">确认选择</button>
+    <div id="view-guide-sci" class="view-section"><div style="margin-bottom:15px;"><button class="btn-back" onclick="showView('view-tutorial')">⬅ <span id="txt-back-demo-s">Back</span></button></div><div id="guide-sci-content" class="card doc-content"></div></div>
+    <div id="view-guide-pop" class="view-section"><div style="margin-bottom:15px;"><button class="btn-back" onclick="showView('view-tutorial')">⬅ <span id="txt-back-demo-p">Back</span></button></div><div id="guide-pop-content" class="card doc-content"></div></div>
+
+    <div id="view-tutorial" class="view-section">
+        <div style="margin-bottom:15px; text-align:left;">
+            <button class="btn-back" onclick="showView('view-home')">⬅ <span id="txt-back-home">返回主页</span></button>
         </div>
-    </div>
-</div>
-
-<div id="view-report" class="view-section">
-    <div class="container">
-        <div class="card" style="text-align:left;">
-            <h2 style="text-align:center;">📋 临床评估报告</h2>
-            <div id="report-content">AI 分析中...</div>
-            <hr style="border:0; border-top:1px solid #eee; margin:15px 0;">
-            <div style="font-size:0.8rem; color:#666; background:#f9f9f9; padding:10px; border-radius:8px;">
-                <strong>数字表型 (Digital Phenotypes):</strong><br>
-                • 打字犹豫 (Latency): <span id="val-latency">-</span> ms<br>
-                • 犹豫指数 (Backspace Rate): <span id="val-backspace">-</span>%<br>
-                • 疲劳指数 (Fatigue): <span id="val-fatigue">-</span>
-            </div>
-            <button class="btn-primary" style="width:100%; margin-top:20px; padding:12px; border:none; border-radius:8px;" onclick="exportData()">导出数据 (CSV)</button>
+        <div style="display:flex; gap:10px; margin-bottom:20px;">
+            <button class="btn btn-outline" style="flex:1; font-size:0.9rem;" onclick="showView('view-guide-sci')">📘 <span id="txt-btn-sci">专业说明书</span></button>
+            <button class="btn btn-info" style="flex:1; font-size:0.9rem;" onclick="showView('view-guide-pop')">🌟 <span id="txt-btn-pop">用户指南</span></button>
         </div>
-    </div>
-</div>
-
-<div id="settings-modal" class="modal">
-    <div class="modal-content">
-        <h3 style="margin-top:0;">🔧 模型配置</h3>
         
-        <div class="setting-group">
-            <label class="setting-label">AI 提供商</label>
-            <select id="ai-provider" onchange="updateProviderFields()">
-                <option value="gemini">Google Gemini (默认)</option>
-                <option value="deepseek">DeepSeek (国内推荐)</option>
-                <option value="qwen">通义千问 (Qwen)</option>
-                <option value="kimi">Kimi (月之暗面)</option>
-                <option value="doubao">Doubao (字节豆包)</option>
-                <option value="openai">OpenAI (GPT-4)</option>
-            </select>
+        <div class="card" style="margin-bottom:20px;">
+            <h3 style="margin-top:0; color:var(--primary);">🧠 <span id="txt-brain-map">全脑认知功能图谱</span></h3>
+            <div class="intro-map">
+                <div class="intro-item"><div class="intro-h"><span>⚡ <span id="txt-map-f">额叶</span></span></div><div class="intro-p"><span id="txt-intro-exec">执行与控制中心</span></div><div class="intro-tag">Stroop, TMT, VFT</div></div>
+                <div class="intro-item"><div class="intro-h"><span>💾 <span id="txt-map-t">颞叶</span></span></div><div class="intro-p"><span id="txt-intro-mem">记忆编码与存储</span></div><div class="intro-tag">Memory (T1/T4/T5)</div></div>
+                <div class="intro-item"><div class="intro-h"><span>🧭 <span id="txt-map-p">顶叶</span></span></div><div class="intro-p"><span id="txt-intro-spa">空间定位与计算</span></div><div class="intro-tag">Corsi (T2), Orient (T3)</div></div>
+                <div class="intro-item"><div class="intro-h"><span>🚀 <span id="txt-map-w">连通性</span></span></div><div class="intro-p"><span id="txt-intro-spd">信息传输效率</span></div><div class="intro-tag">SDMT (T6)</div></div>
+            </div>
         </div>
 
-        <div class="setting-group">
-            <label class="setting-label">API Key</label>
-            <input type="password" id="api-key" placeholder="sk-...">
+        <div class="card text-center">
+            <h2 id="txt-tut-title" style="margin-bottom:20px;">测试演示</h2>
+            <div class="tutorial-grid">
+                <div class="tutorial-card">
+                    <span class="t-icon">🧠</span><div class="t-title" id="txt-tut-c1-title">1. 记忆力</div>
+                    <div class="micro-demo-box" style="padding:10px; min-height:80px;"><div class="demo-word-dynamic anim-pop" id="demo-word-tut" style="font-size:1.8rem;">...</div></div>
+                    <div class="t-desc" id="txt-tut-c1-desc">记住屏幕显示的单词。</div>
+                </div>
+                <div class="tutorial-card">
+                    <span class="t-icon">🟩</span><div class="t-title" id="txt-tut-c2-title">2. 空间记忆</div>
+                    <div class="micro-demo-box" style="padding:10px;"><div class="demo-corsi-grid"><div class="demo-block lit" style="animation-delay:0s"></div><div class="demo-block"></div><div class="demo-block"></div><div class="demo-block"></div><div class="demo-block lit" style="animation-delay:0.6s"></div><div class="demo-block"></div><div class="demo-block"></div><div class="demo-block"></div><div class="demo-block lit" style="animation-delay:1.2s"></div></div></div>
+                    <div class="t-desc" id="txt-tut-c2-desc">观察顺序。</div>
+                </div>
+                <div class="tutorial-card">
+                    <span class="t-icon">📅</span><div class="t-title" id="txt-tut-c4-title">3. 定向力</div>
+                    <div class="micro-demo-box" style="padding:10px;"><div class="demo-word-dynamic" id="demo-time-tut">2026</div></div>
+                    <div class="t-desc" id="txt-tut-c4-desc">回答时间。</div>
+                </div>
+                <div class="tutorial-card">
+                    <span class="t-icon">✏️</span><div class="t-title" id="txt-tut-c9-title">4. 连线测验</div>
+                    <div class="micro-demo-box" style="padding:10px;"><div style="display:flex; gap:5px; align-items:center; justify-content:center;"><div style="width:25px; height:25px; border-radius:50%; border:2px solid #333; display:flex; align-items:center; justify-content:center;">1</div><div class="tmt-demo-line" style="height:2px; width:15px; background:var(--success);"></div><div style="width:25px; height:25px; border-radius:50%; border:2px solid #333; display:flex; align-items:center; justify-content:center;">2</div><div class="tmt-demo-line" style="height:2px; width:15px; background:var(--success); animation-delay:0.5s;"></div><div style="width:25px; height:25px; border-radius:50%; border:2px solid #333; display:flex; align-items:center; justify-content:center;">3</div></div></div>
+                    <div class="t-desc" id="txt-tut-c9-desc">按顺序点击。</div>
+                </div>
+                <div class="tutorial-card">
+                    <span class="t-icon">🎨</span><div class="t-title" id="txt-tut-c5-title">5. 抑制控制</div>
+                    <div class="micro-demo-box" style="padding:10px; min-height:80px;"><div id="demo-stroop-tut-txt" class="demo-stroop-text text-green" style="font-size:2rem;">红</div><div id="demo-stroop-hint" style="font-size:0.75rem; color:#666; margin-top:5px;">(点绿键)</div></div>
+                    <div class="t-desc" id="txt-tut-c5-desc">看颜色。</div>
+                </div>
+                <div class="tutorial-card">
+                    <span class="t-icon">⚡</span><div class="t-title" id="txt-tut-c3-title">6. 处理速度</div>
+                    <div class="micro-demo-box" style="padding:5px;"><div class="demo-sdmt-visual"><div style="font-size:2rem; color:var(--primary);" id="demo-sdmt-sym">⊏</div><div class="demo-keyboard-key" id="demo-sdmt-key">1</div></div></div>
+                    <div class="t-desc" id="txt-tut-c3-desc">看符号选数字。</div>
+                </div>
+                <div class="tutorial-card">
+                    <span class="t-icon">🦁</span><div class="t-title" id="txt-tut-c8-title">7. 语言流利度</div>
+                    <div class="micro-demo-box" style="padding:10px;"><div class="demo-anim-emoji" id="demo-vft-emoji">🦁</div></div>
+                    <div class="t-desc" id="txt-tut-c8-desc">说动物。</div>
+                </div>
+            </div>
+            <div style="margin-top:40px;">
+                <button class="btn btn-success" onclick="try{initSession()}catch(e){alert(e)}"><span id="txt-btn-start-real">✅ 我看懂了，开始正式登记</span></button>
+            </div>
         </div>
+    </div>
 
-        <div class="setting-group" id="group-model">
-            <label class="setting-label">模型名称 / Endpoint ID</label>
-            <input type="text" id="model-name" placeholder="gemini-1.5-flash-001">
-            <div style="font-size:0.75rem; color:#888;">* 如果 Gemini 报错，系统将自动尝试切换</div>
-        </div>
+    <div id="view-t1-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()" title="Exit">🏠</div><h2 id="txt-t1-title">记忆学习</h2><p id="txt-t1-instr">屏幕显示单词。</p><button class="btn btn-primary" onclick="startT1Run()"><span id="txt-btn-mem">开始</span></button></div></div>
+    <div id="view-t1-run" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 style="color:#ccc; font-size:1rem;" id="txt-task-mem">Verbal Learning</h2><div id="t1-word" class="word-display">...</div><div class="progress-container"><div class="progress-track"><div id="t1-learn-bar" class="progress-bar"></div></div></div></div></div>
+    <div id="view-t1-recall" class="view-section"><div class="card"><div class="btn-home-corner" onclick="location.reload()">🏠</div><div style="display:flex; justify-content:space-between;"><h2 id="txt-t1-recall-title">即时回忆</h2><div style="font-weight:bold; color:var(--accent);">⏱ <span id="t1-timer">60</span>s</div></div><div style="display:flex; gap:10px; margin: 20px 0;"><button class="mic-btn" id="t1-mic" onclick="toggleSpeech('t1')">🎤</button><input type="text" id="t1-input" onkeydown="if(event.key==='Enter'){event.preventDefault();addWord('t1');}"><button class="btn btn-primary" onclick="addWord('t1')"><span id="txt-btn-add">添加</span></button></div><div id="t1-chips" class="chips-area"></div><div class="text-center"><button class="btn btn-success" onclick="finishT1()"><span id="txt-btn-finish">完成</span></button></div></div></div>
+    
+    <div id="view-t2-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t2-title">空间记忆</h2><p id="txt-t2-instr">观察顺序。</p><button class="btn btn-primary" onclick="startCorsi('forward')"><span id="txt-btn-start-corsi">开始</span></button></div></div>
+    <div id="view-t2-test" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t2-test-title">空间记忆</h2><p id="t2-status" style="font-weight:bold; color:var(--primary);">...</p><div class="corsi-board" id="corsi-board"></div></div></div>
+    <div id="view-t2b-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t2b-title">空间倒背</h2><p id="txt-t2b-instr">倒序点击。</p><button class="btn btn-primary" onclick="startCorsi('backward')">开始</button></div></div>
 
-        <div class="setting-group" id="group-url" style="display:none;">
-            <label class="setting-label">API Base URL</label>
-            <input type="text" id="api-url" placeholder="https://api.openai.com/v1">
-        </div>
+    <div id="view-t3" class="view-section"><div class="card"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t3-title">定向力</h2><h3 id="t3-q" style="font-size:1.4rem; text-align:center;">Q</h3><div id="t3-input-area"></div><div class="text-center" style="margin-top:20px;"><button class="btn btn-primary" onclick="nextT3()"><span id="txt-btn-next-q">下一题</span></button></div></div></div>
 
-        <div id="status-msg"></div>
+    <div id="view-t9-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t9-title">连线测验</h2><button class="btn btn-primary" onclick="startTMTPractice('A')"><span id="txt-btn-start-tmt">开始</span></button></div></div>
+    <div id="view-t9-test" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><div id="tmt-phase-indicator">Practice A</div><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>⏱ <span id="t9-timer">0.0</span>s</span><span id="t9-next-target">Next: 1</span></div><div id="tmt-canvas-area"></div><div id="tmt-error-msg" style="color:var(--error); font-weight:bold; height:20px; opacity:0; transition:opacity 0.2s;">Wrong!</div></div></div>
 
-        <div style="display:flex; gap:10px;">
-            <button class="btn btn-outline" style="flex:1;" onclick="testConnection()">📡 测试连接</button>
-            <button class="btn btn-primary" style="flex:1;" onclick="saveSettings()">保存</button>
-        </div>
-        <div style="margin-top:10px; text-align:center;">
-            <a href="#" onclick="toggleSettings()" style="color:#999; font-size:0.9rem;">关闭</a>
-        </div>
+    <div id="view-t7-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t7-title">Stroop</h2><p id="txt-t7-instr">看颜色。</p><button class="btn btn-primary" onclick="startStroopPractice()"><span id="txt-btn-start-stroop">开始</span></button></div></div>
+    <div id="view-t7-test" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><div id="t7-phase-indicator">Practice</div><div id="stroop-feedback" class="sdmt-overlay-feedback"></div><div style="display:flex; justify-content:space-between; margin-bottom:15px;"><span>⏱ <span id="t7-timer">--</span>s</span><span>Score: <span id="t7-score">0</span></span></div><div id="stroop-word">Word</div><div class="stroop-grid"><button class="btn btn-color bg-red" onclick="inputStroop('red')"><span id="btn-red-txt">红</span></button><button class="btn btn-color bg-green" onclick="inputStroop('green')"><span id="btn-green-txt">绿</span></button><button class="btn btn-color bg-blue" onclick="inputStroop('blue')"><span id="btn-blue-txt">蓝</span></button><button class="btn btn-color bg-yellow" onclick="inputStroop('yellow')"><span id="btn-yellow-txt">黄</span></button></div></div></div>
+
+    <div id="view-t6-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t6-title">SDMT</h2><p id="txt-t6-instr">看符号选数字。</p><button class="btn btn-primary" onclick="startSDMTPractice()"><span id="txt-btn-start-test">开始</span></button></div></div>
+    <div id="view-t6-test" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><div id="t6-phase-indicator">Practice</div><div id="sdmt-feedback" class="sdmt-overlay-feedback"></div><div style="display:flex; justify-content:space-between; margin-bottom:15px;"><span>⏱ <span id="t6-timer">--</span>s</span><span>Score: <span id="t6-score">0</span></span></div><div id="sdmt-legend" class="sdmt-legend"></div><div class="big-symbol symbol-font" id="t6-target">?</div><div class="sdmt-grid"><button class="key-btn" onclick="inputSDMT(7)">7</button><button class="key-btn" onclick="inputSDMT(8)">8</button><button class="key-btn" onclick="inputSDMT(9)">9</button><button class="key-btn" onclick="inputSDMT(4)">4</button><button class="key-btn" onclick="inputSDMT(5)">5</button><button class="key-btn" onclick="inputSDMT(6)">6</button><button class="key-btn" onclick="inputSDMT(1)">1</button><button class="key-btn" onclick="inputSDMT(2)">2</button><button class="key-btn" onclick="inputSDMT(3)">3</button></div></div></div>
+
+    <div id="view-t4-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t4-title">延迟回忆</h2><button class="btn btn-primary" onclick="startT4Recall()"><span id="txt-btn-start-recall">开始</span></button></div></div>
+    <div id="view-t4-recall" class="view-section"><div class="card"><div class="btn-home-corner" onclick="location.reload()">🏠</div><div style="display:flex; justify-content:space-between;"><h2 id="txt-t4-test-title">延迟回忆</h2><div>⏱ <span id="t4-timer">60</span>s</div></div><input type="text" id="t4-input" onkeydown="if(event.key==='Enter')addWord('t4')"><button class="btn btn-primary" onclick="addWord('t4')">添加</button><div id="t4-chips" class="chips-area"></div><div class="text-center"><button class="btn btn-success" onclick="finishT4()">完成</button></div></div></div>
+    
+    <div id="view-t8-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t8-title">VFT</h2><button class="btn btn-primary" onclick="startT8Test()"><span id="txt-btn-start-vft">开始</span></button></div></div>
+    <div id="view-t8-test" class="view-section"><div class="card"><div class="btn-home-corner" onclick="location.reload()">🏠</div><div style="display:flex; justify-content:space-between;"><h2 id="txt-t8-test-title">VFT</h2><div>⏱ <span id="t8-timer">60</span>s</div></div><input type="text" id="t8-input" onkeydown="if(event.key==='Enter')addWord('t8')"><button class="btn btn-primary" onclick="addWord('t8')">添加</button><div id="t8-chips" class="chips-area"></div><div class="text-center"><button class="btn btn-success" onclick="finishT8()">完成</button></div></div></div>
+
+    <div id="view-t5-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t5-title">再认</h2><button class="btn btn-primary" onclick="startT5Test()"><span id="txt-btn-start-recog">开始</span></button></div></div>
+    <div id="view-t5-test" class="view-section"><div class="card"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t5-test-title">再认</h2><div id="t5-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;"></div><div class="text-center" style="margin-top:20px;"><button class="btn btn-success" onclick="finishT5()">完成</button></div></div></div>
+
+    <div id="view-register" class="view-section"><div class="card"><div style="margin-bottom:15px; text-align:left;"><button class="btn-back" onclick="showView('view-tutorial')">⬅ <span id="txt-back-demo">返回演示</span></button></div><h2 id="txt-reg-title">Info</h2>
+    <div class="form-row"><div><label id="lbl-name">Name</label><input id="p_name"></div><div><label id="lbl-id">ID</label><input id="p_id"></div></div>
+    <div class="form-row"><div><label id="lbl-gender">Gender</label><select id="p_gender"><option value="M">M</option><option value="F">F</option></select></div><div><label id="lbl-dob">DOB</label><input type="date" id="p_dob" onchange="calcAge()"></div></div>
+    <div class="form-row"><div><label id="lbl-age">Age</label><input type="number" id="p_age"></div><div><label id="lbl-edu">Edu</label><select id="p_edu"><option>Edu</option></select></div></div>
+    <div class="form-row"><div><label id="lbl-hand">Hand</label><select id="p_hand"><option value="R">R</option><option value="L">L</option></select></div></div>
+    <div id="reg-error-msg" style="color:red; display:none;">Error</div>
+    <div class="text-center"><button class="btn btn-primary" onclick="submitRegister()">Next</button></div></div></div>
+
+    <div id="view-report" class="view-section"><div class="card"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-report-title">报告</h2><div id="report-body"></div><div style="display:flex; gap:10px; justify-content:center; margin-top:20px;"><button class="btn btn-primary" onclick="analyzeWithAI()">AI Analysis</button></div><div id="ai-report-area"><div id="ai-loading" style="display:none;">Analyzing...</div><div id="ai-report-content"></div></div><div class="backup-section"><p onclick="toggleBackup()">⚠️ Show Raw</p><div id="backup-box" class="backup-box"><textarea id="raw-data"></textarea><button class="btn btn-outline" onclick="copyRaw()">Copy</button></div></div></div></div>
+</div>
+
+<div id="admin-modal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; z-index:200;">
+    <div style="background:white; width:90%; max-width:400px; margin:50px auto; padding:20px; border-radius:12px;">
+        <h3>Settings</h3>
+        <div style="margin-bottom:10px;"><label>Place</label><input id="set-place"></div>
+        <div style="margin-bottom:10px;"><label>City</label><input id="set-city"></div>
+        <div style="margin-bottom:10px;"><label>Provider</label><select id="set-provider" onchange="updateProviderFields()"><option value="gemini">Gemini</option><option value="deepseek">DeepSeek</option></select></div>
+        <div style="margin-bottom:10px;"><label>API Key</label><input id="set-ai-key" type="password"></div>
+        <div style="margin-bottom:10px;"><label>Model</label><input id="set-model-name"></div>
+        <div style="margin-bottom:10px; display:none;" id="group-url"><label>Base URL</label><input id="set-base-url"></div>
+        <div style="margin-bottom:10px;"><label>Cloud URL</label><input id="set-cloud-url"></div>
+        <button class="btn btn-primary" onclick="saveAdmin()">Save</button>
+        <button class="btn btn-outline" onclick="toggleAdmin()">Close</button>
     </div>
 </div>
 
 <script>
-/* =========================================
-   CAS v9.0 Logic Core (Auto-Fix)
-   ========================================= */
-
-let state = {
-    config: { provider: 'gemini', apiKey: '', modelName: '', baseUrl: '' },
-    patient: {}, 
-    chatHistory: [],
-    sdmt: { score: 0, responses: [], map: [], lastTime: 0 },
-    t5: { selected: [], score: 0 },
-    pheno: { keyTimes: [], backspaces: 0, charCount: 0, lastKeyTime: 0 }
+// DATA
+const DB = {
+    lists: { zh: { A: ["老虎", "熊猫", "狮子", "斧头", "锤子", "锯子", "苹果", "香蕉", "葡萄", "汽车"], B: ["豹子", "大象", "狼", "螺丝刀", "钳子", "钻机", "橘子", "梨", "桃子", "卡车"] }, en: { A: ["Tiger", "Panda", "Lion", "Hammer", "Wrench", "Saw", "Apple", "Banana", "Grape", "Car"], B: ["Leopard", "Elephant", "Wolf", "Screwdriver", "Pliers", "Drill", "Orange", "Pear", "Peach", "Truck"] }, child: { A: ["小狗", "小猫", "兔子", "苹果", "香蕉", "西瓜", "汽车", "飞机", "火车", "皮球"], B: ["小猪", "小羊", "熊猫", "葡萄", "橘子", "草莓", "公交车", "轮船", "卡车", "气球"] } },
+    demos: { zh: { w1:"苹果", w2:"香蕉" }, en: { w1:"Apple", w2:"Banana" }, child: { w1:"苹果", w2:"香蕉" } },
+    symbols: ['⊏', '⊐', '⊓', '⊔', '○', '□', '◇', '☆', '△'], 
+    stroop: { zh: { words: ["红","绿","蓝","黄"], colors: ["red","green","blue","yellow"], btns: ["红","绿","蓝","黄"] }, en: { words: ["RED","GREEN","BLUE","YELLOW"], colors: ["red","green","blue","yellow"], btns: ["RED","GREEN","BLUE","YELLOW"] }, child: { words: ["红","绿","蓝","黄"], colors: ["red","green","blue","yellow"], btns: ["红","绿","蓝","黄"] } },
+    tmt: { A: ['1','2','3','4','5','6','7','8','9','10','11','12'], B: ['1','A','2','B','3','C','4','D','5','E','6','F'] },
+    guides: {
+        zh: { sci: `<h3>1. 测验模块</h3><table class="doc-table"><tr><th>模块</th><th>指标</th></tr><tr><td>T1 记忆</td><td>即时回忆分</td></tr><tr><td>T2 Corsi</td><td>广度</td></tr><tr><td>T9 TMT</td><td>时间/错误</td></tr><tr><td>T7 Stroop</td><td>抑制</td></tr><tr><td>T6 SDMT</td><td>速度</td></tr></table>`, pop: `<h3>👋 欢迎！</h3><p>给大脑做个“体检”。</p><h3>🚀 怎么玩？</h3><ul><li>🧠 记词：记住屏幕上的词。</li><li>🟩 点方块：照着顺序点。</li><li>🎨 找颜色：<b>字是“红”，颜色是绿，点绿！</b></li></ul>` },
+        en: { sci: `<h3>1. Battery</h3><table class="doc-table"><tr><th>Module</th><th>Metrics</th></tr><tr><td>T1 Memory</td><td>Immediate</td></tr><tr><td>T2 Corsi</td><td>Span</td></tr><tr><td>T7 Stroop</td><td>Inhibition</td></tr></table>`, pop: `<h3>👋 Welcome!</h3><p>Quick brain check.</p><h3>🚀 How to Play</h3><ul><li>🧠 Memory: Remember words.</li><li>🎨 Colors: Word "RED" in <b>GREEN</b> ink? Tap <b>GREEN</b>!</li></ul>` }
+    },
+    edu_opts: ["Primary","Secondary","High","Uni"],
+    text: {
+        zh: { app_title:"CAS v11.2", home_title:"认知评估系统", btn_quick:"⚡ 快速体验", btn_sci:"📘 说明书", btn_pop:"🌟 指南", tut_title:"演示", back_home:"返回主页", btn_red:"红", btn_green:"绿", btn_blue:"蓝", btn_yellow:"黄", back_demo:"返回演示", reg_title:"受试者信息", btn_start_real:"✅ 我看懂了，开始正式登记", col_m:"指标", col_v:"数值", col_n:"备注", d_imm:"即时回忆", d_ret:"保持率", d_net:"净分", d_fa:"虚报", d_span:"广度", d_pt:"定向", d_err:"错误", d_inh:"抑制", d_spd:"速度", d_ani:"动物", reg_err:"请填写必填项", l_name:"姓名", l_id:"编号", l_gender:"性别", l_dob:"生日", l_age:"年龄", l_edu:"教育", l_hand:"利手" },
+        en: { app_title:"CAS v11.2", home_title:"Cognitive Assessment", btn_quick:"⚡ Quick Run", btn_sci:"📘 Manual", btn_pop:"🌟 Guide", tut_title:"Demo", back_home:"Home", btn_red:"RED", btn_green:"GREEN", btn_blue:"BLUE", btn_yellow:"YEL", back_demo:"Back to Demo", reg_title:"Register", btn_start_real:"Register Now", col_m:"Metric", col_v:"Value", col_n:"Note", d_imm:"Immediate", d_ret:"Retention", d_net:"Net", d_fa:"FA", d_span:"Span", d_pt:"Orientation", d_err:"Errors", d_inh:"Inhibition", d_spd:"Speed", d_ani:"Animals", reg_err:"Required", l_name:"Name", l_id:"ID", l_gender:"Gender", l_dob:"DOB", l_age:"Age", l_edu:"Edu", l_hand:"Hand" },
+        child: { app_title:"大脑挑战", home_title:"大脑挑战赛", btn_quick:"⚡ 快速开始", btn_sci:"📘 老师看", btn_pop:"🌟 怎么玩", tut_title:"演示", back_home:"回主页", btn_red:"红", btn_green:"绿", btn_blue:"蓝", btn_yellow:"黄", back_demo:"回演示", reg_title:"小朋友信息", btn_start_real:"开始", col_m:"项目", col_v:"得分", col_n:"说明", d_imm:"记词", d_ret:"遗忘", d_net:"找词", d_fa:"错选", d_span:"广度", d_pt:"问答", d_err:"错误", d_inh:"抗干扰", d_spd:"手速", d_ani:"动物", reg_err:"填完哦", l_name:"姓名", l_id:"学号", l_gender:"性别", l_dob:"生日", l_age:"几岁", l_edu:"年级", l_hand:"手" },
+        geriatric: { app_title:"老年脑健康", home_title:"老年脑健康筛查", btn_quick:"⚡ 快速测", btn_sci:"📘 医生看", btn_pop:"🌟 老人看", tut_title:"演示", back_home:"回首页", btn_red:"红", btn_green:"绿", btn_blue:"蓝", btn_yellow:"黄", back_demo:"回演示", reg_title:"老人信息", btn_start_real:"开始登记", col_m:"指标", col_v:"数值", col_n:"备注", d_imm:"即时回忆", d_ret:"保持率", d_net:"净分", d_fa:"虚报", d_span:"广度", d_pt:"定向", d_err:"错误", d_inh:"抑制", d_spd:"速度", d_ani:"动物", reg_err:"请填写", l_name:"姓名", l_id:"编号", l_gender:"性别", l_dob:"生日", l_age:"年龄", l_edu:"文化", l_hand:"手" }
+    },
+    t3q: ["Year?","Month?","Date?","Day?","Place?","City?"]
 };
 
-const WORDS_TARGET = ["老虎", "钢琴", "玫瑰"];
-const WORDS_DISTRACT = ["狮子", "吉他", "百合", "桌子", "苹果", "汽车"];
-const SYMBOLS = ['⊏', '⊐', '⊓', '⊔', '△', '○', '□', '◇', '☆'];
+let state = { mode: 'zh', isQuickRun: false, config: { t1_len:10, t6_time:60, t7_time:45, t8_time:60 }, t6:{keyMap:[]}, t9:{history:[]}, t7:{responses:[]}, t1:{entered:[]}, t2:{history:[]}, t3:{score:0, details:[]}, t4:{entered:[]}, t5:{hits:0, false_alarms:0}, t8:{entered:[]} }; 
+let demoInterval = null; let demoToggle = false; let recallTimerInt = null; let t6Interval = null; let t7Interval = null; let t9TimerInt = null; let corsiTimeout = null;
 
-window.onload = () => {
-    loadSettings();
-    document.getElementById('p_dob').max = new Date().toISOString().split("T")[0];
-    if (!state.config.apiKey) toggleSettings();
+window.onload = () => { 
+    const saved = localStorage.getItem('cog_admin');
+    if(saved) state.admin = JSON.parse(saved);
+    else state.admin = { place: "Hospital", city: "Beijing", aiKey: "" };
+    
+    document.getElementById('set-place').value = state.admin.place;
+    document.getElementById('set-city').value = state.admin.city;
+    document.getElementById('set-ai-key').value = state.admin.aiKey || "";
+
+    setMode('zh'); 
+    initCorsiBoard(); 
+    startDemoAnimation(); 
 };
 
-// [FIX] 强制使用新版本的 LocalStorage Key，避免旧错误缓存干扰
-function loadSettings() {
-    const saved = localStorage.getItem('cas_config_v90'); 
-    if (saved) {
-        state.config = JSON.parse(saved);
-    } else {
-        // 初始化默认值
-        state.config = { provider: 'gemini', apiKey: '', modelName: 'gemini-1.5-flash-001', baseUrl: '' };
-    }
+function setMode(m) {
+    state.mode = m;
+    document.body.className = (m==='child')?'child-theme':(m==='geriatric'?'geriatric-theme':'');
+    const T = DB.text[m];
     
-    // Fill UI
-    document.getElementById('ai-provider').value = state.config.provider;
-    document.getElementById('api-key').value = state.config.apiKey;
-    document.getElementById('model-name').value = state.config.modelName || "";
-    document.getElementById('api-url').value = state.config.baseUrl || "";
-    updateBadge();
-    updateProviderFields();
-}
-
-// [FIX] 通用 LLM 调用 & 自动重试逻辑
-async function callLLM(history, isTest = false) {
-    const { provider, apiKey, baseUrl } = state.config;
-    let { modelName } = state.config;
-    
-    if (!apiKey) throw new Error("缺少 API Key");
-
-    // 默认模型回退逻辑 (Safety Net)
-    if (!modelName) {
-        if (provider === 'gemini') modelName = 'gemini-1.5-flash-001'; // 使用精确版本号
-        else if (provider === 'deepseek') modelName = 'deepseek-chat';
-        else if (provider === 'qwen') modelName = 'qwen-plus';
-        else if (provider === 'kimi') modelName = 'moonshot-v1-8k';
-    }
-
-    const sysPrompt = `你是神经内科医生Dr. CAS。任务：1.问候 2.定向力询问 3.记忆植入[老虎,钢琴,玫瑰] 4.干扰 5.输[START_SDMT] 6.输[START_RECOGNITION] 7.输[GENERATE_REPORT]。每次只一步。`;
-    
-    let url, payload, headers = { 'Content-Type': 'application/json' };
-
-    // --- A. Google Gemini ---
-    if (provider === 'gemini') {
-        url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
-        let contents = isTest ? [{ parts: [{ text: "Hello" }] }] : history;
-        payload = { contents };
+    // Auto map IDs
+    for(let k in T) { 
+        let id = 'txt-' + k.replace(/_/g,'-');
+        let el = document.getElementById(id); 
+        if(el) el.innerText = T[k];
         
-        try {
-            const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(payload) });
-            const data = await res.json();
-            
-            if (data.error) {
-                // [AUTO-FIX] 自动降级逻辑
-                if (data.error.message.includes("not found") || data.error.message.includes("404")) {
-                    console.warn(`Model ${modelName} not found. Trying gemini-pro...`);
-                    // 递归重试：尝试使用 gemini-pro
-                    if (modelName !== 'gemini-pro') {
-                        state.config.modelName = 'gemini-pro'; 
-                        return callLLM(history, isTest);
-                    }
-                }
-                throw new Error(data.error.message);
-            }
-            if (isTest) return "Success";
-            return data.candidates[0].content.parts[0].text;
-        } catch (e) { throw e; }
-    } 
-    // --- B. OpenAI 兼容接口 ---
-    else {
-        headers['Authorization'] = `Bearer ${apiKey}`;
-        let finalUrl = baseUrl;
-        
-        if (!finalUrl) {
-            if (provider === 'deepseek') finalUrl = "https://api.deepseek.com/chat/completions";
-            else if (provider === 'qwen') finalUrl = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
-            else if (provider === 'kimi') finalUrl = "https://api.moonshot.cn/v1/chat/completions";
-            else if (provider === 'openai') finalUrl = "https://api.openai.com/v1/chat/completions";
-            else if (provider === 'doubao') finalUrl = "https://ark.cn-beijing.volces.com/api/v3/chat/completions";
+        // Special mapping for register labels
+        if(k.startsWith('l_')) {
+            let lid = 'lbl-' + k.split('_')[1];
+            let lel = document.getElementById(lid);
+            if(lel) lel.innerText = T[k];
         }
+    }
 
-        let messages = [{ role: "system", content: sysPrompt }];
-        if (isTest) messages.push({ role: "user", content: "Hello" });
-        else {
-            history.forEach(h => {
-                if(h.parts && h.parts[0].text.startsWith("[SYSTEM_INFO]")) return; 
-                let role = h.role === 'model' ? 'assistant' : 'user';
-                messages.push({ role, content: h.parts[0].text });
-            });
+    if(document.getElementById('btn-red-txt')) {
+        document.getElementById('btn-red-txt').innerText = T.btn_red;
+        document.getElementById('btn-green-txt').innerText = T.btn_green;
+        document.getElementById('btn-blue-txt').innerText = T.btn_blue;
+        document.getElementById('btn-yellow-txt').innerText = T.btn_yellow;
+    }
+    
+    const es=document.getElementById('p_edu'); 
+    if(es) { es.innerHTML=''; es.add(new Option(T.edu_opts||"Edu", "")); DB.edu_opts.forEach(e=>es.add(new Option(e,e))); }
+
+    renderGuides();
+    updateDemoText();
+}
+
+function renderGuides() {
+    const langKey = (state.mode === 'en') ? 'en' : 'zh';
+    const sciEl = document.getElementById('guide-sci-content');
+    const popEl = document.getElementById('guide-pop-content');
+    if(sciEl) sciEl.innerHTML = DB.guides[langKey].sci;
+    if(popEl) popEl.innerHTML = DB.guides[langKey].pop;
+}
+
+function startDemoAnimation() {
+    if(demoInterval) clearInterval(demoInterval);
+    demoInterval = setInterval(updateDemoText, 2000);
+}
+
+function updateDemoText() {
+    demoToggle = !demoToggle;
+    const modeKey = (state.mode === 'geriatric') ? 'zh' : state.mode;
+    
+    const t1El = document.getElementById('demo-word-tut');
+    if(t1El) {
+        t1El.innerText = demoToggle ? DB.demos[modeKey].w1 : DB.demos[modeKey].w2;
+        t1El.classList.remove('anim-pop');
+        void t1El.offsetWidth; 
+        t1El.classList.add('anim-pop');
+    }
+
+    const stroopEl = document.getElementById('demo-stroop-tut-txt');
+    const hintEl = document.getElementById('demo-stroop-hint');
+    if(stroopEl && hintEl) {
+        const sWords = DB.stroop[modeKey].words;
+        if(demoToggle) {
+            stroopEl.innerText = sWords[0]; 
+            stroopEl.className = "demo-stroop-text text-green"; 
+            hintEl.innerText = (state.mode === 'en') ? "(Ink is Green, Press Green)" : "(颜色是绿，点绿键)";
+        } else {
+            stroopEl.innerText = sWords[1]; 
+            stroopEl.className = "demo-stroop-text text-red";
+            hintEl.innerText = (state.mode === 'en') ? "(Ink is Red, Press Red)" : "(颜色是红，点红键)";
         }
-        
-        payload = { model: modelName, messages, temperature: 0.7 };
+    }
+    const timeEl = document.getElementById('demo-time-tut');
+    if(timeEl) timeEl.innerText = demoToggle ? "2026" : (state.mode==='en'?"Tuesday":"星期二");
 
-        const res = await fetch(finalUrl, { method: 'POST', headers, body: JSON.stringify(payload) });
-        const data = await res.json();
-        if (data.error) throw new Error(data.error.message);
-        if (isTest) return "Success";
-        return data.choices[0].message.content;
+    const symEl = document.getElementById('demo-sdmt-sym');
+    const keyEl = document.getElementById('demo-sdmt-key');
+    if(symEl && keyEl) {
+        if(demoToggle) { symEl.innerText = "⊏"; keyEl.innerText="1"; keyEl.classList.add('pressed'); }
+        else { symEl.innerText = "○"; keyEl.innerText="5"; keyEl.classList.remove('pressed'); }
+    }
+    const aniEl = document.getElementById('demo-vft-emoji');
+    if(aniEl) aniEl.innerText = demoToggle ? "🦁" : "🐼";
+}
+
+function showView(id) {
+    document.querySelectorAll('.view-section').forEach(e => e.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0);
+    if(id==='view-t1-intro') updateDemoText(); 
+    if(id === 'view-guide-sci' || id === 'view-guide-pop') renderGuides();
+}
+
+function initCorsiBoard() {
+    const board = document.getElementById('corsi-board');
+    if(!board) return;
+    board.innerHTML = '';
+    for(let i=0; i<9; i++) {
+        let b = document.createElement('div'); b.className = 'corsi-block'; b.id = 'cb-'+i;
+        b.onclick = () => handleCorsiTap(i); 
+        board.appendChild(b);
     }
 }
 
-// 交互
-async function sendMessage() {
-    const input = document.getElementById('user-input');
-    const text = input.value.trim();
-    if(!text) return;
+function startQuickRun() {
+    state.isQuickRun = true;
+    state.config = { t1_len: 3, t6_time: 15, t7_time: 15, t8_time: 15 };
+    let syms = [...DB.symbols]; syms.sort(() => Math.random() - 0.5);
+    state.t6.keyMap = syms.map((s, i) => ({s: s, n: i + 1}));
+    state.t6.score = 0; state.t6.errors = 0; state.t6.responses = [];
     
-    state.pheno.charCount += text.length;
-    addMsg('user', text);
-    state.chatHistory.push({ role: "user", parts: [{ text: text }] });
-    input.value = '';
+    // Reset other states
+    state.t1={entered:[], time:0}; state.t2={history:[]}; state.t3={score:0, details:[]}; 
+    state.t4={entered:[]}; state.t5={hits:0, false_alarms:0}; state.t7={responses:[], score:0, errors:0}; 
+    state.t8={entered:[]}; state.t9={history:[]};
+
+    state.patient = {name:"QuickGuest", id:"Q"+Date.now(), gender:"M", age:30, edu:"Uni"};
     
-    const loadId = addMsg('ai', '<div class="typing-indicator"><span></span><span></span><span></span></div>');
-    try {
-        const reply = await callLLM(state.chatHistory);
-        document.getElementById(loadId).remove();
-        processAI(reply);
-    } catch(e) {
-        document.getElementById(loadId).innerHTML = `<span style='color:red'>${e.message}</span>`;
-    }
+    const listSet = DB.lists[state.mode === 'geriatric' ? 'zh' : state.mode];
+    state.targets = listSet.A.slice(0, 3);
+    state.distractors = listSet.B.slice(0, 3);
+    state.presentationOrder = [...state.targets];
+    showView('view-t1-intro');
 }
 
-function processAI(text) {
-    if (text.includes("[START_SDMT]")) {
-        addMsg('ai', "好的，请准备开始测试...");
-        setTimeout(startSDMT, 1500);
-    } else if (text.includes("[START_RECOGNITION]")) {
-        addMsg('ai', "请选出刚才提到的物品。");
-        setTimeout(startT5, 1500);
-    } else if (text.includes("[GENERATE_REPORT]")) {
-        addMsg('ai', text.replace("[GENERATE_REPORT]", ""));
-        generateReport();
-    } else {
-        addMsg('ai', text);
-        state.chatHistory.push({ role: "model", parts: [{ text: text }] });
-    }
+function initSession() {
+    state.isQuickRun = false;
+    state.config = { t1_len: 10, t6_time: 60, t7_time: 45, t8_time: 60 };
+    let syms = [...DB.symbols]; syms.sort(() => Math.random() - 0.5);
+    state.t6.keyMap = syms.map((s, i) => ({s: s, n: i + 1}));
+    
+    // Reset states
+    state.t6.score = 0; state.t6.errors = 0; state.t6.responses = [];
+    state.t1={entered:[], time:0}; state.t2={history:[]}; state.t3={score:0, details:[]}; 
+    state.t4={entered:[]}; state.t5={hits:0, false_alarms:0}; state.t7={responses:[], score:0, errors:0}; 
+    state.t8={entered:[]}; state.t9={history:[]};
+    
+    showView('view-register');
 }
 
-// 报告生成
-function generateReport() {
-    showView('view-report');
-    document.getElementById('report-content').innerText = "AI 正在分析... (请稍候)";
-    
-    const avgLat = state.pheno.keyTimes.length ? (state.pheno.keyTimes.reduce((a,b)=>a+b,0)/state.pheno.keyTimes.length).toFixed(0) : 0;
-    document.getElementById('val-latency').innerText = avgLat;
-    
-    const p = state.patient;
-    const prompt = `受试者：${p.age}岁 ${p.gender} ${p.edu}。数据：SDMT=${state.sdmt.score}, 记忆=${state.t5.score}/3。请生成临床报告。`;
-    
-    callLLM([...state.chatHistory, {role:"user", parts:[{text:prompt}]}]).then(res => {
-        document.getElementById('report-content').innerHTML = marked.parse(res);
+function submitRegister() {
+    if(!state.isQuickRun) {
+        // Validation
+        const ids = ['p_name', 'p_id', 'p_gender', 'p_dob', 'p_edu', 'p_hand'];
+        let valid = true;
+        ids.forEach(id => {
+            const el = document.getElementById(id);
+            if(!el.value) { el.classList.add('error'); valid = false; } else { el.classList.remove('error'); }
+        });
+        if(!valid) { document.getElementById('reg-error-msg').style.display='block'; return; }
+
+         state.patient = {
+            name: document.getElementById('p_name').value, id: document.getElementById('p_id').value,
+            gender: document.getElementById('p_gender').value, dob: document.getElementById('p_dob').value,
+            age: document.getElementById('p_age').value, edu: document.getElementById('p_edu').value,
+            hand: document.getElementById('p_hand').value,
+            date: new Date().toISOString().split('T')[0]
+        };
+        const listSet = DB.lists[state.mode === 'geriatric' ? 'zh' : state.mode]; 
+        state.targets = [...listSet.A];
+        state.distractors = [...listSet.B];
+        state.presentationOrder = [...state.targets].sort(() => Math.random() - 0.5);
+    }
+    showView('view-t1-intro'); 
+}
+
+/* --- T1 Memory --- */
+function startT1Run() { showView('view-t1-run'); runSerialWords(); }
+function runSerialWords() {
+    const disp = document.getElementById('t1-word');
+    const bar = document.getElementById('t1-learn-bar');
+    let i = 0;
+    const wordsToShow = state.presentationOrder; 
+    let timer = setInterval(() => {
+        if(i < wordsToShow.length) {
+            disp.innerText = wordsToShow[i];
+            if(state.mode === 'geriatric') speak(wordsToShow[i]);
+            bar.style.width = ((i+1)/wordsToShow.length*100) + "%";
+            i++;
+        } else { clearInterval(timer); startT1Recall(); }
+    }, 2000);
+}
+function startT1Recall() { showView('view-t1-recall'); state.t1.startTime = Date.now(); startRecallTimer('t1'); }
+function startRecallTimer(phase) {
+    let time = 60;
+    if(phase === 't8') time = state.config.t8_time;
+    const timerEl = document.getElementById(phase+'-timer'); timerEl.innerText = time;
+    if(recallTimerInt) clearInterval(recallTimerInt);
+    recallTimerInt = setInterval(() => { time--; timerEl.innerText = time; 
+        if(time <= 0) { 
+            clearInterval(recallTimerInt); 
+            if(phase === 't1') finishT1();
+            else if(phase === 't4') finishT4();
+            else if(phase === 't8') finishT8();
+        } 
+    }, 1000);
+}
+function addWord(phase) {
+    const inp = document.getElementById(phase+'-input');
+    let val = inp.value.trim().split(/[\s,，.。]/)[0];
+    if(!val) return;
+    let store = phase === 't1' ? state.t1.entered : (phase === 't4' ? state.t4.entered : state.t8.entered);
+    store.push(val); 
+    logEvent(phase, 'add_word', val);
+    renderChips(phase); 
+    inp.value = ''; inp.focus(); 
+}
+function renderChips(phase) {
+    const box = document.getElementById(phase+'-chips'); box.innerHTML = '';
+    let store = phase === 't1' ? state.t1.entered : (phase === 't4' ? state.t4.entered : state.t8.entered);
+    store.forEach(val => {
+        let chip = document.createElement('div'); chip.className = 'chip'; chip.innerText=val;
+        box.appendChild(chip);
     });
 }
+function finishT1() {
+    if(recallTimerInt) clearInterval(recallTimerInt);
+    showView('view-t2-intro');
+}
 
-// 游戏逻辑
-let sdmtTarget, sdmtTimer;
-function startSDMT() { showView('view-sdmt'); state.sdmt.map = SYMBOLS.map((s, i) => ({ s, n: i + 1 })).sort(() => Math.random() - 0.5); document.getElementById('sdmt-legend').innerHTML = state.sdmt.map.map(m => `<div class="legend-item"><div class="legend-sym">${m.s}</div><div class="legend-num">${m.n}</div></div>`).join(''); state.sdmt.score = 0; state.sdmt.responses = []; nextSDMT(); let time = 30; document.getElementById('sdmt-timer').innerText = time; sdmtTimer = setInterval(() => { time--; document.getElementById('sdmt-timer').innerText = time; if(time <= 0) endSDMT(); }, 1000); }
-function nextSDMT() { sdmtTarget = state.sdmt.map[Math.floor(Math.random() * 9)]; document.getElementById('sdmt-target').innerText = sdmtTarget.s; state.sdmt.lastTime = Date.now(); }
-window.inputSDMT = (n) => { const correct = n === sdmtTarget.n; if(correct) state.sdmt.score++; state.sdmt.responses.push({ correct, latency: Date.now() - state.sdmt.lastTime }); nextSDMT(); };
-function endSDMT() { clearInterval(sdmtTimer); const res = state.sdmt.responses; if(res.length>6) { const h = Math.floor(res.length/2); const t1 = res.slice(0,h).reduce((a,b)=>a+b.latency,0); const t2 = res.slice(-h).reduce((a,b)=>a+b.latency,0); state.sdmt.fatigue = ((t2-t1)/t1).toFixed(2); } showView('view-chat'); sendSystemMsg(`SDMT得分: ${state.sdmt.score}`); }
-function startT5() { showView('view-t5'); const grid = document.getElementById('t5-grid'); grid.innerHTML = ''; [...WORDS_TARGET, ...WORDS_DISTRACT].sort(()=>Math.random()-0.5).forEach(w => { const btn = document.createElement('div'); btn.className = 't5-btn'; btn.innerText = w; btn.onclick = () => { if(state.t5.selected.includes(w)) { state.t5.selected = state.t5.selected.filter(x=>x!==w); btn.classList.remove('selected'); } else { state.t5.selected.push(w); btn.classList.add('selected'); } }; grid.appendChild(btn); }); }
-function submitT5() { let hits = 0; state.t5.selected.forEach(w => { if(WORDS_TARGET.includes(w)) hits++; }); state.t5.score = hits; showView('view-chat'); sendSystemMsg(`再认结果: ${hits}/3`); }
-function sendSystemMsg(text) { state.chatHistory.push({ role: "user", parts: [{ text: `[SYSTEM] ${text}` }] }); addMsg('ai', '<div class="typing-indicator"><span></span><span></span><span></span></div>'); callLLM(state.chatHistory).then(reply => { document.querySelector('.msg-row:last-child').remove(); processAI(reply); }); }
-function addMsg(role, html) { const div = document.createElement('div'); div.className = `msg-row ${role}`; let avatar = role === 'ai' ? '<div class="avatar">👨‍⚕️</div>' : ''; div.innerHTML = `${avatar}<div class="msg-bubble ${role}">${html}</div>`; document.getElementById('chat-box').appendChild(div); document.getElementById('chat-box').scrollTop = 9999; return 'msg-' + Date.now(); }
-function startSystem() { if(!state.config.apiKey) return toggleSettings(); state.patient.id = document.getElementById('p_id').value; state.patient.age = document.getElementById('p_age').value; state.patient.gender = document.getElementById('p_gender').value; state.patient.edu = document.getElementById('p_edu').value; showView('view-chat'); initChatWithContext(); }
-function showView(id) { document.querySelectorAll('.view-section').forEach(e=>e.classList.remove('active')); document.getElementById(id).classList.add('active'); }
-function calcAge() { const d = new Date(document.getElementById('p_dob').value); document.getElementById('p_age').value = new Date().getFullYear() - d.getFullYear(); }
-async function initChatWithContext() { state.chatHistory = []; const p = state.patient; const context = `受试者信息：${p.age}岁，${p.gender}，学历：${p.edu}。`; state.chatHistory.push({ role: "model", parts: [{ text: `[SYSTEM_INFO] ${context}` }] }); const greeting = `您好，我是 Dr. CAS。很高兴为您服务。今天感觉精神怎么样？`; addMsg('ai', greeting); state.chatHistory.push({ role: "model", parts: [{ text: greeting }] }); speak(greeting); }
-function speak(text) { if('speechSynthesis' in window) { const u = new SpeechSynthesisUtterance(text); u.lang='zh-CN'; speechSynthesis.speak(u); } }
-let rec; if ('webkitSpeechRecognition' in window) { rec = new webkitSpeechRecognition(); rec.lang='zh-CN'; rec.onresult=(e)=>{document.getElementById('user-input').value=e.results[0][0].transcript;}; }
-function startListening() { document.getElementById('btn-mic').classList.add('active'); if(rec) rec.start(); }
-function stopListening() { document.getElementById('btn-mic').classList.remove('active'); if(rec) rec.stop(); }
-function trackKeystroke(e) { if(e.key==='Enter') { sendMessage(); return; } if(state.pheno.lastKeyTime>0) state.pheno.keyTimes.push(Date.now()-state.pheno.lastKeyTime); if(e.key==='Backspace') state.pheno.backspaces++; state.pheno.lastKeyTime=Date.now(); }
-function exportData() { alert("导出功能：数据将保存为 CSV"); }
+/* --- T2 Corsi --- */
+function startCorsi(mode) {
+    state.t2.isBackward = (mode === 'backward');
+    state.t2.level = 2; state.t2.trials = 0; state.t2.score = 0;
+    showView('view-t2-test'); 
+    document.getElementById('txt-t2-test-title').innerText = state.t2.isBackward ? DB.text[state.mode].t2b_title : DB.text[state.mode].t2_test_title;
+    nextCorsiTrial(); 
+}
+function startCorsiTimer() {
+    if(corsiTimeout) clearTimeout(corsiTimeout);
+    corsiTimeout = setTimeout(() => { if(document.getElementById('view-t2-test').classList.contains('active')) { alert("Timeout"); corsiResult(false); } }, 10000);
+}
+function nextCorsiTrial() {
+    state.t2.userSeq = []; state.t2.sequence = [];
+    let pool = [0,1,2,3,4,5,6,7,8];
+    let last = -1;
+    for(let i=0; i<state.t2.level; i++) { 
+        let available = pool.filter(n => n !== last);
+        if(available.length === 0) available = pool;
+        let rIndex = Math.floor(Math.random()*available.length);
+        let current = available[rIndex];
+        state.t2.sequence.push(current); 
+        last = current;
+    }
+    let i=0; document.querySelectorAll('.corsi-block').forEach(b=>b.style.pointerEvents='none');
+    let playInt = setInterval(()=>{
+        if(i < state.t2.sequence.length) {
+            let id = state.t2.sequence[i];
+            let blk = document.getElementById('cb-'+id);
+            blk.classList.add('active'); setTimeout(()=>blk.classList.remove('active'), 600); i++;
+        } else {
+            clearInterval(playInt); 
+            document.querySelectorAll('.corsi-block').forEach(b=>b.style.pointerEvents='auto'); 
+            startCorsiTimer();
+        }
+    }, 1000);
+}
+function handleCorsiTap(id) {
+    if(corsiTimeout) clearTimeout(corsiTimeout);
+    let blk = document.getElementById('cb-'+id); blk.classList.add('user-tap'); setTimeout(()=>blk.classList.remove('user-tap'), 200);
+    state.t2.userSeq.push(id);
+    let idx = state.t2.userSeq.length - 1;
+    let targetSeq = state.t2.sequence;
+    
+    let correct = false;
+    if(state.t2.isBackward) {
+        if(state.t2.userSeq[idx] === targetSeq[targetSeq.length - 1 - idx]) correct = true;
+    } else {
+        if(state.t2.userSeq[idx] === targetSeq[idx]) correct = true;
+    }
+    
+    if(!correct) { corsiResult(false); return; }
+    
+    if(state.t2.userSeq.length === state.t2.sequence.length) corsiResult(true);
+    else startCorsiTimer();
+}
+function corsiResult(success) {
+    if(corsiTimeout) clearTimeout(corsiTimeout);
+    document.querySelectorAll('.corsi-block').forEach(b=>b.style.pointerEvents='none');
+    state.t2.history.push({ level: state.t2.level, success: success, mode: state.t2.isBackward ? 'Bwd' : 'Fwd' });
+    if(success) {
+        if(state.isQuickRun && state.t2.level >= 3) { if(!state.t2.isBackward) showView('view-t2b-intro'); else startT3(); return; }
+        if(state.t2.level >= 9) { if(!state.t2.isBackward) showView('view-t2b-intro'); else startT3(); return; }
+        if(state.t2.trials === 0) { state.t2.level++; state.t2.trials = 0; } else { state.t2.level++; state.t2.trials = 0; }
+        setTimeout(nextCorsiTrial, 1000);
+    } else { 
+        if(state.t2.trials === 0) { state.t2.trials++; setTimeout(nextCorsiTrial, 1000); } 
+        else { if(!state.t2.isBackward) showView('view-t2b-intro'); else startT3(); } 
+    }
+}
 
-// Settings
-function toggleSettings() { const m = document.getElementById('settings-modal'); m.style.display = m.style.display === 'flex' ? 'none' : 'flex'; }
+/* --- T3 Orientation --- */
+let t3Idx = 0;
+function nextT3() {
+    let val = document.getElementById('t3-input-area').querySelector('input')?.value || "";
+    // Simplified logic: accept anything not empty for now
+    if(val.length > 0) state.t3.score++; 
+    state.t3.details.push({q:t3Idx, ans:val});
+    t3Idx++;
+    if(t3Idx < 6) loadT3Q(); else showView('view-t9-intro');
+}
+function loadT3Q() {
+    document.getElementById('t3-q').innerText = DB.t3q[t3Idx];
+    document.getElementById('t3-input-area').innerHTML = '<input type="text" style="width:100%; font-size:1.2rem; padding:10px;">';
+}
+
+/* --- T9 TMT --- */
+function startTMTPractice(type) {
+    state.t9.stage = 'Prac' + type;
+    state.t9.nextIdx = 0;
+    showView('view-t9-test');
+    document.getElementById('tmt-phase-indicator').innerText = type + ' Practice';
+    renderTMT(type, true); 
+}
+function startTMTReal(type) {
+    state.t9.stage = 'Real' + type;
+    state.t9.nextIdx = 0;
+    state.t9.startTime = Date.now();
+    document.getElementById('tmt-phase-indicator').innerText = type + ' Test';
+    renderTMT(type, false);
+    if(t9TimerInt) clearInterval(t9TimerInt);
+    t9TimerInt = setInterval(() => { let el = document.getElementById('t9-timer'); if(el) el.innerText = ((Date.now() - state.t9.startTime) / 1000).toFixed(1); }, 100);
+}
+function renderTMT(type, isPrac) {
+    const area = document.getElementById('tmt-canvas-area');
+    area.innerHTML = '';
+    const seq = isPrac ? (type==='A' ? ['1','2','3'] : ['1','A','2']) : DB.tmt[type]; 
+    state.t9.nodes = seq;
+    const pos = [];
+    for(let i=0; i<seq.length; i++) {
+        let x,y, valid=false, attempts=0;
+        while(!valid && attempts<100) {
+            x = Math.random() * (area.clientWidth - 50) + 10;
+            y = Math.random() * (area.clientHeight - 50) + 10;
+            valid = true;
+            for(let p of pos) { if(Math.sqrt((x-p.x)**2 + (y-p.y)**2) < 50) valid=false; }
+            attempts++;
+        }
+        pos.push({x,y});
+        let node = document.createElement('div');
+        node.className = 'tmt-node';
+        node.innerText = seq[i];
+        node.style.left = x + 'px';
+        node.style.top = y + 'px';
+        node.onclick = () => handleTMTClick(i, node, x, y);
+        node.id = 'tmt-n-'+i;
+        area.appendChild(node);
+    }
+}
+function handleTMTClick(idx, el, x, y) {
+    if (idx === state.t9.nextIdx) {
+        el.classList.add('correct');
+        state.t9.history.push({node: state.t9.nodes[idx], t: Date.now()});
+        state.t9.nextIdx++;
+        if(state.t9.nextIdx >= state.t9.nodes.length) { 
+            if(t9TimerInt) clearInterval(t9TimerInt);
+            if(state.t9.stage.includes('PracA')) startTMTReal('A');
+            else if(state.t9.stage.includes('RealA')) startTMTPractice('B');
+            else if(state.t9.stage.includes('PracB')) startTMTReal('B');
+            else showView('view-t7-intro');
+        }
+    } else {
+        el.classList.add('wrong'); setTimeout(()=>el.classList.remove('wrong'), 300);
+        if(state.t9.stage.includes('Real')) { if(state.t9.stage.includes('A')) state.t9.errA=(state.t9.errA||0)+1; else state.t9.errB=(state.t9.errB||0)+1; }
+    }
+}
+
+/* --- T7 Stroop --- */
+function startStroopPractice() {
+    state.t7.isPractice = true;
+    showView('view-t7-test');
+    nextStroop();
+}
+function startStroopReal() {
+    state.t7.isPractice = false;
+    let time = state.config.t7_time;
+    document.getElementById('t7-phase-indicator').innerText = "Test";
+    t7Interval = setInterval(() => { time--; document.getElementById('t7-timer').innerText = time; if(time <= 0) { clearInterval(t7Interval); showView('view-t6-intro'); } }, 1000);
+}
+function nextStroop() {
+    const sData = DB.stroop[state.mode === 'geriatric' ? 'zh' : state.mode]; 
+    let wIdx = Math.floor(Math.random() * 4);
+    let cIdx = Math.floor(Math.random() * 4);
+    stroopTarget = { word: sData.words[wIdx], colorName: sData.colors[cIdx], colorCode: sData.colors[cIdx] };
+    if(stroopTarget.colorCode === 'yellow') stroopTarget.colorCode = '#f1c40f'; 
+    const el = document.getElementById('stroop-word');
+    el.innerText = stroopTarget.word;
+    el.style.color = stroopTarget.colorCode;
+    state.t7.lastStimTime = Date.now();
+}
+function inputStroop(color) {
+    const now = Date.now();
+    const correct = color === stroopTarget.colorName; 
+    state.t7.responses.push({ target: stroopTarget.colorName, response: color, correct: correct, latency: now - state.t7.lastStimTime });
+    if(correct && !state.t7.isPractice) state.t7.score++;
+    if(!correct && !state.t7.isPractice) state.t7.errors++;
+    document.getElementById('t7-score').innerText = state.t7.score;
+    
+    if(state.t7.isPractice && state.t7.responses.length > 2) startStroopReal();
+    else nextStroop();
+}
+
+/* --- T6 SDMT --- */
+function startSDMTPractice() {
+    showView('view-t6-test');
+    drawSDMTKey();
+    nextSDMT();
+}
+function startSDMTReal() {
+    state.t6.isPractice = false;
+    let time = state.config.t6_time;
+    document.getElementById('t6-phase-indicator').innerText = "Test";
+    t6Interval = setInterval(() => { time--; document.getElementById('t6-timer').innerText = time; if(time <= 0) { clearInterval(t6Interval); showView('view-t4-intro'); } }, 1000);
+}
+function drawSDMTKey() {
+    const legend = document.getElementById('sdmt-legend');
+    legend.innerHTML = '';
+    state.t6.keyMap.forEach(k => {
+        const item = document.createElement('div');
+        item.className = 'sdmt-legend-item';
+        item.innerHTML = `<div class="sdmt-legend-sym">${k.s}</div><div class="sdmt-legend-num">${k.n}</div>`;
+        legend.appendChild(item);
+    });
+}
+function nextSDMT() { t6Target = state.t6.keyMap[Math.floor(Math.random()*9)]; document.getElementById('t6-target').innerText = t6Target.s; state.t6.lastStimTime = Date.now(); }
+function inputSDMT(n) {
+    const now = Date.now();
+    const correct = n === t6Target.n;
+    state.t6.responses.push({ target: t6Target.n, response: n, correct:correct, latency: now - state.t6.lastStimTime, practice: state.t6.isPractice });
+    
+    if(correct && !state.t6.isPractice) state.t6.score++;
+    document.getElementById('t6-score').innerText = state.t6.score;
+
+    if(state.t6.isPractice && state.t6.responses.length > 2) startSDMTReal();
+    else nextSDMT();
+}
+
+/* --- T4 Delayed --- */
+function startT4Recall() { showView('view-t4-recall'); state.t4.startTime = Date.now(); startRecallTimer('t4'); }
+function finishT4() { clearInterval(recallTimerInt); showView('view-t8-intro'); }
+
+/* --- T8 VFT --- */
+function startT8Test() { showView('view-t8-test'); startRecallTimer('t8'); }
+function finishT8() { clearInterval(recallTimerInt); showView('view-t5-intro'); }
+
+/* --- T5 Recognition --- */
+function startT5Test() {
+    showView('view-t5-test'); t5Sel = new Set();
+    const grid = document.getElementById('t5-grid'); grid.innerHTML = '';
+    let all = [...state.targets, ...state.distractors];
+    all.sort(() => Math.random() - 0.5);
+    all.forEach(w => {
+        let b = document.createElement('button'); b.className = 'btn btn-outline'; b.innerText = w;
+        b.onclick = () => { 
+            if(t5Sel.has(w)) { t5Sel.delete(w); b.classList.remove('btn-primary'); } 
+            else { t5Sel.add(w); b.classList.add('btn-primary'); }
+        };
+        grid.appendChild(b);
+    });
+}
+function finishT5() { 
+    state.t5.selected_words = Array.from(t5Sel);
+    t5Sel.forEach(w => { if(state.targets.includes(w)) state.t5.hits++; else state.t5.false_alarms++; });
+    showReport(); 
+}
+
+function showReport() {
+    showView('view-report');
+    const T = DB.text[state.mode];
+    
+    // Calculate simple metrics
+    const t1hits = state.t1.entered.filter(w => state.targets.includes(w)).length;
+    const t4hits = state.t4.entered.filter(w => state.targets.includes(w)).length;
+    const t2fwd = state.t2.history.filter(h=>h.mode==='Fwd' && h.success).length > 0 ? Math.max(...state.t2.history.filter(h=>h.mode==='Fwd' && h.success).map(h=>h.level)) : 0;
+    
+    let html = `<table class="res-table"><tr><th>${T.col_m}</th><th>${T.col_v}</th></tr>`;
+    html += `<tr><td>${T.d_imm}</td><td>${t1hits}/${state.config.t1_len}</td></tr>`;
+    html += `<tr><td>${T.d_ret}</td><td>${t4hits}/${state.config.t1_len}</td></tr>`;
+    html += `<tr><td>${T.d_net}</td><td>${state.t5.hits} (FA:${state.t5.false_alarms})</td></tr>`;
+    html += `<tr><td>${T.d_span}</td><td>${t2fwd}</td></tr>`;
+    html += `<tr><td>${T.d_spd}</td><td>${state.t6.score}</td></tr>`;
+    html += `<tr><td>${T.d_inh}</td><td>${state.t7.score}</td></tr>`;
+    html += `</table>`;
+    document.getElementById('report-body').innerHTML = html;
+    document.getElementById('raw-data').value = generateCSVString();
+    document.querySelector('.backup-box').style.display = 'block';
+}
+
+function generateCSVString() {
+    let csv = "Section,Metric,Value\n";
+    csv += `Info,ID,${state.patient.id}\n`;
+    csv += `T1,Score,${state.t1.entered.length}\n`;
+    csv += `T6,ResponseSeq,${JSON.stringify(state.t6.responses)}\n`;
+    csv += `T7,ResponseSeq,${JSON.stringify(state.t7.responses)}\n`;
+    csv += `T9,PathSeq,${JSON.stringify(state.t9.history)}\n`;
+    return csv;
+}
+
+function toggleAdmin() { document.getElementById('admin-modal').style.display = document.getElementById('admin-modal').style.display==='block'?'none':'block'; }
+function saveAdmin() { 
+    state.admin.aiKey = document.getElementById('set-ai-key').value;
+    state.admin.place = document.getElementById('set-place').value;
+    state.admin.city = document.getElementById('set-city').value;
+    state.admin.provider = document.getElementById('set-provider').value;
+    state.admin.modelName = document.getElementById('set-model-name').value;
+    localStorage.setItem('cog_admin', JSON.stringify(state.admin));
+    toggleAdmin(); 
+}
 function updateProviderFields() {
-    const p = document.getElementById('ai-provider').value;
-    const modelInput = document.getElementById('model-name');
-    if (p === 'gemini') modelInput.placeholder = "gemini-1.5-flash-001 (推荐)";
-    else if (p === 'deepseek') modelInput.placeholder = "deepseek-chat";
-    else if (p === 'qwen') modelInput.placeholder = "qwen-plus";
-    else if (p === 'kimi') modelInput.placeholder = "moonshot-v1-8k";
-    document.getElementById('group-url').style.display = (p === 'custom' || p === 'openai') ? 'block' : 'none';
+    const p = document.getElementById('set-provider').value;
+    const m = document.getElementById('set-model-name');
+    if(p==='gemini') m.placeholder = "gemini-2.0-flash";
 }
-function saveSettings() {
-    state.config = {
-        provider: document.getElementById('ai-provider').value,
-        apiKey: document.getElementById('api-key').value,
-        baseUrl: document.getElementById('api-url').value,
-        modelName: document.getElementById('model-name').value
+async function analyzeWithAI() {
+    const btn = document.querySelector('#view-report .btn-primary');
+    const loading = document.getElementById('ai-loading');
+    const content = document.getElementById('ai-report-content');
+    
+    if(!state.admin.aiKey) return alert("Please set API Key in Settings.");
+    
+    btn.disabled = true;
+    loading.style.display = 'block';
+    content.innerHTML = '';
+    
+    const prompt = `Analyze cognitive data: ${generateCSVString()}. Provide clinical impression.`;
+    
+    try {
+        let url, body;
+        if(state.admin.provider === 'gemini') {
+            const m = state.admin.modelName || 'gemini-2.0-flash';
+            url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${state.admin.aiKey}`;
+            body = { contents: [{ parts: [{ text: prompt }] }] };
+        } else {
+             // DeepSeek / OpenAI format
+             url = state.admin.baseUrl || "https://api.deepseek.com/chat/completions";
+             body = { model: state.admin.modelName || "deepseek-chat", messages: [{ role: "user", content: prompt }] };
+        }
+        
+        const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json', 'Authorization': `Bearer ${state.admin.aiKey}`}, body: JSON.stringify(body) });
+        const data = await res.json();
+        
+        let text = "";
+        if(data.candidates) text = data.candidates[0].content.parts[0].text;
+        else if(data.choices) text = data.choices[0].message.content;
+        else text = JSON.stringify(data);
+        
+        content.innerHTML = marked.parse(text);
+    } catch(e) {
+        content.innerText = "Error: " + e.message;
+    } finally {
+        loading.style.display = 'none';
+        btn.disabled = false;
+    }
+}
+function toggleSpeech(phase) {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if(!SR) return alert("Browser not supported");
+    if(isRecording) { recognition.stop(); return; }
+    recognition = new SR();
+    recognition.lang = state.mode === 'en' ? 'en-US' : 'zh-CN';
+    recognition.onstart = () => { isRecording=true; document.getElementById(phase+'-mic').classList.add('recording'); };
+    recognition.onend = () => { isRecording=false; document.getElementById(phase+'-mic').classList.remove('recording'); };
+    recognition.onresult = e => { 
+        const t = e.results[0][0].transcript; 
+        document.getElementById(phase+'-input').value = t; 
+        if(phase!=='t8') addWord(phase);
     };
-    localStorage.setItem('cas_config_v90', JSON.stringify(state.config));
-    updateBadge();
-    toggleSettings();
+    recognition.start();
 }
-function updateBadge() { document.getElementById('model-badge').innerText = state.config.provider.toUpperCase(); }
-function testConnection() {
-    const status = document.getElementById('status-msg');
-    state.config.provider = document.getElementById('ai-provider').value;
-    state.config.apiKey = document.getElementById('api-key').value;
-    state.config.modelName = document.getElementById('model-name').value;
-    state.config.baseUrl = document.getElementById('api-url').value;
-    status.innerText = "Connecting..."; status.style.color="#666";
-    callLLM([], true).then(()=> { status.innerText="✅ Success"; status.style.color="green"; })
-    .catch(e => { status.innerText="❌ "+e.message; status.style.color="red"; });
+function calcAge() { 
+    const d = new Date(document.getElementById('p_dob').value);
+    if(d) document.getElementById('p_age').value = new Date().getFullYear() - d.getFullYear();
 }
+function toggleBackup() { const box = document.getElementById('backup-box'); box.style.display = box.style.display === 'block' ? 'none' : 'block'; }
+function copyRaw() { const text = document.getElementById('raw-data'); text.select(); document.execCommand("copy"); alert("Copied!"); }
 </script>
 </body>
 </html>
