@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>CAS v11.2 (Final Full)</title>
+    <title>CAS v10.8 (Final Golden Master)</title>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* 1. Core Styles */
+        /* =========================================
+           1. Core Styles
+           ========================================= */
         :root {
             --primary: #2A5C82; --primary-light: #5A8AB0; --accent: #FF7043;
             --bg-color: #F8F9FA; --card-bg: #FFFFFF; --text-main: #2D3436;
@@ -18,8 +20,9 @@
             --primary: #000000; --primary-light: #333333; --accent: #D35400;
             --bg-color: #F0F0F0; --card-bg: #FFFFFF; --text-main: #000000;
             --text-light: #333333; --success: #27AE60; --error: #C0392B;
-            font-size: 1.3rem; 
+            font-size: 1.25rem; 
         }
+
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             background: var(--bg-color); color: var(--text-main); margin: 0; 
@@ -27,11 +30,18 @@
             transition: background 0.3s; -webkit-font-smoothing: antialiased;
         }
         .container { flex: 1; max-width: 800px; margin: 0 auto; padding: 20px; width: 100%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: center; }
+        
         .view-section { display: none; animation: slideUp 0.4s ease-out; }
         .view-section.active { display: block; }
         @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-        .card { background: var(--card-bg); padding: 30px; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.02); position: relative; margin-bottom: 20px; }
+        
+        .card { background: var(--card-bg); padding: 30px; border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.02); position: relative; }
+        
+        /* Geriatric Overrides */
         body.geriatric-theme .card { padding: 40px 25px; border: 2px solid #000; box-shadow: none; border-radius: 8px; }
+        body.geriatric-theme .btn { transform: scale(1.15); margin: 10px; font-weight: 900; border-width: 3px; }
+        body.geriatric-theme input, body.geriatric-theme select { font-size: 1.4rem; padding: 18px; border-width: 2px; border-color: #000; color: #000; background: #fff; }
+        body.geriatric-theme .micro-demo-box { border: 3px dashed #000; background: #fff; }
         
         header { background: rgba(255,255,255,0.95); padding: 15px 30px; position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); backdrop-filter: blur(10px); }
         .brand { font-size: 1.2rem; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 10px; }
@@ -45,97 +55,133 @@
         .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
         .btn-ai { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3); }
         .btn-info { background: #17a2b8; color: white; box-shadow: 0 4px 10px rgba(23, 162, 184, 0.2); }
-        body.geriatric-theme .btn { transform: scale(1.15); margin: 10px; font-weight: 900; border-width: 3px; }
+        
+        .btn-pulse { animation: attentionPulse 2s infinite; border: 2px solid var(--accent); color: var(--accent); }
+        @keyframes attentionPulse { 0% { box-shadow: 0 0 0 0 rgba(255, 112, 67, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
 
         .btn-back { font-size: 0.9rem; color: #666; background: #eee; padding: 8px 15px; border-radius: 20px; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; transition: background 0.2s; }
         .btn-back:hover { background: #e2e6ea; }
+
         .btn-home-corner { position: absolute; top: 15px; right: 15px; background: #f1f3f5; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; cursor: pointer; border: 1px solid #ddd; z-index: 10; transition: transform 0.2s; }
         .btn-home-corner:hover { background: #e9ecef; transform: scale(1.1); }
-
-        input, select { width: 100%; padding: 12px; border: 2px solid #EEE; border-radius: 10px; font-size: 1rem; box-sizing: border-box; background: #FAFAFA; transition: border 0.3s; }
-        input:focus, select:focus { border-color: var(--primary); outline: none; background: #FFF; }
-        body.geriatric-theme input, body.geriatric-theme select { font-size: 1.4rem; padding: 18px; border-width: 2px; border-color: #000; background: #fff; }
-
-        /* Guide & Intro */
-        .guide-steps { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px; font-size: 0.85rem; }
-        .guide-step { flex: 1; background: #FFF; padding: 10px; border-radius: 8px; border: 1px solid #E3F2FD; text-align: center; }
-        .gs-num { display: inline-block; width: 20px; height: 20px; background: var(--primary); color: white; border-radius: 50%; font-size: 0.75rem; line-height: 20px; margin-bottom: 5px; }
-
+        
         .intro-map { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; text-align: left; margin: 20px 0; }
         .intro-item { background: white; padding: 15px; border-radius: 12px; border-left: 5px solid var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .intro-h { font-weight: bold; color: var(--primary); font-size: 1rem; display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
         .intro-p { font-size: 0.85rem; color: #666; line-height: 1.4; }
         .intro-tag { font-size: 0.75rem; background: #E3F2FD; color: #2A5C82; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 5px; }
-
+        
+        /* Guide Content Styles */
+        .doc-content { text-align: left; }
         .doc-content h3 { color: var(--primary); border-bottom: 2px solid #eee; padding-bottom: 8px; margin-top: 25px; font-size: 1.1rem; }
-        .doc-content p, .doc-content li { line-height: 1.6; color: #444; font-size: 0.95rem; margin-bottom: 8px; text-align: left; }
+        .doc-content h3:first-child { margin-top: 0; }
+        .doc-content p, .doc-content li { line-height: 1.6; color: #444; font-size: 0.95rem; margin-bottom: 8px; }
         .doc-table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.85rem; }
         .doc-table th, .doc-table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         .doc-table th { background: #f2f2f2; color: #333; font-weight: bold; }
+        .doc-table tr:nth-child(even) { background-color: #f9f9f9; }
+        
+        input, select { width: 100%; padding: 12px; border: 2px solid #EEE; border-radius: 10px; font-size: 1rem; box-sizing: border-box; background: #FAFAFA; -webkit-appearance: none; transition: border 0.3s; }
+        input:focus, select:focus { border-color: var(--primary); outline: none; background: #FFF; }
+        input.error, select.error { border-color: var(--error); background: #FFF0F0; animation: shake 0.3s; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        
+        .progress-container { margin: 20px 0; }
+        .progress-track { height: 8px; background: #EEE; border-radius: 4px; overflow: hidden; }
+        .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        
+        .micro-demo-box { background: #F0F4F8; border-radius: 12px; padding: 20px; margin: 20px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed #DCE4EA; position: relative; overflow: hidden; min-height: 120px; }
+        .demo-label { font-size: 0.8rem; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .demo-word-dynamic { font-size: 1.5rem; font-weight: bold; color: var(--primary); transition: opacity 0.5s; }
 
-        /* Demo Animations */
+        /* Corsi Animation Fixed */
+        .demo-corsi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 80px; }
+        .demo-block { width: 100%; padding-bottom: 100%; background: #CBD5E0; border-radius: 4px; }
+        .demo-block.lit { animation: demoFlash 2s infinite; }
+        .demo-block:nth-child(1) { animation-delay: 0s; } .demo-block:nth-child(5) { animation-delay: 0.6s; } .demo-block:nth-child(9) { animation-delay: 1.2s; }
+        @keyframes demoFlash { 0%, 100% { background: #CBD5E0; transform: scale(1); } 20%, 40% { background: var(--accent); transform: scale(1.1); } }
+        
+        /* TMT Animation Fixed */
+        .tmt-demo-line { animation: growLine 2s infinite; transform-origin: left; }
+        @keyframes growLine { 0% { transform: scaleX(0); opacity:0; } 50% { transform: scaleX(1); opacity:1; } 100% { transform: scaleX(1); opacity:1; } }
+
         .tutorial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 15px; margin-top: 20px; }
         .tutorial-card { background: #f8f9fa; border: 1px solid #eee; border-radius: 12px; padding: 20px; text-align: left; transition: transform 0.2s; position: relative; overflow: hidden; }
+        .tutorial-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
         .t-icon { font-size: 1.8rem; margin-bottom: 10px; display: block; }
         .t-title { font-weight: bold; color: var(--primary); margin-bottom: 5px; font-size: 1rem; }
         .t-desc { font-size: 0.85rem; color: #666; line-height: 1.5; }
-        
-        .micro-demo-box { background: #F0F4F8; border-radius: 12px; padding: 20px; margin: 20px 0; display: flex; flex-direction: column; align-items: center; justify-content: center; border: 2px dashed #DCE4EA; position: relative; overflow: hidden; min-height: 100px; }
-        body.geriatric-theme .micro-demo-box { border: 3px dashed #000; background: #fff; }
+        .t-hint { font-size: 0.75rem; color: var(--accent); margin-top: 8px; font-style: italic; background: rgba(255,112,67,0.1); padding: 4px 8px; border-radius: 4px; display: inline-block; }
 
-        .demo-word-dynamic { font-size: 1.5rem; font-weight: bold; color: var(--primary); transition: all 0.3s; }
-        .anim-pop { animation: popText 0.5s ease-out; }
-        @keyframes popText { 0% { transform: scale(0.5); opacity:0; } 70% { transform: scale(1.1); opacity:1; } 100% { transform: scale(1); opacity:1; } }
+        .guide-steps { display: flex; justify-content: space-between; gap: 10px; margin-top: 15px; font-size: 0.85rem; }
+        .guide-step { flex: 1; background: #FFF; padding: 10px; border-radius: 8px; border: 1px solid #E3F2FD; text-align: center; }
+        .gs-num { display: inline-block; width: 20px; height: 20px; background: var(--primary); color: white; border-radius: 50%; font-size: 0.75rem; line-height: 20px; margin-bottom: 5px; }
 
-        .demo-corsi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; width: 60px; }
-        .demo-block { width: 100%; padding-bottom: 100%; background: #CBD5E0; border-radius: 4px; }
-        .demo-block.lit { animation: demoFlash 2s infinite; }
-        @keyframes demoFlash { 0%, 100% { background: #CBD5E0; transform: scale(1); } 20%, 40% { background: var(--accent); transform: scale(1.1); } }
-        
-        .tmt-demo-line { animation: growLine 2s infinite; transform-origin: left; }
-        @keyframes growLine { 0% { transform: scaleX(0); opacity:0; } 50% { transform: scaleX(1); opacity:1; } 100% { transform: scaleX(1); opacity:1; } }
-        
-        .demo-anim-emoji { font-size: 2rem; animation: popEmoji 2s infinite; display: inline-block; }
-        @keyframes popEmoji { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+        /* SDMT Visuals */
+        .demo-sdmt-visual { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .demo-sdmt-pair { display: flex; gap: 10px; align-items: center; border: 1px solid #ccc; padding: 5px 15px; border-radius: 8px; background: white; }
+        .demo-keyboard-key { width: 40px; height: 40px; background: #fff; border: 2px solid #bbb; border-radius: 6px; border-bottom-width: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-family: monospace; font-size: 1.2rem; color: #333; transition: all 0.1s; }
+        .demo-keyboard-key.pressed { transform: translateY(2px); border-bottom-width: 2px; background: var(--primary); color: white; border-color: var(--primary-light); }
+        .demo-anim-container { display: flex; align-items: center; gap: 15px; margin-top: 10px; }
 
-        /* Test Visuals */
-        .corsi-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; max-width: 360px; margin: 20px auto; }
-        .corsi-block { background: #E0E0E0; border-radius: 12px; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 0 #CCC; height: 0; padding-bottom: 100%; position: relative; }
-        .corsi-block:active { transform: translateY(2px); box-shadow: 0 2px 0 #CCC; }
-        .corsi-block.active { background: var(--accent) !important; box-shadow: 0 0 15px var(--accent); }
-        .corsi-block.user-tap { background: var(--primary); }
-        body.geriatric-theme .corsi-block { border: 2px solid #333; box-shadow: none; }
-        
-        .sdmt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 400px; margin: 15px auto; }
+        .sdmt-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 10px; background: #F0F4F8; border-radius: 16px; margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.05); }
+        .sdmt-legend-item { flex: 0 1 auto; width: 60px; display: flex; flex-direction: column; align-items: center; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.03); border: 1px solid white; }
+        .symbol-font { font-family: "Segoe UI Symbol", "Apple Symbols", "Noto Sans Symbols", sans-serif; font-weight: 400; line-height: 1; }
+        .sdmt-legend-sym { font-size: 2.2rem; color: var(--primary); height: 50px; width: 100%; display: flex; align-items: center; justify-content: center; background: #FFFFFF; }
+        .sdmt-legend-num { font-size: 1.2rem; font-weight: 700; color: #636E72; height: 30px; width: 100%; display: flex; align-items: center; justify-content: center; background: #DFE6E9; border-top: 1px solid #eee; }
+        @media (max-width: 400px) { .sdmt-legend-item { width: 18%; } .sdmt-legend-sym { font-size: 1.8rem; height: 45px; } .sdmt-legend-num { height: 25px; } }
+
+        .sdmt-overlay-feedback { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10rem; font-weight: 900; opacity: 0; pointer-events: none; z-index: 100; text-shadow: 0 0 40px rgba(255,255,255,1); }
+        .sdmt-overlay-feedback.show-correct { color: var(--success); animation: popOut 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .sdmt-overlay-feedback.show-wrong { color: var(--error); animation: shakeFade 0.5s ease-in-out forwards; }
+        @keyframes popOut { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); } }
+        @keyframes shakeFade { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); } 20% { opacity: 1; transform: translate(-55%, -50%) scale(1); } 40% { transform: translate(-45%, -50%) scale(1); } 60% { transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -20%) scale(0.8); } }
+
         .key-btn { background: #FFF; border: 1px solid #DDD; border-radius: 12px; padding: 20px; font-size: 1.5rem; font-weight: bold; box-shadow: 0 3px 0 #CCC; cursor: pointer; color: #333; transition: all 0.1s; -webkit-tap-highlight-color: transparent; }
         .key-btn:active { transform: translateY(3px); box-shadow: none; }
         .key-btn.correct-flash { background-color: var(--success) !important; color: white; border-color: var(--success); transform: scale(1.1); }
         .key-btn.wrong-flash { background-color: var(--error) !important; color: white; border-color: var(--error); animation: shake 0.3s; }
         .key-btn.active-key { background-color: #e0e0e0 !important; transform: scale(0.95); box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); }
+        
         body.geriatric-theme .key-btn { padding: 30px; font-size: 2rem; border-width: 3px; border-color: #000; }
+
+        .corsi-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; max-width: 360px; margin: 20px auto; }
+        .corsi-block { background: #E0E0E0; border-radius: 12px; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 0 #CCC; height: 0; padding-bottom: 100%; position: relative; }
+        .corsi-block:active { transform: translateY(2px); box-shadow: 0 2px 0 #CCC; }
+        .corsi-block.active { background: var(--accent) !important; box-shadow: 0 0 15px var(--accent); }
+        .corsi-block.user-tap { background: var(--primary); }
         
+        body.geriatric-theme .corsi-block { border: 2px solid #333; box-shadow: none; }
+        
+        .sdmt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 400px; margin: 15px auto; }
         #t6-target { filter: drop-shadow(0 4px 0px rgba(0,0,0,0.1)); transition: all 0.2s; font-size: 5rem; height: 100px; margin: 20px 0; color: var(--primary); }
-        .sdmt-legend { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 10px; background: #F0F4F8; border-radius: 16px; margin-bottom: 15px; border: 1px solid rgba(0,0,0,0.05); }
-        .sdmt-legend-item { flex: 0 1 auto; width: 60px; display: flex; flex-direction: column; align-items: center; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.03); border: 1px solid white; }
-        .sdmt-legend-sym { font-size: 2.2rem; color: var(--primary); height: 50px; width: 100%; display: flex; align-items: center; justify-content: center; background: #FFFFFF; font-family: "Segoe UI Symbol", sans-serif; }
-        .sdmt-legend-num { font-size: 1.2rem; font-weight: 700; color: #636E72; height: 30px; width: 100%; display: flex; align-items: center; justify-content: center; background: #DFE6E9; border-top: 1px solid #eee; }
-        
-        .demo-sdmt-visual { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .demo-keyboard-key { width: 40px; height: 40px; background: #fff; border: 2px solid #bbb; border-radius: 6px; border-bottom-width: 4px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #333; transition: all 0.1s; }
-        .demo-keyboard-key.pressed { transform: translateY(2px); border-bottom-width: 2px; background: var(--primary); color: white; border-color: var(--primary-light); }
-        
+
+        /* Stroop Styles */
         #stroop-word { font-size: 6rem; font-weight: 900; margin: 30px 0; transition: all 0.2s; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.1)); }
         .stroop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 400px; margin: 20px auto; }
         .btn-color { height: 80px; font-size: 1.5rem; font-weight: bold; border: 2px solid rgba(0,0,0,0.1); color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3); transition: transform 0.1s; cursor: pointer; border-radius: 12px; }
         .btn-color:active { transform: scale(0.95); }
-        .bg-red { background-color: #FF5252; } .bg-green { background-color: #2ECC71; } .bg-blue { background-color: #3498DB; } .bg-yellow { background-color: #F1C40F; }
+        .bg-red { background-color: #FF5252; } .bg-green { background-color: #2ECC71; }
+        .bg-blue { background-color: #3498DB; } .bg-yellow { background-color: #F1C40F; }
         .text-red { color: #FF5252; } .text-green { color: #2ECC71; } .text-blue { color: #3498DB; } .text-yellow { color: #F1C40F; }
+        .demo-stroop-card { display:flex; flex-direction:column; align-items:center; gap:10px; padding:10px; }
+        .demo-stroop-text { font-size:2.5rem; font-weight:bold; }
         
+        body.geriatric-theme .btn-color { border: 4px solid #000; color: #000; text-shadow: none; font-size: 2rem; font-weight: 900; }
+        body.geriatric-theme .bg-red { background: #ffaaaa; } body.geriatric-theme .bg-green { background: #99ff99; }
+        body.geriatric-theme .bg-blue { background: #99ccff; } body.geriatric-theme .bg-yellow { background: #ffff99; }
+
+        /* TMT Styles */
         #tmt-canvas-area { position: relative; width: 100%; height: 350px; background: #fff; border: 2px solid #eee; border-radius: 12px; overflow: hidden; margin: 15px 0; touch-action: none; }
         .tmt-node { position: absolute; width: 40px; height: 40px; border-radius: 50%; border: 2px solid #333; background: white; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 1.2rem; cursor: pointer; transition: transform 0.1s; user-select: none; box-shadow: 0 2px 5px rgba(0,0,0,0.1); z-index: 2; }
+        .tmt-node:active { transform: scale(0.9); }
         .tmt-node.correct { background: var(--success); color: white; border-color: var(--success); }
         .tmt-node.wrong { background: var(--error); color: white; border-color: var(--error); animation: shake 0.3s; }
+        .tmt-node.next-hint { box-shadow: 0 0 15px rgba(42, 92, 130, 0.4); border-color: var(--primary); }
         .tmt-line { position: absolute; height: 3px; background: var(--success); transform-origin: 0 50%; z-index: 1; pointer-events: none; border-radius: 2px; }
+        
+        body.geriatric-theme .tmt-node { width: 55px; height: 55px; font-size: 1.6rem; border-width: 3px; border-color: #000; }
 
         .word-display { font-size: 3.5rem; text-align: center; height: 180px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: var(--primary); }
         .chips-area { display: flex; flex-wrap: wrap; gap: 8px; min-height: 60px; padding: 15px; background: #F4F6F8; border-radius: 10px; margin-bottom: 20px; border: 1px dashed #DDD; }
@@ -143,33 +189,48 @@
         .backup-section { margin-top: 30px; border-top: 1px solid #EEE; padding-top: 20px; text-align: left; }
         .backup-box { display: none; margin-top: 10px; }
         textarea.raw-data { width: 100%; height: 150px; font-family: monospace; font-size: 12px; padding: 10px; border: 1px solid #DDD; background: #FAFAFA; border-radius: 8px; -webkit-appearance: none; }
-        
-        .sdmt-overlay-feedback { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 10rem; font-weight: 900; opacity: 0; pointer-events: none; z-index: 100; text-shadow: 0 0 40px rgba(255,255,255,1); }
-        .sdmt-overlay-feedback.show-correct { color: var(--success); animation: popOut 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        .sdmt-overlay-feedback.show-wrong { color: var(--error); animation: shakeFade 0.5s ease-in-out forwards; }
-        
+        .hidden { display: none; } .text-center { text-align: center; }
         .mic-btn { font-size: 1.5rem; padding: 0 15px; background: #FFF; border: 1px solid #DDD; border-radius: 8px; cursor: pointer; }
         .mic-btn.recording { border-color: var(--accent); color: var(--accent); animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 112, 67, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(0,0,0,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
-
+        table.res-table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        table.res-table th, table.res-table td { padding: 10px; border-bottom: 1px solid #EEE; text-align: left; }
+        table.res-table th { color: #888; font-size: 0.85rem; }
+        #ai-report-area { margin-top: 20px; background: #f0f7ff; padding: 20px; border-radius: 12px; border: 1px solid #cce5ff; text-align: left; display: none; }
+        .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 3px solid rgba(0,0,0,0.1); border-radius: 50%; border-top-color: #2A5C82; animation: spin 1s ease-in-out infinite; margin-right: 10px; vertical-align: middle; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        /* Universal Responsive Adaptation */
         @media (max-width: 768px) { 
-            .card { padding: 20px 15px; } .tutorial-grid { grid-template-columns: 1fr; } .intro-map { grid-template-columns: 1fr; } 
-            .sdmt-legend-sym { font-size: 1.8rem; height: 40px; } .sdmt-legend-num { height: 25px; } .btn-color { height: 70px; font-size: 1.3rem; }
-            .form-row { grid-template-columns: 1fr; }
+            .card { padding: 20px 15px; } 
+            .form-row { grid-template-columns: 1fr; } 
+            .word-display { font-size: 2.5rem; height: 120px; } 
+            .key-btn { padding: 15px; font-size: 1.2rem; }
+            .tutorial-grid { grid-template-columns: 1fr; }
+            .intro-map { grid-template-columns: 1fr; } 
+            .sdmt-legend-sym { font-size: 1.8rem; height: 40px; }
+            .sdmt-legend-num { height: 25px; }
+            .tmt-node { width: 35px; height: 35px; font-size: 1rem; }
+            .btn-color { height: 70px; font-size: 1.3rem; }
+        }
+        @media (orientation: landscape) and (max-height: 600px) {
+            header { padding: 5px 20px; }
+            .container { padding: 10px; }
+            .card { padding: 15px; }
+            #tmt-canvas-area { height: 250px; }
         }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="brand"><span style="font-size:1.5rem;">🧠</span><span id="txt-app-title">CAS v11.2</span></div>
+    <div class="brand"><span style="font-size:1.5rem;">🧠</span><span id="txt-app-title">CAS v10.8</span></div>
     <div style="display:flex; align-items:center; gap:10px;">
         <button onclick="toggleAdmin()" style="border:none; background:transparent; font-size:1.2rem; cursor:pointer;" title="Settings">⚙️</button>
         <div class="mode-switch">
             <button onclick="setMode('zh')" id="btn-mode-zh" class="active">中文</button>
             <button onclick="setMode('en')" id="btn-mode-en">English</button>
             <button onclick="setMode('child')" id="btn-mode-child">👶</button>
-            <button onclick="setMode('geriatric')" id="btn-mode-geriatric" title="老年模式">👴</button>
+            <button onclick="setMode('geriatric')" id="btn-mode-geriatric" title="老年模式 (Geriatric Mode)" style="font-size:1.2rem;">👴</button>
         </div>
     </div>
 </header>
@@ -177,40 +238,70 @@
 <div class="container">
     <div id="view-home" class="view-section active">
         <div class="card text-center">
-            <h1 id="txt-home-title">认知评估系统</h1>
-            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Universal Edition (v11.2)</p>
+            <h1 id="txt-home-title" style="margin-bottom: 10px;">认知评估系统</h1>
+            <p id="txt-home-desc" style="color: var(--text-light); margin-bottom: 30px;">Universal Edition (v10.8)</p>
             <div style="max-width:500px; margin:0 auto 30px auto; color:#666; font-size:0.9rem; line-height:1.6;">
                 <p id="txt-home-intro">本测试包含9个环节，预计耗时25分钟。<br>请确保您处于安静环境。</p>
             </div>
+            
             <div style="display:flex; gap:15px; justify-content:center; flex-wrap:wrap;">
                 <button class="btn btn-primary" onclick="startTutorial()"><span id="txt-btn-tutorial">📖 查看演示 (Demo)</span></button>
                 <button class="btn btn-ai" onclick="startQuickRun()"><span id="txt-btn-quick">⚡ 快速体验 (Quick)</span></button>
             </div>
+
             <div style="margin-top: 20px;">
-                <button id="btn-home-settings" class="btn btn-outline" style="font-size: 0.9rem; padding: 10px 25px;" onclick="toggleAdmin()">⚙️ <span id="txt-btn-settings">系统配置</span></button>
+                <button id="btn-home-settings" class="btn btn-outline" style="font-size: 0.9rem; padding: 10px 25px; display:inline-flex; align-items:center; gap:5px;" onclick="toggleAdmin()">
+                    <span id="icon-settings">⚙️</span> <span id="txt-btn-settings">系统配置 (Admin Setup)</span>
+                </button>
             </div>
         </div>
     </div>
 
-    <div id="view-guide-sci" class="view-section"><div style="margin-bottom:15px;"><button class="btn-back" onclick="showView('view-tutorial')">⬅ <span id="txt-back-demo-s">Back</span></button></div><div id="guide-sci-content" class="card doc-content"></div></div>
-    <div id="view-guide-pop" class="view-section"><div style="margin-bottom:15px;"><button class="btn-back" onclick="showView('view-tutorial')">⬅ <span id="txt-back-demo-p">Back</span></button></div><div id="guide-pop-content" class="card doc-content"></div></div>
+    <div id="view-guide-sci" class="view-section">
+        <div style="margin-bottom:15px;"><button class="btn-back" onclick="showView('view-tutorial')">⬅ <span id="txt-back-demo-s">Back</span></button></div>
+        <div id="guide-sci-content" class="card doc-content">
+            </div>
+    </div>
+
+    <div id="view-guide-pop" class="view-section">
+        <div style="margin-bottom:15px;"><button class="btn-back" onclick="showView('view-tutorial')">⬅ <span id="txt-back-demo-p">Back</span></button></div>
+        <div id="guide-pop-content" class="card doc-content">
+            </div>
+    </div>
 
     <div id="view-tutorial" class="view-section">
         <div style="margin-bottom:15px; text-align:left;">
             <button class="btn-back" onclick="showView('view-home')">⬅ <span id="txt-back-home">返回主页</span></button>
         </div>
+
         <div style="display:flex; gap:10px; margin-bottom:20px;">
             <button class="btn btn-outline" style="flex:1; font-size:0.9rem;" onclick="showView('view-guide-sci')">📘 <span id="txt-btn-sci">专业说明书</span></button>
             <button class="btn btn-info" style="flex:1; font-size:0.9rem;" onclick="showView('view-guide-pop')">🌟 <span id="txt-btn-pop">用户指南</span></button>
         </div>
-        
+
         <div class="card" style="margin-bottom:20px;">
             <h3 style="margin-top:0; color:var(--primary);">🧠 <span id="txt-brain-map">全脑认知功能图谱</span></h3>
             <div class="intro-map">
-                <div class="intro-item"><div class="intro-h"><span>⚡ <span id="txt-map-f">额叶</span></span></div><div class="intro-p"><span id="txt-intro-exec">执行与控制中心</span></div><div class="intro-tag">Stroop, TMT, VFT</div></div>
-                <div class="intro-item"><div class="intro-h"><span>💾 <span id="txt-map-t">颞叶</span></span></div><div class="intro-p"><span id="txt-intro-mem">记忆编码与存储</span></div><div class="intro-tag">Memory (T1/T4/T5)</div></div>
-                <div class="intro-item"><div class="intro-h"><span>🧭 <span id="txt-map-p">顶叶</span></span></div><div class="intro-p"><span id="txt-intro-spa">空间定位与计算</span></div><div class="intro-tag">Corsi (T2), Orient (T3)</div></div>
-                <div class="intro-item"><div class="intro-h"><span>🚀 <span id="txt-map-w">连通性</span></span></div><div class="intro-p"><span id="txt-intro-spd">信息传输效率</span></div><div class="intro-tag">SDMT (T6)</div></div>
+                <div class="intro-item">
+                    <div class="intro-h"><span>⚡ <span id="txt-map-f">额叶</span></span></div>
+                    <div class="intro-p"><span id="txt-intro-exec">执行与控制中心，大脑的CEO。</span></div>
+                    <div class="intro-tag">Stroop, TMT, VFT</div>
+                </div>
+                <div class="intro-item">
+                    <div class="intro-h"><span>💾 <span id="txt-map-t">颞叶</span></span></div>
+                    <div class="intro-p"><span id="txt-intro-mem">记忆的编码与存储，大脑的数据库。</span></div>
+                    <div class="intro-tag">Memory (T1/T4/T5)</div>
+                </div>
+                <div class="intro-item">
+                    <div class="intro-h"><span>🧭 <span id="txt-map-p">顶叶</span></span></div>
+                    <div class="intro-p"><span id="txt-intro-spa">空间定位与计算，大脑的导航仪。</span></div>
+                    <div class="intro-tag">Corsi (T2), Orient (T3)</div>
+                </div>
+                <div class="intro-item">
+                    <div class="intro-h"><span>🚀 <span id="txt-map-w">连通性</span></span></div>
+                    <div class="intro-p"><span id="txt-intro-spd">信息传输效率，大脑的光纤网络。</span></div>
+                    <div class="intro-tag">SDMT (T6)</div>
+                </div>
             </div>
         </div>
 
@@ -218,304 +309,520 @@
             <h2 id="txt-tut-title" style="margin-bottom:20px;">测试演示</h2>
             <div class="tutorial-grid">
                 <div class="tutorial-card">
-                    <span class="t-icon">🧠</span><div class="t-title" id="txt-tut-c1-title">1. 记忆力</div>
-                    <div class="micro-demo-box" style="padding:10px; min-height:80px;"><div class="demo-word-dynamic anim-pop" id="demo-word-tut" style="font-size:1.8rem;">...</div></div>
+                    <span class="t-icon">🧠</span>
+                    <div class="t-title" id="txt-tut-c1-title">1. 记忆力挑战</div>
+                    <div class="micro-demo-box" style="padding:10px; min-height:80px;">
+                        <div class="demo-word-dynamic" id="demo-word-tut" style="font-size:1.8rem;">...</div>
+                    </div>
                     <div class="t-desc" id="txt-tut-c1-desc">记住屏幕显示的单词。</div>
                 </div>
                 <div class="tutorial-card">
                     <span class="t-icon">🟩</span><div class="t-title" id="txt-tut-c2-title">2. 空间记忆</div>
-                    <div class="micro-demo-box" style="padding:10px;"><div class="demo-corsi-grid"><div class="demo-block lit" style="animation-delay:0s"></div><div class="demo-block"></div><div class="demo-block"></div><div class="demo-block"></div><div class="demo-block lit" style="animation-delay:0.6s"></div><div class="demo-block"></div><div class="demo-block"></div><div class="demo-block"></div><div class="demo-block lit" style="animation-delay:1.2s"></div></div></div>
-                    <div class="t-desc" id="txt-tut-c2-desc">观察顺序。</div>
+                    <div class="micro-demo-box" style="padding:10px;">
+                        <div class="demo-label" id="lbl-demo-t2">演示</div>
+                        <div class="demo-corsi-grid">
+                            <div class="demo-block lit" style="animation-delay: 0s;"></div>
+                            <div class="demo-block"></div>
+                            <div class="demo-block"></div>
+                            <div class="demo-block"></div>
+                            <div class="demo-block lit" style="animation-delay: 0.6s;"></div>
+                            <div class="demo-block"></div>
+                            <div class="demo-block"></div>
+                            <div class="demo-block"></div>
+                            <div class="demo-block lit" style="animation-delay: 1.2s;"></div>
+                        </div>
+                    </div>
+                    <div class="t-desc" id="txt-tut-c2-desc">观察方块亮起的<b>顺序</b>。演示结束后，请按<b>相同顺序</b>点击方块。</div>
                 </div>
+                <div class="tutorial-card"><span class="t-icon">🔄</span><div class="t-title" id="txt-tut-c2b-title">2B. 空间倒背</div><div class="t-desc" id="txt-tut-c2b-desc">难度升级！请<b>倒序</b>点击方块。</div></div>
+                <div class="tutorial-card"><span class="t-icon">📅</span><div class="t-title" id="txt-tut-c4-title">3. 定向问答</div><div class="t-desc" id="txt-tut-c4-desc">回答时间与地点问题。</div></div>
+                <div class="tutorial-card"><span class="t-icon">✏️</span><div class="t-title" id="txt-tut-c9-title">4. 连线测验</div><div class="micro-demo-box" style="padding:10px;"><div style="display:flex; gap:10px; align-items:center; justify-content:center; height:100%;"><div style="width:30px; height:30px; border-radius:50%; border:2px solid #333; display:flex; align-items:center; justify-content:center; font-weight:bold;">1</div><div class="tmt-demo-line" style="height:2px; width:20px; background:var(--success);"></div><div style="width:30px; height:30px; border-radius:50%; border:2px solid #333; display:flex; align-items:center; justify-content:center; font-weight:bold;">2</div><div class="tmt-demo-line" style="height:2px; width:20px; background:var(--success); animation-delay:0.5s;"></div><div style="width:30px; height:30px; border-radius:50%; border:2px solid #333; display:flex; align-items:center; justify-content:center; font-weight:bold;">3</div></div></div><div class="t-desc" id="txt-tut-c9-desc">按顺序点击圆圈：<br>A: 1-2-3...<br>B: 1-A-2-B...</div></div>
                 <div class="tutorial-card">
-                    <span class="t-icon">📅</span><div class="t-title" id="txt-tut-c4-title">3. 定向力</div>
-                    <div class="micro-demo-box" style="padding:10px;"><div class="demo-word-dynamic" id="demo-time-tut">2026</div></div>
-                    <div class="t-desc" id="txt-tut-c4-desc">回答时间。</div>
+                    <span class="t-icon">🎨</span>
+                    <div class="t-title" id="txt-tut-c5-title">5. 抑制控制</div>
+                    <div class="micro-demo-box" style="padding:10px; min-height:80px;">
+                        <div id="demo-stroop-tut-txt" class="demo-stroop-text text-green" style="font-size:2rem;">红</div>
+                        <div id="demo-stroop-hint" style="font-size:0.8rem; color:#666; margin-top:5px;">(颜色是绿，点绿键)</div>
+                    </div>
+                    <div class="t-desc" id="txt-tut-c5-desc">忽略文字含义，<b>只判断字的颜色</b>！</div>
                 </div>
+                
                 <div class="tutorial-card">
-                    <span class="t-icon">✏️</span><div class="t-title" id="txt-tut-c9-title">4. 连线测验</div>
-                    <div class="micro-demo-box" style="padding:10px;"><div style="display:flex; gap:5px; align-items:center; justify-content:center;"><div style="width:25px; height:25px; border-radius:50%; border:2px solid #333; display:flex; align-items:center; justify-content:center;">1</div><div class="tmt-demo-line" style="height:2px; width:15px; background:var(--success);"></div><div style="width:25px; height:25px; border-radius:50%; border:2px solid #333; display:flex; align-items:center; justify-content:center;">2</div><div class="tmt-demo-line" style="height:2px; width:15px; background:var(--success); animation-delay:0.5s;"></div><div style="width:25px; height:25px; border-radius:50%; border:2px solid #333; display:flex; align-items:center; justify-content:center;">3</div></div></div>
-                    <div class="t-desc" id="txt-tut-c9-desc">按顺序点击。</div>
+                    <span class="t-icon">⚡</span>
+                    <div class="t-title" id="txt-tut-c3-title">6. 处理速度</div>
+                    <div class="micro-demo-box" style="padding:5px;">
+                        <div class="demo-sdmt-visual">
+                            <div style="font-size:2rem; color:var(--primary);" id="demo-sdmt-sym">⊏</div>
+                            <div class="demo-keyboard-key" id="demo-sdmt-key">1</div>
+                        </div>
+                    </div>
+                    <div class="t-desc" id="txt-tut-c3-desc">看符号，按对应的数字键。<br><b>推荐使用键盘操作！(1-9)</b></div>
                 </div>
-                <div class="tutorial-card">
-                    <span class="t-icon">🎨</span><div class="t-title" id="txt-tut-c5-title">5. 抑制控制</div>
-                    <div class="micro-demo-box" style="padding:10px; min-height:80px;"><div id="demo-stroop-tut-txt" class="demo-stroop-text text-green" style="font-size:2rem;">红</div><div id="demo-stroop-hint" style="font-size:0.75rem; color:#666; margin-top:5px;">(点绿键)</div></div>
-                    <div class="t-desc" id="txt-tut-c5-desc">看颜色。</div>
-                </div>
-                <div class="tutorial-card">
-                    <span class="t-icon">⚡</span><div class="t-title" id="txt-tut-c3-title">6. 处理速度</div>
-                    <div class="micro-demo-box" style="padding:5px;"><div class="demo-sdmt-visual"><div style="font-size:2rem; color:var(--primary);" id="demo-sdmt-sym">⊏</div><div class="demo-keyboard-key" id="demo-sdmt-key">1</div></div></div>
-                    <div class="t-desc" id="txt-tut-c3-desc">看符号选数字。</div>
-                </div>
-                <div class="tutorial-card">
-                    <span class="t-icon">🦁</span><div class="t-title" id="txt-tut-c8-title">7. 语言流利度</div>
-                    <div class="micro-demo-box" style="padding:10px;"><div class="demo-anim-emoji" id="demo-vft-emoji">🦁</div></div>
-                    <div class="t-desc" id="txt-tut-c8-desc">说动物。</div>
-                </div>
+                
+                <div class="tutorial-card"><span class="t-icon">🦁</span><div class="t-title" id="txt-tut-c8-title">7. 语言流利度</div><div class="t-desc" id="txt-tut-c8-desc">60秒内，说出尽可能多的动物名称。<br><b>支持语音自动输入！</b></div></div>
             </div>
             <div style="margin-top:40px;">
-                <button class="btn btn-success" onclick="try{initSession()}catch(e){alert(e)}"><span id="txt-btn-start-real">✅ 我看懂了，开始正式登记</span></button>
+                <button class="btn btn-success" onclick="try{initSession()}catch(e){alert(e)}"><span id="txt-btn-start-real">开始登记</span></button>
             </div>
         </div>
     </div>
 
-    <div id="view-t1-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()" title="Exit">🏠</div><h2 id="txt-t1-title">记忆学习</h2><p id="txt-t1-instr">屏幕显示单词。</p><button class="btn btn-primary" onclick="startT1Run()"><span id="txt-btn-mem">开始</span></button></div></div>
+    <div id="view-register" class="view-section">
+        <div class="card">
+            <div style="margin-bottom:15px; text-align:left;">
+                <button class="btn-back" onclick="showView('view-tutorial')">⬅ <span id="txt-back-demo">返回演示</span></button>
+            </div>
+            <h2 id="txt-reg-title">受试者信息</h2>
+            <div class="form-row"><div><label id="lbl-name">姓名 *</label><input type="text" id="p_name" required></div><div><label id="lbl-id">登记号 *</label><input type="text" id="p_id" required></div></div>
+            <div class="form-row"><div><label id="lbl-gender">性别 *</label><select id="p_gender"><option value="">--Select--</option></select></div><div><label id="lbl-dob">出生日期 *</label><input type="date" id="p_dob" min="1900-01-01" lang="zh-CN" onchange="calcAge()" required></div></div>
+            <div class="form-row"><div><label id="lbl-age">年龄</label><input type="number" id="p_age" readonly></div><div><label id="lbl-edu">教育 *</label><select id="p_edu"><option value="">--Select--</option></select></div></div>
+            <div class="form-row"><div><label id="lbl-hand">利手 (Handedness) *</label><select id="p_hand" required><option value="">--Select--</option><option value="R">右利手 (Right)</option><option value="L">左利手 (Left)</option><option value="B">双利手 (Both)</option></select></div><div></div></div>
+            <div class="text-center"><button class="btn btn-primary" id="btn-submit-reg" onclick="validateAndSubmit()"><span id="txt-btn-next">下一步</span></button><div id="reg-error-msg" style="color:var(--error); margin-top:10px; display:none;">请填写所有必填项</div></div>
+        </div>
+    </div>
+
+    <div id="view-t1-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()" title="Exit">🏠</div><h2 id="txt-t1-title">记忆学习</h2><div class="micro-demo-box"><div class="demo-label" id="lbl-demo-t1">演示</div><div class="demo-word-dynamic" id="demo-word-intro">...</div></div><p id="txt-t1-instr">屏幕将逐个显示单词，请用心记住。</p><button class="btn btn-primary" onclick="startT1Run()"><span id="txt-btn-mem">开始记忆</span></button></div></div>
     <div id="view-t1-run" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 style="color:#ccc; font-size:1rem;" id="txt-task-mem">Verbal Learning</h2><div id="t1-word" class="word-display">...</div><div class="progress-container"><div class="progress-track"><div id="t1-learn-bar" class="progress-bar"></div></div></div></div></div>
-    <div id="view-t1-recall" class="view-section"><div class="card"><div class="btn-home-corner" onclick="location.reload()">🏠</div><div style="display:flex; justify-content:space-between;"><h2 id="txt-t1-recall-title">即时回忆</h2><div style="font-weight:bold; color:var(--accent);">⏱ <span id="t1-timer">60</span>s</div></div><div style="display:flex; gap:10px; margin: 20px 0;"><button class="mic-btn" id="t1-mic" onclick="toggleSpeech('t1')">🎤</button><input type="text" id="t1-input" onkeydown="if(event.key==='Enter'){event.preventDefault();addWord('t1');}"><button class="btn btn-primary" onclick="addWord('t1')"><span id="txt-btn-add">添加</span></button></div><div id="t1-chips" class="chips-area"></div><div class="text-center"><button class="btn btn-success" onclick="finishT1()"><span id="txt-btn-finish">完成</span></button></div></div></div>
+    <div id="view-t1-recall" class="view-section"><div class="card"><div class="btn-home-corner" onclick="location.reload()">🏠</div><div style="display:flex; justify-content:space-between;"><h2 id="txt-t1-recall-title">即时回忆</h2><div style="font-weight:bold; color:var(--accent);">⏱ <span id="t1-timer">60</span>s</div></div><div style="display:flex; gap:10px; margin: 20px 0;"><button class="mic-btn" id="t1-mic" onclick="toggleSpeech('t1')">🎤</button><input type="text" id="t1-input" onkeydown="if(event.key==='Enter'){event.preventDefault();addWord('t1');}"><button class="btn btn-primary" onclick="addWord('t1')"><span id="txt-btn-add">添加</span></button></div><div id="t1-chips" class="chips-area"></div><div class="text-center"><button class="btn btn-success" onclick="finishT1()"><span id="txt-btn-finish">完成本节</span></button></div></div></div>
     
-    <div id="view-t2-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t2-title">空间记忆</h2><p id="txt-t2-instr">观察顺序。</p><button class="btn btn-primary" onclick="startCorsi('forward')"><span id="txt-btn-start-corsi">开始</span></button></div></div>
+    <div id="view-t2-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t2-title">空间记忆</h2><div class="micro-demo-box"><div class="demo-label" id="lbl-demo-t2">演示</div><div class="demo-corsi-grid"><div class="demo-block lit"></div><div class="demo-block"></div><div class="demo-block"></div><div class="demo-block"></div><div class="demo-block lit" style="animation-delay:0.5s"></div><div class="demo-block"></div><div class="demo-block"></div><div class="demo-block"></div><div class="demo-block lit" style="animation-delay:1s"></div></div></div><p id="txt-t2-instr">观察方块亮起的顺序，按相同顺序点击。</p><button class="btn btn-primary" onclick="startCorsi('forward')"><span id="txt-btn-start-corsi">开始测试</span></button></div></div>
     <div id="view-t2-test" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t2-test-title">空间记忆</h2><p id="t2-status" style="font-weight:bold; color:var(--primary);">...</p><div class="corsi-board" id="corsi-board"></div></div></div>
-    <div id="view-t2b-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t2b-title">空间倒背</h2><p id="txt-t2b-instr">倒序点击。</p><button class="btn btn-primary" onclick="startCorsi('backward')">开始</button></div></div>
+    <div id="view-t2b-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t2b-title">空间倒背</h2><div class="micro-demo-box" style="padding:20px;"><div style="font-size:3rem;">🔄</div><div style="margin-top:10px;">难度升级！</div></div><p id="txt-t2b-instr">观察顺序 1-2-3，请<b>倒序点击</b> 3-2-1。</p><button class="btn btn-primary" onclick="startCorsi('backward')">开始倒背测试</button></div></div>
 
-    <div id="view-t3" class="view-section"><div class="card"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t3-title">定向力</h2><h3 id="t3-q" style="font-size:1.4rem; text-align:center;">Q</h3><div id="t3-input-area"></div><div class="text-center" style="margin-top:20px;"><button class="btn btn-primary" onclick="nextT3()"><span id="txt-btn-next-q">下一题</span></button></div></div></div>
+    <div id="view-t3" class="view-section"><div class="card"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t3-title">定向力</h2><div style="min-height: 200px; display:flex; flex-direction:column; justify-content:center;"><h3 id="t3-q" style="font-size: 1.4rem; margin-bottom: 20px; text-align:center;">Question</h3><div id="t3-input-area"></div></div><div class="text-center" style="margin-top:20px;"><button class="btn btn-primary" onclick="nextT3()"><span id="txt-btn-next-q">下一题</span></button></div></div></div>
 
-    <div id="view-t9-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t9-title">连线测验</h2><button class="btn btn-primary" onclick="startTMTPractice('A')"><span id="txt-btn-start-tmt">开始</span></button></div></div>
-    <div id="view-t9-test" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><div id="tmt-phase-indicator">Practice A</div><div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>⏱ <span id="t9-timer">0.0</span>s</span><span id="t9-next-target">Next: 1</span></div><div id="tmt-canvas-area"></div><div id="tmt-error-msg" style="color:var(--error); font-weight:bold; height:20px; opacity:0; transition:opacity 0.2s;">Wrong!</div></div></div>
+    <div id="view-t9-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t9-title">连线测验 (TMT)</h2><div style="text-align:left; max-width:500px; margin:0 auto; line-height:1.6; color:#555;"><p><b>任务 A：</b> 按数字顺序点击 (1 ➡ 2 ➡ 3...)</p><p><b>任务 B：</b> 数字和字母交替点击 (1 ➡ A ➡ 2 ➡ B...)</p></div><div class="micro-demo-box" style="margin:20px 0; padding:10px;"><div style="font-size:1.2rem; font-weight:bold; color:var(--primary);">1 ➡ A ➡ 2 ➡ B</div></div><button class="btn btn-primary" onclick="startTMTPractice('A')"><span id="txt-btn-start-tmt">开始练习 (Part A)</span></button></div></div>
+    <div id="view-t9-test" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><div id="tmt-phase-indicator" style="background:#FFEAA7; color:#d35400; padding:5px 10px; border-radius:20px; font-weight:bold; display:inline-block; margin-bottom:10px;">Practice A</div><div style="display:flex; justify-content:space-between; font-weight:bold; margin-bottom:10px;"><span>⏱ <span id="t9-timer">0.0</span>s</span><span style="color:#666" id="t9-next-target">Next: 1</span></div><div id="tmt-canvas-area"></div><div id="tmt-error-msg" style="color:var(--error); font-weight:bold; height:20px; opacity:0; transition:opacity 0.2s;">Wrong!</div></div></div>
 
-    <div id="view-t7-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t7-title">Stroop</h2><p id="txt-t7-instr">看颜色。</p><button class="btn btn-primary" onclick="startStroopPractice()"><span id="txt-btn-start-stroop">开始</span></button></div></div>
-    <div id="view-t7-test" class="view-section"><div class="card text-center" style="position:relative;"><div class="btn-home-corner" onclick="location.reload()">🏠</div><div id="t7-phase-indicator">Practice</div><div id="stroop-feedback" class="sdmt-overlay-feedback"></div><div style="display:flex; justify-content:space-between; margin-bottom:15px;"><span>⏱ <span id="t7-timer">--</span>s</span><span>Score: <span id="t7-score">0</span></span></div><div id="stroop-word">Word</div><div class="stroop-grid"><button class="btn btn-color bg-red" onclick="inputStroop('red')"><span id="btn-red-txt">红</span></button><button class="btn btn-color bg-green" onclick="inputStroop('green')"><span id="btn-green-txt">绿</span></button><button class="btn btn-color bg-blue" onclick="inputStroop('blue')"><span id="btn-blue-txt">蓝</span></button><button class="btn btn-color bg-yellow" onclick="inputStroop('yellow')"><span id="btn-yellow-txt">黄</span></button></div></div></div>
+    <div id="view-t7-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t7-title">抑制控制 (Stroop)</h2><div class="micro-demo-box" style="padding:20px;"><div id="demo-stroop-text" class="text-blue" style="font-size:3rem; font-weight:bold; margin-bottom:10px;">红</div><div style="font-size:1rem; color:#666;">字是"红"，但颜色是"蓝"</div><div style="margin-top:15px; font-weight:bold; color:var(--primary);">请点击 [蓝] 按钮</div></div><p id="txt-t7-instr" style="margin:20px 0;">请忽略文字含义，<b>快速判断文字颜色</b>！</p><button class="btn btn-primary" onclick="startStroopPractice()"><span id="txt-btn-start-stroop">开始测试</span></button></div></div>
+    <div id="view-t7-test" class="view-section"><div class="card text-center" style="position:relative;"><div class="btn-home-corner" onclick="location.reload()">🏠</div><div id="t7-phase-indicator" style="background:#FFEAA7; color:#d35400; padding:5px 10px; border-radius:20px; font-weight:bold; display:inline-block; margin-bottom:10px;">Practice / 练习</div><div id="stroop-feedback" class="sdmt-overlay-feedback">✓</div><div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.2rem; margin-bottom:15px;"><span>⏱ <span id="t7-timer">--</span>s</span><span style="color:var(--success)">Score: <span id="t7-score">0</span></span></div><div id="stroop-word">准备...</div><div class="stroop-grid"><button class="btn btn-color bg-red" onclick="inputStroop('red')"><span id="btn-red-txt">红</span></button><button class="btn btn-color bg-green" onclick="inputStroop('green')"><span id="btn-green-txt">绿</span></button><button class="btn btn-color bg-blue" onclick="inputStroop('blue')"><span id="btn-blue-txt">蓝</span></button><button class="btn btn-color bg-yellow" onclick="inputStroop('yellow')"><span id="btn-yellow-txt">黄</span></button></div></div></div>
 
-    <div id="view-t6-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t6-title">SDMT</h2><p id="txt-t6-instr">看符号选数字。</p><button class="btn btn-primary" onclick="startSDMTPractice()"><span id="txt-btn-start-test">开始</span></button></div></div>
-    <div id="view-t6-test" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><div id="t6-phase-indicator">Practice</div><div id="sdmt-feedback" class="sdmt-overlay-feedback"></div><div style="display:flex; justify-content:space-between; margin-bottom:15px;"><span>⏱ <span id="t6-timer">--</span>s</span><span>Score: <span id="t6-score">0</span></span></div><div id="sdmt-legend" class="sdmt-legend"></div><div class="big-symbol symbol-font" id="t6-target">?</div><div class="sdmt-grid"><button class="key-btn" onclick="inputSDMT(7)">7</button><button class="key-btn" onclick="inputSDMT(8)">8</button><button class="key-btn" onclick="inputSDMT(9)">9</button><button class="key-btn" onclick="inputSDMT(4)">4</button><button class="key-btn" onclick="inputSDMT(5)">5</button><button class="key-btn" onclick="inputSDMT(6)">6</button><button class="key-btn" onclick="inputSDMT(1)">1</button><button class="key-btn" onclick="inputSDMT(2)">2</button><button class="key-btn" onclick="inputSDMT(3)">3</button></div></div></div>
+    <div id="view-t6-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t6-title">处理速度</h2><p id="txt-t6-instr">参照图例，点击数字（支持键盘 1-9）。</p><button class="btn btn-primary" onclick="startSDMTPractice()"><span id="txt-btn-start-test">开始测试</span></button></div></div>
+    <div id="view-t6-test" class="view-section"><div class="card text-center" style="position:relative;"><div class="btn-home-corner" onclick="location.reload()">🏠</div><div id="t6-phase-indicator" style="background:#FFEAA7; color:#d35400; padding:5px 10px; border-radius:20px; font-weight:bold; display:inline-block; margin-bottom:10px;">Practice / 练习</div><div id="sdmt-feedback" class="sdmt-overlay-feedback">✓</div><div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.2rem; margin-bottom:15px;"><span>⏱ <span id="t6-timer">--</span>s</span><span style="color:var(--success)"><span id="txt-score">Score</span>: <span id="t6-score">0</span></span></div><div id="sdmt-legend" class="sdmt-legend"></div><div class="big-symbol symbol-font" id="t6-target">?</div><div class="sdmt-grid"><button class="key-btn" onclick="inputSDMT(7, 'Click')">7</button><button class="key-btn" onclick="inputSDMT(8, 'Click')">8</button><button class="key-btn" onclick="inputSDMT(9, 'Click')">9</button><button class="key-btn" onclick="inputSDMT(4, 'Click')">4</button><button class="key-btn" onclick="inputSDMT(5, 'Click')">5</button><button class="key-btn" onclick="inputSDMT(6, 'Click')">6</button><button class="key-btn" onclick="inputSDMT(1, 'Click')">1</button><button class="key-btn" onclick="inputSDMT(2, 'Click')">2</button><button class="key-btn" onclick="inputSDMT(3, 'Click')">3</button></div><p style="margin-top:10px; font-size:0.8rem; color:#888;">⌨️ 提示：可使用键盘数字键 1-9 快速作答</p></div></div>
 
-    <div id="view-t4-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t4-title">延迟回忆</h2><button class="btn btn-primary" onclick="startT4Recall()"><span id="txt-btn-start-recall">开始</span></button></div></div>
-    <div id="view-t4-recall" class="view-section"><div class="card"><div class="btn-home-corner" onclick="location.reload()">🏠</div><div style="display:flex; justify-content:space-between;"><h2 id="txt-t4-test-title">延迟回忆</h2><div>⏱ <span id="t4-timer">60</span>s</div></div><input type="text" id="t4-input" onkeydown="if(event.key==='Enter')addWord('t4')"><button class="btn btn-primary" onclick="addWord('t4')">添加</button><div id="t4-chips" class="chips-area"></div><div class="text-center"><button class="btn btn-success" onclick="finishT4()">完成</button></div></div></div>
+    <div id="view-t4-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t4-title">延迟回忆</h2><p id="txt-t4-instr" style="color:var(--text-light); margin:30px 0;">请再次回忆刚才学过的单词。</p><button class="btn btn-primary" onclick="startT4Recall()"><span id="txt-btn-start-recall">开始回忆</span></button></div></div>
+    <div id="view-t4-recall" class="view-section"><div class="card"><div class="btn-home-corner" onclick="location.reload()">🏠</div><div style="display:flex; justify-content:space-between;"><h2 id="txt-t4-test-title">延迟回忆</h2><div style="font-weight:bold; color:var(--accent);">⏱ <span id="t4-timer">60</span>s</div></div><div style="display:flex; gap:10px; margin: 20px 0;"><button class="mic-btn" id="t4-mic" onclick="toggleSpeech('t4')">🎤</button><input type="text" id="t4-input" onkeydown="if(event.key==='Enter'){event.preventDefault();addWord('t4');}"><button class="btn btn-primary" onclick="addWord('t4')"><span id="txt-btn-add-t4">添加</span></button></div><div id="t4-chips" class="chips-area"></div><div class="text-center"><button class="btn btn-success" onclick="finishT4()"><span id="txt-btn-finish">完成本节</span></button></div></div></div>
     
-    <div id="view-t8-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t8-title">VFT</h2><button class="btn btn-primary" onclick="startT8Test()"><span id="txt-btn-start-vft">开始</span></button></div></div>
-    <div id="view-t8-test" class="view-section"><div class="card"><div class="btn-home-corner" onclick="location.reload()">🏠</div><div style="display:flex; justify-content:space-between;"><h2 id="txt-t8-test-title">VFT</h2><div>⏱ <span id="t8-timer">60</span>s</div></div><input type="text" id="t8-input" onkeydown="if(event.key==='Enter')addWord('t8')"><button class="btn btn-primary" onclick="addWord('t8')">添加</button><div id="t8-chips" class="chips-area"></div><div class="text-center"><button class="btn btn-success" onclick="finishT8()">完成</button></div></div></div>
+    <div id="view-t8-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t8-title">语言流利度</h2><div class="micro-demo-box" style="padding:20px; font-size:3rem;">🦁 🐼 🐱</div><p id="txt-t8-instr">在60秒内，说出尽可能多的<b>动物</b>名称。<br>支持语音连续输入。</p><button class="btn btn-primary" onclick="startT8Test()"><span id="txt-btn-start-vft">开始测试</span></button></div></div>
+    <div id="view-t8-test" class="view-section"><div class="card"><div class="btn-home-corner" onclick="location.reload()">🏠</div><div style="display:flex; justify-content:space-between;"><h2 id="txt-t8-test-title">列举动物</h2><div style="font-weight:bold; color:var(--accent);">⏱ <span id="t8-timer">60</span>s</div></div><div style="display:flex; gap:10px; margin: 20px 0;"><button class="mic-btn" id="t8-mic" onclick="toggleSpeech('t8')">🎤</button><input type="text" id="t8-input" onkeydown="if(event.key==='Enter'){event.preventDefault();addWord('t8');}"><button class="btn btn-primary" onclick="addWord('t8')"><span id="txt-btn-add-t8">添加</span></button></div><div id="t8-chips" class="chips-area"></div><div class="text-center"><button class="btn btn-success" onclick="finishT8()"><span id="txt-btn-finish-t8">完成本节</span></button></div></div></div>
 
-    <div id="view-t5-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t5-title">再认</h2><button class="btn btn-primary" onclick="startT5Test()"><span id="txt-btn-start-recog">开始</span></button></div></div>
-    <div id="view-t5-test" class="view-section"><div class="card"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t5-test-title">再认</h2><div id="t5-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px;"></div><div class="text-center" style="margin-top:20px;"><button class="btn btn-success" onclick="finishT5()">完成</button></div></div></div>
-
-    <div id="view-register" class="view-section"><div class="card"><div style="margin-bottom:15px; text-align:left;"><button class="btn-back" onclick="showView('view-tutorial')">⬅ <span id="txt-back-demo">返回演示</span></button></div><h2 id="txt-reg-title">Info</h2>
-    <div class="form-row"><div><label id="lbl-name">Name</label><input id="p_name"></div><div><label id="lbl-id">ID</label><input id="p_id"></div></div>
-    <div class="form-row"><div><label id="lbl-gender">Gender</label><select id="p_gender"><option value="M">M</option><option value="F">F</option></select></div><div><label id="lbl-dob">DOB</label><input type="date" id="p_dob" onchange="calcAge()"></div></div>
-    <div class="form-row"><div><label id="lbl-age">Age</label><input type="number" id="p_age"></div><div><label id="lbl-edu">Edu</label><select id="p_edu"><option>Edu</option></select></div></div>
-    <div class="form-row"><div><label id="lbl-hand">Hand</label><select id="p_hand"><option value="R">R</option><option value="L">L</option></select></div></div>
-    <div id="reg-error-msg" style="color:red; display:none;">Error</div>
-    <div class="text-center"><button class="btn btn-primary" onclick="submitRegister()">Next</button></div></div></div>
-
-    <div id="view-report" class="view-section"><div class="card"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-report-title">报告</h2><div id="report-body"></div><div style="display:flex; gap:10px; justify-content:center; margin-top:20px;"><button class="btn btn-ai" onclick="analyzeWithAI()">AI Analysis</button></div><div id="ai-report-area"><div id="ai-loading" style="display:none;">Analyzing...</div><div id="ai-report-content"></div></div><div class="backup-section"><p onclick="toggleBackup()">⚠️ Show Raw</p><div id="backup-box" class="backup-box"><textarea id="raw-data"></textarea><button class="btn btn-outline" onclick="copyRaw()">Copy</button></div></div></div></div>
+    <div id="view-t5-intro" class="view-section"><div class="card text-center"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-t5-title">再认</h2><p id="txt-t5-hint">从下方列表中，选出 T1 学过的单词。</p><button class="btn btn-primary" onclick="startT5Test()"><span id="txt-btn-start-recog">开始选择</span></button></div></div>
+    <div id="view-t5-test" class="view-section"><div class="card"><div class="btn-home-corner" onclick="location.reload()">🏠</div><div style="display:flex; justify-content:space-between;"><h2 id="txt-t5-test-title">再认</h2><div id="t5-progress-txt">0 / 10</div></div><div id="t5-grid" style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:20px;"></div><div class="text-center" style="margin-top:30px;"><button class="btn btn-success" onclick="finishT5()"><span id="txt-btn-finish-t5">完成本节</span></button></div></div></div>
+    
+    <div id="view-report" class="view-section"><div class="card"><div class="btn-home-corner" onclick="location.reload()">🏠</div><h2 id="txt-report-title">评估报告</h2><div id="report-body"></div><div style="display:flex; gap:10px; justify-content:center; margin-top:20px; flex-wrap:wrap;"><button class="btn btn-ai" onclick="analyzeWithAI()" id="btn-ai-analyze">🤖 AI Analysis</button><button class="btn btn-outline" onclick="uploadData()" id="btn-cloud-upload">☁️ Upload Cloud</button></div><div id="ai-report-area"><div id="ai-loading" style="display:none;"><div class="loading-spinner"></div>Analyzing...</div><div id="ai-report-content"></div></div><div style="display:flex; gap:10px; justify-content:center; margin-top:20px;"><button class="btn btn-success" onclick="exportJSON()">💾 JSON</button><button class="btn btn-primary" onclick="exportCSV()">📥 CSV (Full Data)</button></div><div class="backup-section"><p style="font-size:0.8rem; color:#999; cursor:pointer;" onclick="toggleBackup()">⚠️ <span id="txt-backup-hint">Show Raw Data</span></p><div id="backup-box" class="backup-box"><textarea id="raw-data" class="raw-data" readonly></textarea><button class="btn btn-outline" style="font-size:0.8rem; padding:8px 15px; margin-top:5px;" onclick="copyRaw()">📋 Copy</button></div></div><div class="text-center" style="margin-top:30px;"><button class="btn btn-outline" onclick="location.reload()">🔄 <span id="txt-btn-restart">New Subject</span></button></div></div></div>
 </div>
 
 <div id="admin-modal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:none; z-index:200;">
-    <div style="background:white; width:90%; max-width:400px; margin:50px auto; padding:20px; border-radius:12px;">
-        <h3>Settings</h3>
-        <div style="margin-bottom:10px;"><label>Place</label><input id="set-place"></div>
-        <div style="margin-bottom:10px;"><label>City</label><input id="set-city"></div>
-        <div style="margin-bottom:10px;"><label>Provider</label><select id="set-provider" onchange="updateProviderFields()"><option value="gemini">Gemini</option><option value="deepseek">DeepSeek</option></select></div>
-        <div style="margin-bottom:10px;"><label>API Key</label><input id="set-ai-key" type="password"></div>
-        <div style="margin-bottom:10px;"><label>Model</label><input id="set-model-name"></div>
-        <div style="margin-bottom:10px; display:none;" id="group-url"><label>Base URL</label><input id="set-base-url"></div>
-        <div style="margin-bottom:10px;"><label>Cloud URL</label><input id="set-cloud-url"></div>
-        <button class="btn btn-primary" onclick="saveAdmin()">Save</button>
-        <button class="btn btn-outline" onclick="toggleAdmin()">Close</button>
+    <div style="background:white; width:90%; max-width:400px; margin:50px auto; padding:25px; border-radius:12px; box-shadow:0 10px 40px rgba(0,0,0,0.2);">
+        <h3 id="txt-admin-title">Settings</h3>
+        <div style="margin-bottom:15px;"><label id="lbl-set-place" style="font-weight:bold; font-size:0.9rem;">Place</label><input type="text" id="set-place" value="Hospital"></div>
+        <div style="margin-bottom:15px;"><label id="lbl-set-city" style="font-weight:bold; font-size:0.9rem;">City</label><input type="text" id="set-city" value="Beijing"></div>
+        <hr style="margin: 20px 0; border:0; border-top:1px solid #eee;">
+        <div style="margin-bottom:15px;"><label style="font-weight:bold; font-size:0.9rem; color:#667eea;">AI Provider</label><select id="set-provider" style="font-size:0.9rem;" onchange="updateProviderFields()"><option value="gemini">Google Gemini</option><option value="deepseek">DeepSeek</option><option value="qwen">Qwen</option><option value="kimi">Kimi</option><option value="doubao">Doubao</option><option value="openai">OpenAI</option><option value="custom">Custom / Ollama</option></select></div>
+        <div style="margin-bottom:15px;"><label id="lbl-set-key" style="font-weight:bold; font-size:0.9rem; color:#667eea;">API Key</label><input type="password" id="set-ai-key" placeholder="sk-..." style="font-size:0.8rem;"></div>
+        <div id="group-model" style="margin-bottom:15px;"><label class="setting-label" style="font-weight:bold; font-size:0.9rem;">Model Name / Endpoint</label><input type="text" id="set-model-name" placeholder="gemini-2.0-flash (Default)" style="font-size:0.8rem;"></div>
+        <div id="group-url" style="margin-bottom:15px; display:none;"><label class="setting-label" style="font-weight:bold; font-size:0.9rem;">API Base URL</label><input type="text" id="set-base-url" placeholder="https://..." style="font-size:0.8rem;"></div>
+        <div style="margin-bottom:15px;"><label id="lbl-set-cloud" style="font-weight:bold; font-size:0.9rem;">Cloud URL</label><input type="text" id="set-cloud-url" placeholder="https://script.google..." style="font-size:0.8rem;"></div>
+        <div style="margin-top:20px; text-align:right;"><button class="btn btn-outline" onclick="toggleAdmin()">Close</button><button class="btn btn-primary" onclick="saveAdmin()">Save</button></div>
     </div>
 </div>
 
 <script>
-// DATA
+// 1. DATA (v10.8 Final)
 const DB = {
     lists: { zh: { A: ["老虎", "熊猫", "狮子", "斧头", "锤子", "锯子", "苹果", "香蕉", "葡萄", "汽车"], B: ["豹子", "大象", "狼", "螺丝刀", "钳子", "钻机", "橘子", "梨", "桃子", "卡车"] }, en: { A: ["Tiger", "Panda", "Lion", "Hammer", "Wrench", "Saw", "Apple", "Banana", "Grape", "Car"], B: ["Leopard", "Elephant", "Wolf", "Screwdriver", "Pliers", "Drill", "Orange", "Pear", "Peach", "Truck"] }, child: { A: ["小狗", "小猫", "兔子", "苹果", "香蕉", "西瓜", "汽车", "飞机", "火车", "皮球"], B: ["小猪", "小羊", "熊猫", "葡萄", "橘子", "草莓", "公交车", "轮船", "卡车", "气球"] } },
     demos: { zh: { w1:"苹果", w2:"香蕉" }, en: { w1:"Apple", w2:"Banana" }, child: { w1:"苹果", w2:"香蕉" } },
     symbols: ['⊏', '⊐', '⊓', '⊔', '○', '□', '◇', '☆', '△'], 
     stroop: { zh: { words: ["红","绿","蓝","黄"], colors: ["red","green","blue","yellow"], btns: ["红","绿","蓝","黄"] }, en: { words: ["RED","GREEN","BLUE","YELLOW"], colors: ["red","green","blue","yellow"], btns: ["RED","GREEN","BLUE","YELLOW"] }, child: { words: ["红","绿","蓝","黄"], colors: ["red","green","blue","yellow"], btns: ["红","绿","蓝","黄"] } },
     tmt: { A: ['1','2','3','4','5','6','7','8','9','10','11','12'], B: ['1','A','2','B','3','C','4','D','5','E','6','F'] },
+    // Localized Guides - Rich Content
     guides: {
-        zh: { sci: `<h3>1. 测验模块</h3><table class="doc-table"><tr><th>模块</th><th>指标</th></tr><tr><td>T1 记忆</td><td>即时回忆分</td></tr><tr><td>T2 Corsi</td><td>广度</td></tr><tr><td>T9 TMT</td><td>时间/错误</td></tr><tr><td>T7 Stroop</td><td>抑制</td></tr><tr><td>T6 SDMT</td><td>速度</td></tr></table>`, pop: `<h3>👋 欢迎！</h3><p>给大脑做个“体检”。</p><h3>🚀 怎么玩？</h3><ul><li>🧠 记词：记住屏幕上的词。</li><li>🟩 点方块：照着顺序点。</li><li>🎨 找颜色：<b>字是“红”，颜色是绿，点绿！</b></li></ul>` },
-        en: { sci: `<h3>1. Battery</h3><table class="doc-table"><tr><th>Module</th><th>Metrics</th></tr><tr><td>T1 Memory</td><td>Immediate</td></tr><tr><td>T2 Corsi</td><td>Span</td></tr><tr><td>T7 Stroop</td><td>Inhibition</td></tr></table>`, pop: `<h3>👋 Welcome!</h3><p>Quick brain check.</p><h3>🚀 How to Play</h3><ul><li>🧠 Memory: Remember words.</li><li>🎨 Colors: Word "RED" in <b>GREEN</b> ink? Tap <b>GREEN</b>!</li></ul>` }
+        zh: {
+            sci: `<h3>1. 测验模块详解 (Test Battery)</h3><table class="doc-table"><tr><th>模块</th><th>认知域</th><th>测量指标</th></tr><tr><td><b>T1 听觉词语</b></td><td>情节记忆 (编码)</td><td>即时回忆得分 (0-10)</td></tr><tr><td><b>T2 Corsi 广度</b></td><td>视空间工作记忆</td><td>顺背/倒背广度 (Span)</td></tr><tr><td><b>T3 定向力</b></td><td>定向力</td><td>时间/地点得分 (0-6)</td></tr><tr><td><b>T9 连线 (TMT)</b></td><td>执行功能/转换</td><td>完成时间(s), 错误数, 路径潜伏期(Path Latency)</td></tr><tr><td><b>T7 Stroop</b></td><td>抑制控制</td><td>正确率, 反应时 (RT)</td></tr><tr><td><b>T6 符号数字</b></td><td>加工速度</td><td>正确数, 中位反应时, 变异性</td></tr><tr><td><b>T4 延迟回忆</b></td><td>长时记忆 (保持)</td><td>延迟得分, 遗忘率</td></tr><tr><td><b>T8 语流 (VFT)</b></td><td>语义记忆</td><td>产词量, 聚类策略</td></tr><tr><td><b>T5 再认</b></td><td>记忆 (提取辅助)</td><td>净分 (Hits - FA)</td></tr></table><h3>2. 结果解读</h3><ul><li><b>原始数据</b>：测试结束后提供的 CSV 包含所有按键的毫秒级时间戳 (Digital Phenotyping)，可用于分析帕金森风险或微细运动障碍。</li><li><b>AI 辅助报告</b>：配置 API Key 后可生成详细的临床叙述报告。</li></ul>`,
+            pop: `<h3>👋 欢迎！这是什么？</h3><p>这就像是给大脑做一次“体检”。通过几个有趣的小游戏（记单词、点方块、找颜色），测测您的<b>记忆力</b>好不好，<b>反应</b>快不快。</p><h3>🚀 闯关游戏介绍</h3><ul><li><b>🧠 记词挑战</b>：屏幕出现词语，请大声念出来并记在脑子里。后面会考好几次哦！</li><li><b>🟩 点方块</b>：看方块怎么亮，等它停了，按<b>一模一样的顺序</b>去点。</li><li><b>✏️ 连连看</b>：按 <b>1 -> 2 -> 3...</b> 的顺序点击圆圈。</li><li><b>🎨 找颜色（最难！）</b>：字是“红”，但颜色是<b>绿色</b>。请点<b>【绿】</b>按钮！<br><i>秘诀：千万别读字，只看颜色！</i></li><li><b>🦁 说动物</b>：1分钟内说出您知道的所有动物名字。</li></ul>`
+        },
+        en: {
+            sci: `<h3>1. Test Battery Breakdown</h3><table class="doc-table"><tr><th>Module</th><th>Cognitive Domain</th><th>Metrics & Digital Biomarkers</th></tr><tr><td><b>T1 AVLT</b></td><td>Episodic Memory</td><td>Immediate Recall (0-10)</td></tr><tr><td><b>T2 Corsi</b></td><td>Visuospatial WM</td><td>Span (Fwd/Bwd)</td></tr><tr><td><b>T3 Orientation</b></td><td>Orientation</td><td>Time/Place Score</td></tr><tr><td><b>T9 TMT</b></td><td>Executive/Shifting</td><td>Completion Time, Errors, Path Latency Seq</td></tr><tr><td><b>T7 Stroop</b></td><td>Inhibition</td><td>Accuracy, Response Time (RT)</td></tr><tr><td><b>T6 SDMT</b></td><td>Processing Speed</td><td>Correct, Median RT, Fatigue Index</td></tr><tr><td><b>T4 Delayed</b></td><td>Long-term Memory</td><td>Delayed Score, Retention Rate</td></tr><tr><td><b>T8 VFT</b></td><td>Semantic Memory</td><td>Fluency, Clustering</td></tr><tr><td><b>T5 Recognition</b></td><td>Retrieval Support</td><td>Net Score (Hits - FA)</td></tr></table><h3>2. Interpretation & Phenotyping</h3><ul><li><b>Digital Phenotyping</b>: The CSV export contains keystroke-level dynamics (latency sequences) suitable for ML modeling to detect subtle motor slowing or cognitive hesitation.</li><li><b>AI Analysis</b>: Generates a clinical narrative profile.</li></ul>`,
+            pop: `<h3>👋 Welcome!</h3><p>This is a quick check-up for your brain health. We will test your memory and reaction speed through simple games.</p><h3>🚀 How to Play</h3><ul><li><b>🧠 Memory Challenge</b>: Read the words aloud and remember them. You will be asked to recall them later.</li><li><b>🟩 Block Tapping</b>: Watch the blocks light up, then tap them in the <b>exact same order</b>.</li><li><b>✏️ Connect the Dots</b>: Tap the circles in order: <b>1 -> 2 -> 3...</b></li><li><b>🎨 Color Game</b>: The word might say "RED", but the ink is <b>GREEN</b>. Tap the <b>GREEN</b> button!<br><i>Tip: Ignore the word, look at the color!</i></li><li><b>🦁 Animal Naming</b>: Name as many animals as you can in 1 minute.</li></ul>`
+        }
     },
-    edu_opts: ["Primary","Secondary","High","Uni"],
     text: {
-        zh: { app_title:"CAS v11.2", home_title:"认知评估系统", btn_quick:"⚡ 快速体验", btn_sci:"📘 说明书", btn_pop:"🌟 指南", tut_title:"演示", back_home:"返回主页", btn_red:"红", btn_green:"绿", btn_blue:"蓝", btn_yellow:"黄", back_demo:"返回演示", reg_title:"受试者信息", btn_start_real:"✅ 我看懂了，开始正式登记", col_m:"指标", col_v:"数值", col_n:"备注", d_imm:"即时回忆", d_ret:"保持率", d_net:"净分", d_fa:"虚报", d_span:"广度", d_pt:"定向", d_err:"错误", d_inh:"抑制", d_spd:"速度", d_ani:"动物", reg_err:"请填写必填项", l_name:"姓名", l_id:"编号", l_gender:"性别", l_dob:"生日", l_age:"年龄", l_edu:"教育", l_hand:"利手" },
-        en: { app_title:"CAS v11.2", home_title:"Cognitive Assessment", btn_quick:"⚡ Quick Run", btn_sci:"📘 Manual", btn_pop:"🌟 Guide", tut_title:"Demo", back_home:"Home", btn_red:"RED", btn_green:"GREEN", btn_blue:"BLUE", btn_yellow:"YEL", back_demo:"Back to Demo", reg_title:"Register", btn_start_real:"Register Now", col_m:"Metric", col_v:"Value", col_n:"Note", d_imm:"Immediate", d_ret:"Retention", d_net:"Net", d_fa:"FA", d_span:"Span", d_pt:"Orientation", d_err:"Errors", d_inh:"Inhibition", d_spd:"Speed", d_ani:"Animals", reg_err:"Required", l_name:"Name", l_id:"ID", l_gender:"Gender", l_dob:"DOB", l_age:"Age", l_edu:"Edu", l_hand:"Hand" },
-        child: { app_title:"大脑挑战", home_title:"大脑挑战赛", btn_quick:"⚡ 快速开始", btn_sci:"📘 老师看", btn_pop:"🌟 怎么玩", tut_title:"演示", back_home:"回主页", btn_red:"红", btn_green:"绿", btn_blue:"蓝", btn_yellow:"黄", back_demo:"回演示", reg_title:"小朋友信息", btn_start_real:"开始", col_m:"项目", col_v:"得分", col_n:"说明", d_imm:"记词", d_ret:"遗忘", d_net:"找词", d_fa:"错选", d_span:"广度", d_pt:"问答", d_err:"错误", d_inh:"抗干扰", d_spd:"手速", d_ani:"动物", reg_err:"填完哦", l_name:"姓名", l_id:"学号", l_gender:"性别", l_dob:"生日", l_age:"几岁", l_edu:"年级", l_hand:"手" },
-        geriatric: { app_title:"老年脑健康", home_title:"老年脑健康筛查", btn_quick:"⚡ 快速测", btn_sci:"📘 医生看", btn_pop:"🌟 老人看", tut_title:"演示", back_home:"回首页", btn_red:"红", btn_green:"绿", btn_blue:"蓝", btn_yellow:"黄", back_demo:"回演示", reg_title:"老人信息", btn_start_real:"开始登记", col_m:"指标", col_v:"数值", col_n:"备注", d_imm:"即时回忆", d_ret:"保持率", d_net:"净分", d_fa:"虚报", d_span:"广度", d_pt:"定向", d_err:"错误", d_inh:"抑制", d_spd:"速度", d_ani:"动物", reg_err:"请填写", l_name:"姓名", l_id:"编号", l_gender:"性别", l_dob:"生日", l_age:"年龄", l_edu:"文化", l_hand:"手" }
-    },
-    t3q: ["Year?","Month?","Date?","Day?","Place?","City?"]
+        zh: {
+            app_title: "认知评估系统", home_title: "认知评估系统", home_desc: "Universal (v10.8)",
+            btn_settings: "系统配置 (Admin)", btn_quick: "⚡ 快速体验 (Quick)", btn_sci: "📘 专业说明书", btn_pop: "🌟 用户指南",
+            tut_title: "测试内容演示", tut_c1_title: "1. 记忆力挑战", tut_c1_desc: "屏幕会逐个显示单词。请用心<b>记住</b>它们。", tut_c2_title: "2. 空间记忆", tut_c2_desc: "观察方块亮起的<b>顺序</b>。演示结束后，请按<b>相同顺序</b>点击方块。", tut_c2b_title: "2B. 空间倒背", tut_c2b_desc: "难度升级！请<b>倒序</b>点击方块。", tut_c4_title: "3. 定向问答", tut_c4_desc: "回答时间与地点问题。", tut_c4_hint: "注：最后两题（地点/城市）的正确答案请在【设置】中预设", tut_c9_title: "4. 连线测验 (TMT)", tut_c9_desc: "按顺序点击圆圈：<br>A: 1-2-3...<br>B: 1-A-2-B...", tut_c5_title: "5. 抑制控制 (Stroop)", tut_c5_desc: "忽略文字含义，只判断颜色！", tut_c3_title: "6. 处理速度 (SDMT)", tut_c3_desc: "看符号，按对应的数字键。<br><b>推荐使用键盘操作！(1-9)</b>", tut_c8_title: "7. 语言流利度", tut_c8_desc: "60秒内，说出尽可能多的动物名称。<br><b>支持语音自动输入！</b>",
+            guide_title: "快速使用指南", step1: "登记信息", step2: "阅读/收听指令", step3: "完成测试", step4: "获取报告",
+            brain_map: "全脑认知功能图谱", intro_exec: "执行与控制中心，大脑的CEO。", intro_mem: "记忆的编码与存储，大脑的数据库。", intro_spa: "空间定位与计算，大脑的导航仪。", intro_spd: "信息传输效率，大脑的光纤网络。",
+            map_f: "额叶", map_t: "颞叶", map_p: "顶叶", map_w: "连通性",
+            back_home: "返回主页", back_demo: "返回演示", doc_sci_title: "📘 临床与科研使用手册", doc_pop_title: "🌟 用户指南",
+            reg_title: "受试者信息", l_name: "姓名", l_id: "登记号", l_gender: "性别", l_dob: "出生日期", l_age: "年龄", l_edu: "教育", l_hand: "利手", g_m: "男", g_f: "女", btn_next: "下一步", reg_err: "请填写必填项",
+            t1_title: "记忆学习", t1_instr: "屏幕将逐个显示单词。<br>请用心记住它们，稍后需要回忆。", btn_mem: "开始记忆", t1_recall_title: "即时回忆", btn_add: "添加", btn_finish: "完成本节", task_mem: "Memory Task", ph_input: "输入一个词，按回车提交",
+            t2_title: "空间记忆", t2_instr: "观察方块点亮顺序，按相同顺序点击。", btn_start_corsi: "开始测试", t2_test_title: "空间记忆", t2b_title: "空间倒背",
+            t3_title: "定向力", btn_nq: "下一题",
+            t9_title: "连线测验 (Trail Making)", btn_start_tmt: "开始练习 (Part A)", rep_t9: "执行转换 (TMT)", tmt_prac_A: "练习 A (1-5)", tmt_real_A: "正式测试 A (1-12)", tmt_prac_B: "练习 B (1-C)", tmt_real_B: "正式测试 B (1-F)",
+            t7_title: "抑制控制 (Stroop)", t7_instr: "忽略文字含义，快速点击文字颜色。", btn_start_stroop: "开始测试", btn_red:"红", btn_green:"绿", btn_blue:"蓝", btn_yellow:"黄", rep_t7: "抑制控制",
+            t6_title: "处理速度 (SDMT)", t6_instr: "参照图例，点击数字。", btn_start_test: "开始测试", score: "得分",
+            t4_title: "延迟回忆", t4_instr: "请再次回忆，刚才(T1)学过的那些单词。", btn_start_recall: "开始回忆", t4_test_title: "延迟回忆", btn_add_t4: "添加",
+            t8_title: "语言流利度", btn_start_vft: "开始测试", btn_add_t8: "添加", btn_finish_t8: "完成本节", t8_test_title: "列举动物", rep_t8: "语言流利度",
+            t5_title: "再认", t5_hint: "从下方列表中，选出 T1 学过的单词。", btn_finish_t5: "完成本节", btn_start_recog: "开始选择", t5_test_title: "再认测试",
+            home_intro: "本测试包含9个环节，预计耗时25分钟。<br>请确保您处于安静环境。",
+            btn_tutorial: "📖 查看演示 (Demo)", btn_start_real: "我明白了，开始登记",
+            report_title: "评估报告", btn_restart: "新受试者", backup_hint: "显示原始数据",
+            edu_opts: ["小学","初中","高中","大学","研究生"], select_def: "--请选择--",
+            t3q: ["Current Year?","Current Month?","Current Date?","Day of Week?","Current Place?","Current City?"],
+            t3_opts_m: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+            t3_opts_d: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+            lbl_demo: "Demo", t2_watch: "请观察...", t2_go: "请点击!", t2_timeout: "超时",
+            admin_title: "⚙️ 系统设置", admin_place: "📍 地点 (关键词)", admin_city: "🏙️ 城市 (关键词)", admin_cloud: "☁️ Google Script URL", admin_key: "🤖 API Key",
+            rep_t1: "言语学习", rep_t4: "延迟回忆", rep_t5: "再认记忆", rep_t2: "空间广度", rep_t3: "定向力", rep_t6: "加工速度", rep_note: "备注",
+            t6_prac_phase: "练习阶段 (3题)", t6_test_phase: "正式测试 (60s)", t6_prac_fail: "错误！请重试",
+            col_m: "指标", col_v: "数值", col_n: "备注", 
+            d_imm: "即时回忆", d_ret: "保持率", d_net: "净分", d_fa: "虚报", d_span: "空间广度", d_pt: "时间地点", d_err: "错误数", d_inh: "抑制能力", d_spd: "加工速度", d_ani: "动物总数"
+        },
+        en: { 
+            app_title: "CAS v10.8", home_title: "Cognitive Assessment System", home_desc: "Universal (v10.8)",
+            btn_settings: "Admin Setup", btn_quick: "⚡ Quick Run", btn_sci: "📘 Clinician Manual", btn_pop: "🌟 User Guide",
+            tut_title: "Task Demonstration", tut_c1_title: "1. Verbal Memory", tut_c1_desc: "Words will be shown sequentially. Memorize them for immediate and delayed recall.", tut_c2_title: "2. Spatial Span", tut_c2_desc: "Observe the sequence of lit blocks, then tap them in the <b>exact same order</b>.", tut_c2b_title: "2B. Corsi Backward", tut_c2b_desc: "Harder! Tap the blocks in <b>reverse order</b>.", tut_c4_title: "3. Orientation", tut_c4_desc: "Standard questions regarding current date and location.", tut_c4_hint: "Note: Preset Place/City in [Settings] for correct scoring.", tut_c9_title: "4. Trail Making (TMT)", tut_c9_desc: "Connect circles in order:<br>A: 1-2-3...<br>B: 1-A-2-B...", tut_c5_title: "5. Inhibition (Stroop)", tut_c5_desc: "Ignore the word, identify the ink color.", tut_c3_title: "6. Processing Speed", tut_c3_desc: "Match symbols to numbers.<br><b>Keyboard (1-9) Recommended!</b>", tut_c8_title: "7. Verbal Fluency", tut_c8_desc: "Name as many animals as possible in 60s.<br><b>Voice Input Supported!</b>",
+            guide_title: "Quick Start Guide", step1: "Register", step2: "Follow Instr.", step3: "Complete Task", step4: "Get Report",
+            brain_map: "Whole Brain Cognitive Map", intro_exec: "Executive Control Center. The CEO.", intro_mem: "Memory Encoding & Storage. The Database.", intro_spa: "Spatial Orientation. The GPS.", intro_spd: "Information Processing. The Fiber Optics.",
+            map_f: "Frontal", map_t: "Temporal", map_p: "Parietal", map_w: "Connectivity",
+            back_home: "Back Home", back_demo: "Back to Demo", doc_sci_title: "📘 Clinical & Research Manual", doc_pop_title: "🌟 Brain Health Check - User Guide",
+            reg_title: "Subject Demographics", l_name: "Name", l_id: "Subject ID", l_gender: "Gender", l_dob: "Date of Birth", l_age: "Age", l_edu: "Education", l_hand: "Handedness", g_m: "Male", g_f: "Female", btn_next: "Next", reg_err: "All fields required",
+            t1_title: "Verbal Learning", t1_instr: "Words will appear one by one.<br>Memorize them.", btn_mem: "Start Encoding", t1_recall_title: "Immediate Recall", btn_add: "Add", btn_finish: "Finish Section", task_mem: "Encoding Phase", ph_input: "Type word, press Enter",
+            t2_title: "Spatial Span", t2_instr: "Watch the sequence, then repeat it.", btn_start_corsi: "Start Task", t2_test_title: "Corsi Block Task", t2b_title: "Corsi Backward",
+            t3_title: "Orientation", btn_nq: "Next Question",
+            t9_title: "Trail Making Test", btn_start_tmt: "Start Practice A", rep_t9: "TMT Shifting", tmt_prac_A: "Practice A", tmt_real_A: "Test A (1-12)", tmt_prac_B: "Practice B", tmt_real_B: "Test B (1-F)",
+            t7_title: "Stroop Task", t7_instr: "Click the button matching the INK COLOR.", btn_start_stroop: "Start Task", btn_red:"RED", btn_green:"GREEN", btn_blue:"BLUE", btn_yellow:"YEL", rep_t7: "Inhibition",
+            t6_title: "Processing Speed (SDMT)", t6_instr: "Match symbols to numbers.", btn_start_test: "Start SDMT", score: "Score",
+            t4_title: "Delayed Recall", t4_instr: "Recall the words learned in the first section.", btn_start_recall: "Start Recall", t4_test_title: "Delayed Recall", btn_add_t4: "Add",
+            t8_title: "Verbal Fluency", btn_start_vft: "Start Task", btn_add_t8: "Add", btn_finish_t8: "Finish", t8_test_title: "Animal Naming", rep_t8: "Verbal Fluency",
+            t5_title: "Recognition Memory", t5_hint: "Select the words that were presented in the first section.", btn_finish_t5: "Finish Section", btn_start_recog: "Start Recognition", t5_test_title: "Recognition Phase",
+            home_intro: "This battery consists of 9 neuropsychological tasks.<br>Estimated time: 25 mins. Please ensure a quiet environment.",
+            btn_tutorial: "📖 View Demo", btn_start_real: "Proceed to Register",
+            report_title: "Clinical Report", btn_restart: "New Subject", backup_hint: "Show Raw Data",
+            edu_opts: ["Primary","Secondary","High School","Bachelor","Master/PhD"], select_def: "--Select--",
+            t3q: ["Current Year?","Current Month?","Current Date?","Day of Week?","Current Place?","Current City?"],
+            t3_opts_m: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+            t3_opts_d: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+            lbl_demo: "Demo", t2_watch: "Watch...", t2_go: "Go!", t2_timeout: "Timeout",
+            admin_title: "⚙️ Settings", admin_place: "📍 Place (Keywords)", admin_city: "🏙️ City (Keywords)", admin_cloud: "☁️ Google Script URL", admin_key: "🤖 API Key",
+            rep_t1: "Verbal Learning", rep_t4: "Delayed Recall", rep_t5: "Recognition", rep_t2: "Spatial Span", rep_t3: "Orientation", rep_t6: "Proc. Speed", rep_note: "Note",
+            t6_prac_phase: "Practice (3 Trials)", t6_test_phase: "Real Test (60s)", t6_prac_fail: "Wrong! Try Again.",
+            col_m: "Metric", col_v: "Value", col_n: "Note", 
+            d_imm: "Immediate", d_ret: "Retention", d_net: "Net", d_fa: "FA", d_span: "Spatial Span", d_pt: "Time & Place", d_err: "Errors", d_inh: "Inhibition", d_spd: "Speed", d_ani: "Animals"
+        },
+        child: {
+            app_title: "大脑挑战赛", home_title: "大脑挑战赛", home_desc: "趣味版 (v10.8)",
+            btn_settings: "设置", btn_quick: "⚡ 快速开始", btn_sci: "📘 老师手册", btn_pop: "🌟 小朋友指南",
+            tut_title: "游戏演示", tut_c1_title: "1. 记词游戏", tut_c1_desc: "屏幕上会出现词语。要把它们<b>记在脑子里</b>哦。", tut_c2_title: "2. 点方块", tut_c2_desc: "看方块怎么亮，然后照着<b>点一点</b>。", tut_c2b_title: "2B. 倒着点", tut_c2b_desc: "要反过来点哦！比如亮1-2-3，你点3-2-1。", tut_c4_title: "3. 问答时间", tut_c4_desc: "问问你今天是几号，在哪里。", tut_c4_hint: "让大人在【设置】里填好答案哦", tut_c9_title: "4. 连连看", tut_c9_desc: "按顺序点圆圈：1-2-3...", tut_c5_title: "5. 找颜色", tut_c5_desc: "别读字，要看颜色哦！", tut_c3_title: "6. 找数字", tut_c3_desc: "看上面的图，找对应的数字！<br><b>可以用键盘按 1-9 哦！</b>", tut_c8_title: "7. 说动物", tut_c8_desc: "说出你知道的所有动物。",
+            guide_title: "怎么玩？", step1: "写名字", step2: "听指挥", step3: "做游戏", step4: "看分数",
+            brain_map: "大脑地图", intro_exec: "大脑指挥官", intro_mem: "小小图书馆", intro_spa: "小小导航员", intro_spd: "闪电反应",
+            map_f: "额叶", map_t: "颞叶", map_p: "顶叶", map_w: "白质",
+            back_home: "回主页", back_demo: "回演示", doc_sci_title: "📘 老师/家长手册", doc_pop_title: "🌟 大脑挑战赛 - 玩法说明",
+            reg_title: "小朋友信息", l_name: "姓名", l_id: "学号", l_gender: "性别", l_dob: "生日", l_age: "几岁", l_edu: "年级", l_hand: "常用的手", g_m: "男", g_f: "女", btn_next: "下一步", reg_err: "请把信息填完整",
+            t1_title: "记词挑战", t1_instr: "看仔细并记住这些词哦！", btn_mem: "开始", t1_recall_title: "告诉我", btn_add: "记住了", btn_finish: "做完了", task_mem: "记词游戏", ph_input: "输入一个词",
+            t2_title: "方块跳舞", t2_instr: "看方块怎么亮，然后照着点。", btn_start_corsi: "开始", t2_test_title: "记方块", t2b_title: "倒着点",
+            t3_title: "问答时间", btn_nq: "下一题",
+            t9_title: "连线游戏", btn_start_tmt: "开始练习", rep_t9: "连线游戏", tmt_prac_A: "练习 (1-5)", tmt_real_A: "正式开始 (1-12)", tmt_prac_B: "练习 B", tmt_real_B: "正式 B",
+            t7_title: "颜色大挑战", t7_instr: "字是红色的就点红按钮！", btn_start_stroop: "开始", btn_red:"红", btn_green:"绿", btn_blue:"蓝", btn_yellow:"黄", rep_t7: "抗干扰",
+            t6_title: "眼疾手快", t6_instr: "看图找数字！", btn_start_test: "开始", score: "分数",
+            t4_title: "考考记忆力", t4_instr: "刚才学的词，还记得哪些？", btn_start_recall: "我记得", t4_test_title: "再背一次", btn_add_t4: "添加",
+            t8_title: "说动物", btn_start_vft: "开始", btn_add_t8: "记下来", btn_finish_t8: "完成", t8_test_title: "动物园", rep_t8: "动物数量",
+            t5_title: "找朋友", t5_hint: "把刚才学的词找出来。", btn_finish_t5: "完成", btn_start_recog: "开始找", t5_test_title: "找词游戏",
+            home_intro: "我们来玩几个小游戏吧！<br>先看看怎么玩哦。",
+            btn_tutorial: "📖 看看怎么玩", btn_start_real: "准备好了！",
+            report_title: "成绩单", btn_restart: "下一个", backup_hint: "数据备份",
+            edu_opts: ["幼儿园","一年级","二年级","三年级","四年级","五年级","六年级","初中"], select_def: "--请选择--",
+            t3q: ["今年是哪一年?","现在是几月份?","今天是几号?","今天是星期几?","这是什么地方?","我们在哪个城市?"],
+            t3_opts_m: ["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],
+            t3_opts_d: ["周一","周二","周三","周四","周五","周六","周日"],
+            lbl_demo: "演示", t2_watch: "看好了...", t2_go: "该你了!", t2_timeout: "太慢啦",
+            admin_title: "⚙️ 设置", admin_place: "📍 地点", admin_city: "🏙️ 城市", admin_cloud: "☁️ 云端地址", admin_key: "🤖 AI 密钥",
+            rep_t1: "记忆力", rep_t4: "延迟回忆", rep_t5: "再认", rep_t2: "空间广度", rep_t3: "定向力", rep_t6: "反应速度", rep_note: "说明",
+            t6_prac_phase: "练习一下", t6_test_phase: "正式开始", t6_prac_fail: "不对哦，再试一次",
+            col_m: "指标", col_v: "数值", col_n: "备注", 
+            d_imm: "即时回忆", d_ret: "保持率", d_net: "净分", d_fa: "虚报", d_span: "空间广度", d_pt: "时间地点", d_err: "错误数", d_inh: "抑制能力", d_spd: "加工速度", d_ani: "动物总数"
+        }
+    }
 };
 
-let state = { mode: 'zh', isQuickRun: false, config: { t1_len:10, t6_time:60, t7_time:45, t8_time:60 }, t6:{keyMap:[]}, t9:{history:[]}, t7:{responses:[]}, t1:{entered:[]}, t2:{history:[]}, t3:{score:0, details:[]}, t4:{entered:[]}, t5:{hits:0, false_alarms:0}, t8:{entered:[]} }; 
-let demoInterval = null; let demoToggle = false; let recallTimerInt = null; let t6Interval = null; let t7Interval = null; let t9TimerInt = null; let corsiTimeout = null;
+let state = {
+    mode: 'zh',
+    isQuickRun: false,
+    config: { t1_len: 10, t6_time: 60, t7_time: 45, t8_time: 60 },
+    patient: {},
+    targets: [], distractors: [], presentationOrder: [],
+    t1: { entered: [], time: 0, event_log: [] },
+    t2: { level: 2, trials: 0, score: 0, sequence: [], userSeq: [], history:[], event_log: [], isBackward: false },
+    t3: { details: [], score: 0, time: 0 },
+    t4: { entered: [], time: 0, event_log: [] }, 
+    t5: { hits: 0, false_alarms: 0, time: 0, selected_words: [], event_log: [] },
+    t6: { score: 0, errors: 0, time: 60, responses: [], keyMap: [], event_log: [], isPractice: false, practiceCount: 0 },
+    t7: { score: 0, errors: 0, time: 45, responses: [], event_log: [], isPractice: false, practiceCount: 0, lastStimTime: 0 },
+    t8: { entered: [], time: 0, event_log: [] },
+    t9: { stage: 'PracA', startTime: 0, timeA: 0, timeB: 0, errA: 0, errB: 0, nodes: [], nextIdx: 0, history: [] },
+    admin: { place: "Hospital", city: "Beijing", aiKey: "", cloudUrl: "", provider: "gemini", modelName: "", baseUrl: "" },
+    meta: { userAgent: navigator.userAgent, screen: `${window.screen.width}x${window.screen.height}`, startTime: Date.now() }
+};
 
-window.onload = () => { 
+let recognition = null, isRecording = false, recallTimerInt = null, corsiTimeout = null, t6Interval = null, demoInterval = null, t7Interval = null, t9TimerInt = null;
+
+function logEvent(phase, type, data) { if(state[phase] && state[phase].event_log) { state[phase].event_log.push({ t: Date.now(), type: type, d: data }); } }
+
+function startTutorial() { showView('view-tutorial'); }
+
+// Quick Run Logic
+function startQuickRun() {
+    state.isQuickRun = true;
+    state.config = { t1_len: 3, t6_time: 15, t7_time: 15, t8_time: 15 }; 
+    // Initialize SDMT Symbols manually (critical for Quick Run)
+    let syms = [...DB.symbols]; 
+    syms.sort(() => Math.random() - 0.5);
+    state.t6.keyMap = syms.map((s, i) => ({s: s, n: i + 1}));
+    state.t6.score = 0; state.t6.errors = 0; state.t6.responses = [];
+
+    document.getElementById('p_name').value = "Guest";
+    document.getElementById('p_id').value = "Q" + Date.now().toString().slice(-4);
+    document.getElementById('p_gender').value = "M"; 
+    document.getElementById('p_dob').value = "1980-01-01";
+    document.getElementById('p_age').value = "45";
+    document.getElementById('p_edu').value = "大学";
+    document.getElementById('p_hand').value = "R";
+    
+    submitRegister(); 
+}
+
+window.onload = () => {
+    setMode('zh');
     const saved = localStorage.getItem('cog_admin');
     if(saved) state.admin = JSON.parse(saved);
-    else state.admin = { place: "Hospital", city: "Beijing", aiKey: "" };
-    
+    checkConfigHealth();
     document.getElementById('set-place').value = state.admin.place;
     document.getElementById('set-city').value = state.admin.city;
     document.getElementById('set-ai-key').value = state.admin.aiKey || "";
-
-    setMode('zh'); 
-    initCorsiBoard(); 
+    document.getElementById('set-cloud-url').value = state.admin.cloudUrl || "";
+    if(document.getElementById('set-provider')) document.getElementById('set-provider').value = state.admin.provider || "gemini";
+    if(document.getElementById('set-model-name')) document.getElementById('set-model-name').value = state.admin.modelName || "";
+    if(document.getElementById('set-base-url')) document.getElementById('set-base-url').value = state.admin.baseUrl || "";
+    updateProviderFields();
+    document.getElementById('p_dob').max = new Date().toISOString().split("T")[0];
+    initCorsiBoard();
     startDemoAnimation(); 
+    startKeyDemoLoop();
 };
+
+function checkConfigHealth() {
+    const btn = document.getElementById('btn-home-settings');
+    const txt = document.getElementById('txt-btn-settings');
+    if (!state.admin.aiKey) {
+        btn.classList.add('btn-pulse');
+        txt.innerText = "系统配置 (⚠️ 缺 Key)";
+    } else {
+        btn.classList.remove('btn-pulse');
+        txt.innerText = "系统配置 (Admin Setup)";
+    }
+}
+
+function startKeyDemoLoop() {
+    setInterval(() => {
+        const key = document.getElementById('demo-key-1');
+        if(key) {
+            key.classList.add('pressed');
+            setTimeout(() => key.classList.remove('pressed'), 300);
+        }
+    }, 2000); 
+}
+
+function initCorsiBoard() {
+    const board = document.getElementById('corsi-board');
+    board.innerHTML = '';
+    for(let i=0; i<9; i++) {
+        let b = document.createElement('div'); b.className = 'corsi-block'; b.id = 'cb-'+i;
+        b.onclick = () => handleCorsiTap(i); board.appendChild(b);
+    }
+}
 
 function setMode(m) {
     state.mode = m;
-    document.body.className = (m==='child')?'child-theme':(m==='geriatric'?'geriatric-theme':'');
+    document.body.className = '';
+    if (m === 'child') document.body.classList.add('child-theme');
+    if (m === 'geriatric') document.body.classList.add('geriatric-theme');
+    document.querySelectorAll('.mode-switch button').forEach(b => b.classList.remove('active'));
+    document.getElementById('btn-mode-'+m).classList.add('active');
     const T = DB.text[m];
     
-    for(let k in T) { 
-        let id = 'txt-' + k.replace(/_/g,'-');
-        let el = document.getElementById(id); 
-        if(el) el.innerText = T[k];
-        if(k.startsWith('l_')) {
-            let lid = 'lbl-' + k.split('_')[1];
-            let lel = document.getElementById(lid);
-            if(lel) lel.innerText = T[k];
+    for(let key in T) {
+        let el = document.getElementById('txt-' + key.replace(/_/g,'-'));
+        if(el) el.innerHTML = T[key];
+        let parts = key.split('_');
+        if(parts[0] === 'l' && parts.length > 1) {
+             let lblId = 'lbl-' + parts[1];
+             let lbl = document.getElementById(lblId);
+             if(lbl) lbl.innerText = T[key];
         }
     }
+    // Update Intro Map & Guide Texts
+    if(T.brain_map) document.getElementById('txt-brain-map').innerText = T.brain_map;
+    if(T.intro_exec) document.getElementById('txt-intro-exec').innerText = T.intro_exec;
+    if(T.intro_mem) document.getElementById('txt-intro-mem').innerText = T.intro_mem;
+    if(T.intro_spa) document.getElementById('txt-intro-spa').innerText = T.intro_spa;
+    if(T.intro_spd) document.getElementById('txt-intro-spd').innerText = T.intro_spd;
+    if(T.map_f) document.getElementById('txt-map-f').innerText = T.map_f;
+    if(T.map_t) document.getElementById('txt-map-t').innerText = T.map_t;
+    if(T.map_p) document.getElementById('txt-map-p').innerText = T.map_p;
+    if(T.map_w) document.getElementById('txt-map-w').innerText = T.map_w;
+    if(T.back_home) document.getElementById('txt-back-home').innerText = T.back_home;
+    if(T.back_demo) document.getElementById('txt-back-demo').innerText = T.back_demo;
+    if(T.back_demo) document.getElementById('txt-back-demo-s').innerText = T.back_demo; 
+    if(T.back_demo) document.getElementById('txt-back-demo-p').innerText = T.back_demo; 
+    if(T.guide_title) document.getElementById('txt-guide-title').innerText = T.guide_title;
+    if(T.step1) document.getElementById('txt-step-1').innerText = T.step1;
+    if(T.step2) document.getElementById('txt-step-2').innerText = T.step2;
+    if(T.step3) document.getElementById('txt-step-3').innerText = T.step3;
+    if(T.step4) document.getElementById('txt-step-4').innerText = T.step4;
+    if(T.btn_sci) document.getElementById('txt-btn-sci').innerText = T.btn_sci;
+    if(T.btn_pop) document.getElementById('txt-btn-pop').innerText = T.btn_pop;
+    if(T.doc_sci_title) document.getElementById('txt-doc-sci-title').innerText = T.doc_sci_title;
+    if(T.doc_pop_title) document.getElementById('txt-doc-pop-title').innerText = T.doc_pop_title;
 
-    if(document.getElementById('btn-red-txt')) {
-        document.getElementById('btn-red-txt').innerText = T.btn_red;
-        document.getElementById('btn-green-txt').innerText = T.btn_green;
-        document.getElementById('btn-blue-txt').innerText = T.btn_blue;
-        document.getElementById('btn-yellow-txt').innerText = T.btn_yellow;
-    }
+    document.getElementById('btn-red-txt').innerText = T.btn_red;
+    document.getElementById('btn-green-txt').innerText = T.btn_green;
+    document.getElementById('btn-blue-txt').innerText = T.btn_blue;
+    document.getElementById('btn-yellow-txt').innerText = T.btn_yellow;
+    if(T.btn_settings) document.getElementById('txt-btn-settings').innerText = T.btn_settings;
+    if(T.btn_quick) document.getElementById('txt-btn-quick').innerText = T.btn_quick; 
+    checkConfigHealth(); 
+    const gs=document.getElementById('p_gender'); gs.innerHTML=''; gs.add(new Option(T.select_def, "")); gs.add(new Option(T.g_m,'M')); gs.add(new Option(T.g_f,'F'));
+    const es=document.getElementById('p_edu'); es.innerHTML=''; es.add(new Option(T.select_def, "")); T.edu_opts.forEach(e=>es.add(new Option(e,e)));
     
-    const es=document.getElementById('p_edu'); 
-    if(es) { es.innerHTML=''; es.add(new Option(T.edu_opts||"Edu", "")); DB.edu_opts.forEach(e=>es.add(new Option(e,e))); }
-
     renderGuides();
     updateDemoText();
 }
 
 function renderGuides() {
-    const langKey = (state.mode === 'en') ? 'en' : 'zh';
+    const m = state.mode;
+    const langKey = (m === 'en') ? 'en' : 'zh';
+    
     const sciEl = document.getElementById('guide-sci-content');
     const popEl = document.getElementById('guide-pop-content');
-    if(sciEl) sciEl.innerHTML = DB.guides[langKey].sci;
-    if(popEl) popEl.innerHTML = DB.guides[langKey].pop;
+    
+    if(sciEl && DB.guides[langKey]) sciEl.innerHTML = DB.guides[langKey].sci;
+    if(popEl && DB.guides[langKey]) popEl.innerHTML = DB.guides[langKey].pop;
 }
 
 function startDemoAnimation() {
     if(demoInterval) clearInterval(demoInterval);
     demoInterval = setInterval(updateDemoText, 2000);
 }
-
+let demoToggle = false;
 function updateDemoText() {
     demoToggle = !demoToggle;
     const modeKey = (state.mode === 'geriatric') ? 'zh' : state.mode;
-    
-    const t1El = document.getElementById('demo-word-tut');
-    if(t1El) {
-        t1El.innerText = demoToggle ? DB.demos[modeKey].w1 : DB.demos[modeKey].w2;
-        t1El.classList.remove('anim-pop');
-        void t1El.offsetWidth; 
-        t1El.classList.add('anim-pop');
-    }
+    const words = DB.demos[modeKey];
+    const txt = demoToggle ? words.w1 : words.w2;
+    const el1 = document.getElementById('demo-word-tut');
+    const el2 = document.getElementById('demo-word-intro');
+    if(el1) { el1.innerText = txt; el1.style.opacity = demoToggle ? 1 : 0.5; }
+    if(el2) { el2.innerText = txt; el2.style.opacity = demoToggle ? 1 : 0.5; }
 
     const stroopEl = document.getElementById('demo-stroop-tut-txt');
     const hintEl = document.getElementById('demo-stroop-hint');
-    if(stroopEl && hintEl) {
+    if(stroopEl) {
         const sWords = DB.stroop[modeKey].words;
         if(demoToggle) {
             stroopEl.innerText = sWords[0]; 
             stroopEl.className = "demo-stroop-text text-green"; 
-            hintEl.innerText = (state.mode === 'en') ? "(Ink is Green, Press Green)" : "(颜色是绿，点绿键)";
+            if(hintEl) { if(state.mode === 'en') hintEl.innerText = "(Color is Green, Click Green)"; else hintEl.innerText = "(颜色是绿，点绿键)"; }
         } else {
             stroopEl.innerText = sWords[1]; 
             stroopEl.className = "demo-stroop-text text-red";
-            hintEl.innerText = (state.mode === 'en') ? "(Ink is Red, Press Red)" : "(颜色是红，点红键)";
+            if(hintEl) { if(state.mode === 'en') hintEl.innerText = "(Color is Red, Click Red)"; else hintEl.innerText = "(颜色是红，点红键)"; }
         }
     }
-    const timeEl = document.getElementById('demo-time-tut');
-    if(timeEl) timeEl.innerText = demoToggle ? "2026" : (state.mode==='en'?"Tuesday":"星期二");
+}
 
-    const symEl = document.getElementById('demo-sdmt-sym');
-    const keyEl = document.getElementById('demo-sdmt-key');
-    if(symEl && keyEl) {
-        if(demoToggle) { symEl.innerText = "⊏"; keyEl.innerText="1"; keyEl.classList.add('pressed'); }
-        else { symEl.innerText = "○"; keyEl.innerText="5"; keyEl.classList.remove('pressed'); }
+function speak(text) {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = 'zh-CN';
+        u.rate = 0.9; 
+        window.speechSynthesis.speak(u);
     }
-    const aniEl = document.getElementById('demo-vft-emoji');
-    if(aniEl) aniEl.innerText = demoToggle ? "🦁" : "🐼";
 }
 
 function showView(id) {
     document.querySelectorAll('.view-section').forEach(e => e.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     window.scrollTo(0,0);
-    if(id==='view-t1-intro') updateDemoText(); 
-    if(id === 'view-guide-sci' || id === 'view-guide-pop') renderGuides();
-}
-
-function initCorsiBoard() {
-    const board = document.getElementById('corsi-board');
-    if(!board) return;
-    board.innerHTML = '';
-    for(let i=0; i<9; i++) {
-        let b = document.createElement('div'); b.className = 'corsi-block'; b.id = 'cb-'+i;
-        b.onclick = () => handleCorsiTap(i); 
-        board.appendChild(b);
+    
+    if (id === 'view-guide-sci' || id === 'view-guide-pop') {
+        renderGuides();
     }
-}
 
-function startQuickRun() {
-    state.isQuickRun = true;
-    state.config = { t1_len: 3, t6_time: 15, t7_time: 15, t8_time: 15 };
-    let syms = [...DB.symbols]; syms.sort(() => Math.random() - 0.5);
-    state.t6.keyMap = syms.map((s, i) => ({s: s, n: i + 1}));
-    state.t6.score = 0; state.t6.errors = 0; state.t6.responses = [];
+    if (state.mode === 'geriatric') {
+        const T = DB.text.geriatric;
+        let textToSpeak = "";
+        if (id === 'view-t1-intro') textToSpeak = T.t1_instr;
+        else if (id === 'view-t2-intro') textToSpeak = T.t2_instr;
+        else if (id === 'view-t2b-intro') textToSpeak = T.t2b_instr;
+        else if (id === 'view-t3') textToSpeak = "请回答屏幕上的问题。";
+        else if (id === 'view-t9-intro') textToSpeak = "请按顺序点击圆圈。";
+        else if (id === 'view-t7-intro') textToSpeak = T.t7_instr;
+        else if (id === 'view-t6-intro') textToSpeak = T.t6_instr;
+        else if (id === 'view-t4-intro') textToSpeak = T.t4_instr;
+        else if (id === 'view-t8-intro') textToSpeak = T.t8_instr;
+        else if (id === 'view-t5-intro') textToSpeak = T.t5_hint;
+        if (textToSpeak) speak(textToSpeak.replace(/<[^>]*>/g, ''));
+    }
     
-    // Reset other states
-    state.t1={entered:[], time:0}; state.t2={history:[]}; state.t3={score:0, details:[]}; 
-    state.t4={entered:[]}; state.t5={hits:0, false_alarms:0}; state.t7={responses:[], score:0, errors:0}; 
-    state.t8={entered:[]}; state.t9={history:[]};
-
-    state.patient = {name:"QuickGuest", id:"Q"+Date.now(), gender:"M", age:30, edu:"Uni"};
-    
-    const listSet = DB.lists[state.mode === 'geriatric' ? 'zh' : state.mode];
-    state.targets = listSet.A.slice(0, 3);
-    state.distractors = listSet.B.slice(0, 3);
-    state.presentationOrder = [...state.targets];
-    showView('view-t1-intro');
+    if (id === 'view-t1-intro') {
+        updateDemoText();
+    }
 }
 
 function initSession() {
+    let syms = [...DB.symbols]; syms.sort(()=>Math.random()-0.5);
+    state.t6.keyMap = syms.map((s,i)=>({s:s, n:i+1}));
+    state.t1 = { entered: [], time: 0, event_log: [] };
+    state.t4 = { entered: [], time: 0, event_log: [] };
+    state.t5 = { hits: 0, false_alarms: 0, time: 0, selected_words: [], event_log: [] };
+    state.t6 = { score: 0, errors: 0, time: 60, responses: [], keyMap: state.t6.keyMap, event_log: [], isPractice: false, practiceCount: 0 };
+    state.t7 = { score: 0, errors: 0, time: 45, responses: [], event_log: [], isPractice: false, practiceCount: 0 };
+    state.t2 = { level: 2, trials: 0, score: 0, sequence: [], userSeq: [], history:[], event_log: [], isBackward: false };
+    state.t3 = { details: [], score: 0, time: 0 }; 
+    state.t8 = { entered: [], time: 0, event_log: [] };
+    state.t9 = { stage: 'PracA', startTime: 0, timeA: 0, timeB: 0, errA: 0, errB: 0, nodes: [], nextIdx: 0, history: [] };
     state.isQuickRun = false;
     state.config = { t1_len: 10, t6_time: 60, t7_time: 45, t8_time: 60 };
-    let syms = [...DB.symbols]; syms.sort(() => Math.random() - 0.5);
-    state.t6.keyMap = syms.map((s, i) => ({s: s, n: i + 1}));
-    
-    // Reset states
-    state.t6.score = 0; state.t6.errors = 0; state.t6.responses = [];
-    state.t1={entered:[], time:0}; state.t2={history:[]}; state.t3={score:0, details:[]}; 
-    state.t4={entered:[]}; state.t5={hits:0, false_alarms:0}; state.t7={responses:[], score:0, errors:0}; 
-    state.t8={entered:[]}; state.t9={history:[]};
-    
-    showView('view-register');
+    try { showView('view-register'); } catch(e) { alert("Error starting session: " + e.message); }
+}
+
+function validateAndSubmit() {
+    const required = ['p_name', 'p_id', 'p_gender', 'p_dob', 'p_edu', 'p_hand'];
+    let valid = true;
+    required.forEach(id => { const el = document.getElementById(id); if(!el.value) { el.classList.add('error'); valid = false; } else { el.classList.remove('error'); } });
+    const msg = document.getElementById('reg-error-msg');
+    if(!valid) { msg.innerText = DB.text[state.mode].reg_err; msg.style.display = 'block'; } else { msg.style.display = 'none'; submitRegister(); }
 }
 
 function submitRegister() {
-    if(!state.isQuickRun) {
-        // Validation
-        const ids = ['p_name', 'p_id', 'p_gender', 'p_dob', 'p_edu', 'p_hand'];
-        let valid = true;
-        ids.forEach(id => {
-            const el = document.getElementById(id);
-            if(!el.value) { el.classList.add('error'); valid = false; } else { el.classList.remove('error'); }
-        });
-        if(!valid) { document.getElementById('reg-error-msg').style.display='block'; return; }
-
-         state.patient = {
-            name: document.getElementById('p_name').value, id: document.getElementById('p_id').value,
-            gender: document.getElementById('p_gender').value, dob: document.getElementById('p_dob').value,
-            age: document.getElementById('p_age').value, edu: document.getElementById('p_edu').value,
-            hand: document.getElementById('p_hand').value,
-            date: new Date().toISOString().split('T')[0]
-        };
-        const listSet = DB.lists[state.mode === 'geriatric' ? 'zh' : state.mode]; 
-        state.targets = [...listSet.A];
-        state.distractors = [...listSet.B];
-        state.presentationOrder = [...state.targets].sort(() => Math.random() - 0.5);
-    }
+    state.patient = {
+        name: document.getElementById('p_name').value, id: document.getElementById('p_id').value,
+        gender: document.getElementById('p_gender').value, dob: document.getElementById('p_dob').value,
+        age: document.getElementById('p_age').value, edu: document.getElementById('p_edu').value,
+        hand: document.getElementById('p_hand').value,
+        date: new Date().toISOString().split('T')[0]
+    };
+    const listSet = DB.lists[state.mode === 'geriatric' ? 'zh' : state.mode]; 
+    state.targets = [...listSet.A];
+    if(state.isQuickRun) state.targets = state.targets.slice(0, state.config.t1_len);
+    state.distractors = [...listSet.B];
+    if(state.isQuickRun) state.distractors = state.distractors.slice(0, state.config.t1_len);
+    state.presentationOrder = [...state.targets].sort(() => Math.random() - 0.5);
     showView('view-t1-intro'); 
 }
 
-/* --- T1 Memory --- */
 function startT1Run() { showView('view-t1-run'); runSerialWords(); }
 function runSerialWords() {
     const disp = document.getElementById('t1-word');
@@ -554,22 +861,32 @@ function addWord(phase) {
     store.push(val); 
     logEvent(phase, 'add_word', val);
     renderChips(phase); 
-    inp.value = ''; inp.focus(); 
+    inp.value = '';
+    inp.focus(); 
+    if(phase !== 't8') updateProgress(phase==='t1'?'t1-recall-bar':'t4-recall-bar', phase==='t1'?'t1-timer':'t4-timer', store.length);
 }
 function renderChips(phase) {
     const box = document.getElementById(phase+'-chips'); box.innerHTML = '';
     let store = phase === 't1' ? state.t1.entered : (phase === 't4' ? state.t4.entered : state.t8.entered);
     store.forEach(val => {
         let chip = document.createElement('div'); chip.className = 'chip'; chip.innerText=val;
+        chip.onclick=()=>{ 
+            if(phase==='t1') state.t1.entered = state.t1.entered.filter(w=>w!==val); 
+            else if(phase==='t4') state.t4.entered = state.t4.entered.filter(w=>w!==val);
+            else state.t8.entered = state.t8.entered.filter(w=>w!==val);
+            logEvent(phase, 'remove_word', val);
+            renderChips(phase); 
+        };
         box.appendChild(chip);
     });
 }
 function finishT1() {
     if(recallTimerInt) clearInterval(recallTimerInt);
+    state.t1.time = ((Date.now() - state.t1.startTime)/1000).toFixed(1);
     showView('view-t2-intro');
 }
+function updateProgress(barId, txtId, val) { if(document.getElementById(barId)) document.getElementById(barId).style.width = Math.min(100, (val/state.config.t1_len)*100) + "%"; }
 
-/* --- T2 Corsi --- */
 function startCorsi(mode) {
     state.t2.isBackward = (mode === 'backward');
     state.t2.level = 2; state.t2.trials = 0; state.t2.score = 0;
@@ -579,10 +896,13 @@ function startCorsi(mode) {
 }
 function startCorsiTimer() {
     if(corsiTimeout) clearTimeout(corsiTimeout);
-    corsiTimeout = setTimeout(() => { if(document.getElementById('view-t2-test').classList.contains('active')) { alert("Timeout"); corsiResult(false); } }, 10000);
+    corsiTimeout = setTimeout(() => { if(document.getElementById('view-t2-test').classList.contains('active')) { alert(DB.text[state.mode].t2_timeout); corsiResult(false); } }, 10000);
 }
 function nextCorsiTrial() {
     state.t2.userSeq = []; state.t2.sequence = [];
+    const status = document.getElementById('t2-status'); 
+    status.innerText = DB.text[state.mode].t2_watch; 
+    status.style.color = 'var(--primary)';
     let pool = [0,1,2,3,4,5,6,7,8];
     let last = -1;
     for(let i=0; i<state.t2.level; i++) { 
@@ -601,36 +921,35 @@ function nextCorsiTrial() {
             blk.classList.add('active'); setTimeout(()=>blk.classList.remove('active'), 600); i++;
         } else {
             clearInterval(playInt); 
-            document.querySelectorAll('.corsi-block').forEach(b=>b.style.pointerEvents='auto'); 
-            startCorsiTimer();
+            status.innerText = DB.text[state.mode].t2_go; 
+            status.style.color = 'var(--success)';
+            document.querySelectorAll('.corsi-block').forEach(b=>b.style.pointerEvents='auto'); startCorsiTimer();
         }
     }, 1000);
 }
 function handleCorsiTap(id) {
-    if(corsiTimeout) clearTimeout(corsiTimeout);
+    startCorsiTimer();
     let blk = document.getElementById('cb-'+id); blk.classList.add('user-tap'); setTimeout(()=>blk.classList.remove('user-tap'), 200);
     state.t2.userSeq.push(id);
+    logEvent('t2', 'tap', id);
     let idx = state.t2.userSeq.length - 1;
     let targetSeq = state.t2.sequence;
-    
-    let correct = false;
     if(state.t2.isBackward) {
-        if(state.t2.userSeq[idx] === targetSeq[targetSeq.length - 1 - idx]) correct = true;
+        let targetVal = targetSeq[targetSeq.length - 1 - idx];
+        if (state.t2.userSeq[idx] !== targetVal) corsiResult(false);
     } else {
-        if(state.t2.userSeq[idx] === targetSeq[idx]) correct = true;
+        if (state.t2.userSeq[idx] !== targetSeq[idx]) corsiResult(false);
     }
-    
-    if(!correct) { corsiResult(false); return; }
-    
     if(state.t2.userSeq.length === state.t2.sequence.length) corsiResult(true);
-    else startCorsiTimer();
 }
 function corsiResult(success) {
     if(corsiTimeout) clearTimeout(corsiTimeout);
     document.querySelectorAll('.corsi-block').forEach(b=>b.style.pointerEvents='none');
     state.t2.history.push({ level: state.t2.level, success: success, mode: state.t2.isBackward ? 'Bwd' : 'Fwd' });
+    logEvent('t2', 'trial_result', {level:state.t2.level, success:success, mode:state.t2.isBackward});
     if(success) {
         if(state.isQuickRun && state.t2.level >= 3) { if(!state.t2.isBackward) showView('view-t2b-intro'); else startT3(); return; }
+        
         if(state.t2.level >= 9) { if(!state.t2.isBackward) showView('view-t2b-intro'); else startT3(); return; }
         if(state.t2.trials === 0) { state.t2.level++; state.t2.trials = 0; } else { state.t2.level++; state.t2.trials = 0; }
         setTimeout(nextCorsiTrial, 1000);
@@ -640,34 +959,58 @@ function corsiResult(success) {
     }
 }
 
-/* --- T3 Orientation --- */
 let t3Idx = 0;
-function nextT3() {
-    let val = document.getElementById('t3-input-area').querySelector('input')?.value || "";
-    // Simplified logic: accept anything not empty for now
-    if(val.length > 0) state.t3.score++; 
-    state.t3.details.push({q:t3Idx, ans:val});
-    t3Idx++;
-    if(t3Idx < 6) loadT3Q(); else showView('view-t9-intro');
-}
+function startT3() { t3Idx = 0; state.t3.startTime = Date.now(); showView('view-t3'); loadT3Q(); }
 function loadT3Q() {
-    document.getElementById('t3-q').innerText = DB.t3q[t3Idx];
-    document.getElementById('t3-input-area').innerHTML = '<input type="text" style="width:100%; font-size:1.2rem; padding:10px;">';
+    document.getElementById('t3-q').innerText = DB.text[state.mode].t3q[t3Idx];
+    const area = document.getElementById('t3-input-area'); area.innerHTML = '';
+    if(t3Idx === 1 || t3Idx === 3) {
+        const opts = t3Idx===1 ? DB.text[state.mode].t3_opts_m : DB.text[state.mode].t3_opts_d;
+        let grid = document.createElement('div'); grid.style.display="grid"; grid.style.gridTemplateColumns="repeat(4,1fr)"; grid.style.gap="10px";
+        opts.forEach(o => { let b = document.createElement('button'); b.className = 'btn btn-outline'; b.innerText=o; b.onclick = () => nextT3(o); grid.appendChild(b); });
+        area.appendChild(grid);
+    } else {
+        let inp = document.createElement('input'); inp.id = 't3-inp'; area.appendChild(inp);
+        inp.focus(); inp.onkeydown = e => { if(e.key==='Enter') nextT3(); };
+    }
+}
+function nextT3(val) {
+    if (!val) val = document.getElementById('t3-inp')?.value;
+    if (!val) return; 
+    const now = new Date(); let correct = false;
+    const checkFuzzy = (userIn, targetStr) => {
+        if(!targetStr) return false;
+        const targets = targetStr.split(/,|，/).map(s=>s.trim().toLowerCase());
+        const u = userIn.trim().toLowerCase();
+        return targets.some(t => u.includes(t));
+    };
+    switch (t3Idx) {
+        case 0: correct = (val.trim() == now.getFullYear()); break;
+        case 1: correct = (val === DB.text[state.mode].t3_opts_m[now.getMonth()]); break;
+        case 2: correct = Math.abs(parseInt(val) - now.getDate()) <= 1; break;
+        case 3: correct = (val === DB.text[state.mode].t3_opts_d[(now.getDay()+6)%7]); break;
+        case 4: correct = checkFuzzy(val, state.admin.place); break; 
+        case 5: correct = checkFuzzy(val, state.admin.city); break;  
+    }
+    if (correct) state.t3.score++;
+    state.t3.details.push({ q: t3Idx, ans: val, c: correct });
+    t3Idx++;
+    if (t3Idx < 6) loadT3Q(); else { state.t3.time = ((Date.now() - state.t3.startTime) / 1000).toFixed(1); showView('view-t9-intro'); }
 }
 
-/* --- T9 TMT --- */
 function startTMTPractice(type) {
     state.t9.stage = 'Prac' + type;
     state.t9.nextIdx = 0;
     showView('view-t9-test');
-    document.getElementById('tmt-phase-indicator').innerText = type + ' Practice';
+    document.getElementById('tmt-phase-indicator').innerText = type === 'A' ? DB.text[state.mode].tmt_prac_A : DB.text[state.mode].tmt_prac_B;
     renderTMT(type, true); 
 }
 function startTMTReal(type) {
     state.t9.stage = 'Real' + type;
     state.t9.nextIdx = 0;
     state.t9.startTime = Date.now();
-    document.getElementById('tmt-phase-indicator').innerText = type + ' Test';
+    document.getElementById('tmt-phase-indicator').innerText = type === 'A' ? DB.text[state.mode].tmt_real_A : DB.text[state.mode].tmt_real_B;
+    document.getElementById('tmt-phase-indicator').style.background = "#55efc4";
     renderTMT(type, false);
     if(t9TimerInt) clearInterval(t9TimerInt);
     t9TimerInt = setInterval(() => { let el = document.getElementById('t9-timer'); if(el) el.innerText = ((Date.now() - state.t9.startTime) / 1000).toFixed(1); }, 100);
@@ -675,19 +1018,24 @@ function startTMTReal(type) {
 function renderTMT(type, isPrac) {
     const area = document.getElementById('tmt-canvas-area');
     area.innerHTML = '';
-    const seq = isPrac ? (type==='A' ? ['1','2','3'] : ['1','A','2']) : DB.tmt[type]; 
+    const seq = isPrac ? (type==='A' ? ['1','2','3','4','5'] : ['1','A','2','B','3']) : DB.tmt[type]; 
     state.t9.nodes = seq;
     const pos = [];
+    const size = 40; 
     for(let i=0; i<seq.length; i++) {
-        let x,y, valid=false, attempts=0;
-        while(!valid && attempts<100) {
-            x = Math.random() * (area.clientWidth - 50) + 10;
-            y = Math.random() * (area.clientHeight - 50) + 10;
+        let valid = false, x, y;
+        let attempts = 0;
+        while(!valid && attempts < 100) {
+            x = Math.random() * (area.clientWidth - size - 10) + 5;
+            y = Math.random() * (area.clientHeight - size - 10) + 5;
             valid = true;
-            for(let p of pos) { if(Math.sqrt((x-p.x)**2 + (y-p.y)**2) < 50) valid=false; }
+            for(let p of pos) {
+                let dist = Math.sqrt(Math.pow(x-p.x,2) + Math.pow(y-p.y,2));
+                if(dist < size * 1.5) valid = false; 
+            }
             attempts++;
         }
-        pos.push({x,y});
+        pos.push({x,y, val: seq[i], idx: i});
         let node = document.createElement('div');
         node.className = 'tmt-node';
         node.innerText = seq[i];
@@ -697,41 +1045,78 @@ function renderTMT(type, isPrac) {
         node.id = 'tmt-n-'+i;
         area.appendChild(node);
     }
+    document.getElementById('t9-next-target').innerText = "Next: " + state.t9.nodes[0];
 }
 function handleTMTClick(idx, el, x, y) {
     if (idx === state.t9.nextIdx) {
         el.classList.add('correct');
+        // Digital Phenotyping
         state.t9.history.push({node: state.t9.nodes[idx], t: Date.now()});
-        state.t9.nextIdx++;
-        if(state.t9.nextIdx >= state.t9.nodes.length) { 
-            if(t9TimerInt) clearInterval(t9TimerInt);
-            if(state.t9.stage.includes('PracA')) startTMTReal('A');
-            else if(state.t9.stage.includes('RealA')) startTMTPractice('B');
-            else if(state.t9.stage.includes('PracB')) startTMTReal('B');
-            else showView('view-t7-intro');
+        
+        if(idx > 0) {
+            let prevEl = document.getElementById('tmt-n-'+(idx-1));
+            let prevX = parseFloat(prevEl.style.left);
+            let prevY = parseFloat(prevEl.style.top);
+            drawTMTLine(prevX+20, prevY+20, x+20, y+20);
         }
+        state.t9.nextIdx++;
+        if(state.t9.nextIdx >= state.t9.nodes.length) { finishTMTStage(); } 
+        else { document.getElementById('t9-next-target').innerText = "Next: " + state.t9.nodes[state.t9.nextIdx]; }
     } else {
-        el.classList.add('wrong'); setTimeout(()=>el.classList.remove('wrong'), 300);
-        if(state.t9.stage.includes('Real')) { if(state.t9.stage.includes('A')) state.t9.errA=(state.t9.errA||0)+1; else state.t9.errB=(state.t9.errB||0)+1; }
+        el.classList.add('wrong');
+        setTimeout(()=>el.classList.remove('wrong'), 300);
+        if(state.t9.stage.startsWith('Real')) { if(state.t9.stage.includes('A')) state.t9.errA++; else state.t9.errB++; }
+        let msg = document.getElementById('tmt-error-msg');
+        msg.style.opacity = 1;
+        setTimeout(()=>msg.style.opacity=0, 1000);
     }
 }
+function drawTMTLine(x1, y1, x2, y2) {
+    const area = document.getElementById('tmt-canvas-area');
+    const len = Math.sqrt((x2-x1)**2 + (y2-y1)**2);
+    const angle = Math.atan2(y2-y1, x2-x1) * 180 / Math.PI;
+    const line = document.createElement('div');
+    line.className = 'tmt-line';
+    line.style.width = len + 'px';
+    line.style.left = x1 + 'px';
+    line.style.top = y1 + 'px';
+    line.style.transform = `rotate(${angle}deg)`;
+    area.prepend(line); 
+}
+function finishTMTStage() {
+    if(t9TimerInt) clearInterval(t9TimerInt);
+    if(state.t9.stage === 'PracA') { alert("Practice A Complete! Start Test A."); startTMTReal('A'); } 
+    else if (state.t9.stage === 'RealA') { state.t9.timeA = ((Date.now() - state.t9.startTime)/1000).toFixed(1); alert("Part A Complete. Practice Part B (1-A-2-B...)"); startTMTPractice('B'); } 
+    else if (state.t9.stage === 'PracB') { alert("Practice B Complete! Start Test B."); startTMTReal('B'); } 
+    else if (state.t9.stage === 'RealB') { state.t9.timeB = ((Date.now() - state.t9.startTime)/1000).toFixed(1); showView('view-t7-intro'); }
+}
 
-/* --- T7 Stroop --- */
+let stroopTarget = null;
 function startStroopPractice() {
     state.t7.isPractice = true;
+    state.t7.practiceCount = 0;
     showView('view-t7-test');
     nextStroop();
+    document.getElementById('t7-timer').innerText = "--";
+    document.getElementById('t7-phase-indicator').innerText = DB.text[state.mode].t6_prac_phase;
+    document.getElementById('t7-phase-indicator').style.display = 'inline-block';
 }
 function startStroopReal() {
     state.t7.isPractice = false;
-    let time = state.config.t7_time;
-    document.getElementById('t7-phase-indicator').innerText = "Test";
-    t7Interval = setInterval(() => { time--; document.getElementById('t7-timer').innerText = time; if(time <= 0) { clearInterval(t7Interval); showView('view-t6-intro'); } }, 1000);
+    state.t7.score = 0;
+    state.t7.errors = 0;
+    document.getElementById('t7-phase-indicator').innerText = DB.text[state.mode].t6_test_phase;
+    document.getElementById('t7-phase-indicator').style.background = "#55efc4";
+    document.getElementById('t7-score').innerText = "0";
+    let time = state.config.t7_time; 
+    document.getElementById('t7-timer').innerText = time;
+    t7Interval = setInterval(() => { time--; document.getElementById('t7-timer').innerText = time; if(time <= 0) endStroop(); }, 1000);
 }
 function nextStroop() {
     const sData = DB.stroop[state.mode === 'geriatric' ? 'zh' : state.mode]; 
     let wIdx = Math.floor(Math.random() * 4);
     let cIdx = Math.floor(Math.random() * 4);
+    while(cIdx === wIdx) { cIdx = Math.floor(Math.random() * 4); }
     stroopTarget = { word: sData.words[wIdx], colorName: sData.colors[cIdx], colorCode: sData.colors[cIdx] };
     if(stroopTarget.colorCode === 'yellow') stroopTarget.colorCode = '#f1c40f'; 
     const el = document.getElementById('stroop-word');
@@ -742,26 +1127,47 @@ function nextStroop() {
 function inputStroop(color) {
     const now = Date.now();
     const correct = color === stroopTarget.colorName; 
-    state.t7.responses.push({ target: stroopTarget.colorName, response: color, correct: correct, latency: now - state.t7.lastStimTime });
-    if(correct && !state.t7.isPractice) state.t7.score++;
-    if(!correct && !state.t7.isPractice) state.t7.errors++;
-    document.getElementById('t7-score').innerText = state.t7.score;
-    
-    if(state.t7.isPractice && state.t7.responses.length > 2) startStroopReal();
-    else nextStroop();
+    state.t7.responses.push({ target: stroopTarget.colorName, response: color, correct: correct, latency: now - state.t7.lastStimTime, practice: state.t7.isPractice });
+    const overlay = document.getElementById('stroop-feedback');
+    overlay.className = "sdmt-overlay-feedback"; void overlay.offsetWidth; 
+    if(correct) {
+        if(!state.t7.isPractice) state.t7.score++;
+        overlay.innerText = "✓"; overlay.classList.add('show-correct');
+        if(state.t7.isPractice) {
+            state.t7.practiceCount++;
+            if(state.t7.practiceCount >= 3) { setTimeout(() => { alert(DB.text[state.mode].t6_test_phase); startStroopReal(); }, 300); return; }
+        }
+    } else {
+        if(!state.t7.isPractice) state.t7.errors++;
+        overlay.innerText = "✗"; overlay.classList.add('show-wrong');
+        if(state.t7.isPractice) { alert(DB.text[state.mode].t6_prac_fail); }
+    }
+    if(!state.t7.isPractice) document.getElementById('t7-score').innerText = state.t7.score;
+    nextStroop();
 }
+function endStroop() { clearInterval(t7Interval); showView('view-t6-intro'); }
 
-/* --- T6 SDMT --- */
+let t6Target = null;
 function startSDMTPractice() {
+    state.t6.isPractice = true;
+    state.t6.practiceCount = 0;
     showView('view-t6-test');
     drawSDMTKey();
     nextSDMT();
+    document.getElementById('t6-timer').innerText = "--";
+    document.getElementById('t6-phase-indicator').innerText = DB.text[state.mode].t6_prac_phase;
+    document.getElementById('t6-phase-indicator').style.display = 'inline-block';
 }
 function startSDMTReal() {
     state.t6.isPractice = false;
-    let time = state.config.t6_time;
-    document.getElementById('t6-phase-indicator').innerText = "Test";
-    t6Interval = setInterval(() => { time--; document.getElementById('t6-timer').innerText = time; if(time <= 0) { clearInterval(t6Interval); showView('view-t4-intro'); } }, 1000);
+    state.t6.score = 0;
+    state.t6.errors = 0;
+    document.getElementById('t6-phase-indicator').innerText = DB.text[state.mode].t6_test_phase;
+    document.getElementById('t6-phase-indicator').style.background = "#55efc4";
+    document.getElementById('t6-score').innerText = "0";
+    let time = state.config.t6_time; 
+    document.getElementById('t6-timer').innerText = time;
+    t6Interval = setInterval(() => { time--; document.getElementById('t6-timer').innerText = time; if(time <= 0) endSDMT(); }, 1000);
 }
 function drawSDMTKey() {
     const legend = document.getElementById('sdmt-legend');
@@ -774,135 +1180,76 @@ function drawSDMTKey() {
     });
 }
 function nextSDMT() { t6Target = state.t6.keyMap[Math.floor(Math.random()*9)]; document.getElementById('t6-target').innerText = t6Target.s; state.t6.lastStimTime = Date.now(); }
-function inputSDMT(n) {
-    const now = Date.now();
-    const correct = n === t6Target.n;
-    state.t6.responses.push({ target: t6Target.n, response: n, correct:correct, latency: now - state.t6.lastStimTime, practice: state.t6.isPractice });
-    
-    if(correct && !state.t6.isPractice) state.t6.score++;
-    document.getElementById('t6-score').innerText = state.t6.score;
+function inputSDMT(n, source='Click') {
+    const now = Date.now(); const correct = n === t6Target.n;
+    state.t6.responses.push({ target: t6Target.n, response: n, correct: correct, latency: now - state.t6.lastStimTime, timestamp: now, practice: state.t6.isPractice, source: source });
+    const btns = document.querySelectorAll('.sdmt-grid .key-btn');
+    let targetBtn = null;
+    for(let b of btns) { if(b.innerText.trim() == n.toString()) { targetBtn = b; break; } }
+    const overlay = document.getElementById('sdmt-feedback');
+    overlay.className = "sdmt-overlay-feedback"; void overlay.offsetWidth; 
+    if(correct) {
+        if(!state.t6.isPractice) state.t6.score++;
+        if(targetBtn) { targetBtn.classList.add('correct-flash'); setTimeout(()=>targetBtn.classList.remove('correct-flash'), 100); }
+        overlay.innerText = "✓"; overlay.classList.add('show-correct');
+        if(state.t6.isPractice) {
+            state.t6.practiceCount++;
+            if(state.t6.practiceCount >= 3) { setTimeout(() => { alert(DB.text[state.mode].t6_test_phase); startSDMTReal(); }, 300); return; }
+        }
+    } else {
+        if(!state.t6.isPractice) state.t6.errors++;
+        if(targetBtn) { targetBtn.classList.add('wrong-flash'); setTimeout(()=>targetBtn.classList.remove('wrong-flash'), 200); }
+        overlay.innerText = "✗"; overlay.classList.add('show-wrong');
+        if(state.t6.isPractice) { alert(DB.text[state.mode].t6_prac_fail); }
+    }
+    if(!state.t6.isPractice) document.getElementById('t6-score').innerText = state.t6.score;
+    nextSDMT();
+}
+function endSDMT() { clearInterval(t6Interval); showView('view-t4-intro'); }
 
-    if(state.t6.isPractice && state.t6.responses.length > 2) startSDMTReal();
-    else nextSDMT();
+function startT4Recall() { showView('view-t4-recall'); state.t4.startTime = Date.now(); startRecallTimer('t4'); }
+function finishT4() {
+    if(recallTimerInt) clearInterval(recallTimerInt);
+    state.t4.time = ((Date.now() - state.t4.startTime)/1000).toFixed(1);
+    showView('view-t8-intro');
 }
 
-/* --- T4 Delayed --- */
-function startT4Recall() { showView('view-t4-recall'); state.t4.startTime = Date.now(); startRecallTimer('t4'); }
-function finishT4() { clearInterval(recallTimerInt); showView('view-t8-intro'); }
+function startT8Test() {
+    showView('view-t8-test');
+    state.t8.startTime = Date.now();
+    startRecallTimer('t8'); 
+}
+function finishT8() {
+    if(recallTimerInt) clearInterval(recallTimerInt);
+    state.t8.time = ((Date.now() - state.t8.startTime)/1000).toFixed(1);
+    showView('view-t5-intro');
+}
 
-/* --- T8 VFT --- */
-function startT8Test() { showView('view-t8-test'); startRecallTimer('t8'); }
-function finishT8() { clearInterval(recallTimerInt); showView('view-t5-intro'); }
-
-/* --- T5 Recognition --- */
+let t5Sel = new Set();
 function startT5Test() {
-    showView('view-t5-test'); t5Sel = new Set();
+    showView('view-t5-test'); state.t5.startTime = Date.now(); t5Sel = new Set();
     const grid = document.getElementById('t5-grid'); grid.innerHTML = '';
     let all = [...state.targets, ...state.distractors];
     all.sort(() => Math.random() - 0.5);
     all.forEach(w => {
         let b = document.createElement('button'); b.className = 'btn btn-outline'; b.innerText = w;
-        b.onclick = () => { 
-            if(t5Sel.has(w)) { t5Sel.delete(w); b.classList.remove('btn-primary'); } 
-            else { t5Sel.add(w); b.classList.add('btn-primary'); }
+        b.onclick = () => {
+            if(t5Sel.has(w)) { t5Sel.delete(w); b.classList.remove('btn-primary'); b.classList.add('btn-outline'); b.style.color = 'var(--primary)'; }
+            else { t5Sel.add(w); b.classList.remove('btn-outline'); b.classList.add('btn-primary'); b.style.color = 'white'; }
+            document.getElementById('t5-progress-txt').innerText = `${t5Sel.size} / 10`;
+            logEvent('t5', 'select_toggle', w);
         };
         grid.appendChild(b);
     });
 }
-function finishT5() { 
+function finishT5() {
+    state.t5.time = ((Date.now() - state.t5.startTime)/1000).toFixed(1);
+    state.t5.hits = 0; state.t5.false_alarms = 0;
     state.t5.selected_words = Array.from(t5Sel);
     t5Sel.forEach(w => { if(state.targets.includes(w)) state.t5.hits++; else state.t5.false_alarms++; });
     showReport(); 
 }
 
-function showReport() {
-    showView('view-report');
-    const T = DB.text[state.mode];
-    
-    // Calculate simple metrics
-    const t1hits = state.t1.entered.filter(w => state.targets.includes(w)).length;
-    const t4hits = state.t4.entered.filter(w => state.targets.includes(w)).length;
-    const t2fwd = state.t2.history.filter(h=>h.mode==='Fwd' && h.success).length > 0 ? Math.max(...state.t2.history.filter(h=>h.mode==='Fwd' && h.success).map(h=>h.level)) : 0;
-    
-    let html = `<table class="res-table"><tr><th>${T.col_m}</th><th>${T.col_v}</th></tr>`;
-    html += `<tr><td>${T.d_imm}</td><td>${t1hits}/${state.config.t1_len}</td></tr>`;
-    html += `<tr><td>${T.d_ret}</td><td>${t4hits}/${state.config.t1_len}</td></tr>`;
-    html += `<tr><td>${T.d_net}</td><td>${state.t5.hits} (FA:${state.t5.false_alarms})</td></tr>`;
-    html += `<tr><td>${T.d_span}</td><td>${t2fwd}</td></tr>`;
-    html += `<tr><td>${T.d_spd}</td><td>${state.t6.score}</td></tr>`;
-    html += `<tr><td>${T.d_inh}</td><td>${state.t7.score}</td></tr>`;
-    html += `</table>`;
-    document.getElementById('report-body').innerHTML = html;
-    document.getElementById('raw-data').value = generateCSVString();
-    document.querySelector('.backup-box').style.display = 'block';
-}
-
-function generateCSVString() {
-    let csv = "Section,Metric,Value\n";
-    csv += `Info,ID,${state.patient.id}\n`;
-    csv += `T1,Score,${state.t1.entered.length}\n`;
-    csv += `T6,ResponseSeq,${JSON.stringify(state.t6.responses)}\n`;
-    csv += `T7,ResponseSeq,${JSON.stringify(state.t7.responses)}\n`;
-    csv += `T9,PathSeq,${JSON.stringify(state.t9.history)}\n`;
-    return csv;
-}
-
-function toggleAdmin() { document.getElementById('admin-modal').style.display = document.getElementById('admin-modal').style.display==='block'?'none':'block'; }
-function saveAdmin() { 
-    state.admin.aiKey = document.getElementById('set-ai-key').value;
-    state.admin.place = document.getElementById('set-place').value;
-    state.admin.city = document.getElementById('set-city').value;
-    state.admin.provider = document.getElementById('set-provider').value;
-    state.admin.modelName = document.getElementById('set-model-name').value;
-    localStorage.setItem('cog_admin', JSON.stringify(state.admin));
-    toggleAdmin(); 
-}
-function updateProviderFields() {
-    const p = document.getElementById('set-provider').value;
-    const m = document.getElementById('set-model-name');
-    if(p==='gemini') m.placeholder = "gemini-2.0-flash";
-}
-async function analyzeWithAI() {
-    const btn = document.querySelector('#view-report .btn-primary');
-    const loading = document.getElementById('ai-loading');
-    const content = document.getElementById('ai-report-content');
-    
-    if(!state.admin.aiKey) return alert("Please set API Key in Settings.");
-    
-    btn.disabled = true;
-    loading.style.display = 'block';
-    content.innerHTML = '';
-    
-    const prompt = `Analyze cognitive data: ${generateCSVString()}. Provide clinical impression.`;
-    
-    try {
-        let url, body;
-        if(state.admin.provider === 'gemini') {
-            const m = state.admin.modelName || 'gemini-2.0-flash';
-            url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${state.admin.aiKey}`;
-            body = { contents: [{ parts: [{ text: prompt }] }] };
-        } else {
-             // DeepSeek / OpenAI format
-             url = state.admin.baseUrl || "https://api.deepseek.com/chat/completions";
-             body = { model: state.admin.modelName || "deepseek-chat", messages: [{ role: "user", content: prompt }] };
-        }
-        
-        const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json', 'Authorization': `Bearer ${state.admin.aiKey}`}, body: JSON.stringify(body) });
-        const data = await res.json();
-        
-        let text = "";
-        if(data.candidates) text = data.candidates[0].content.parts[0].text;
-        else if(data.choices) text = data.choices[0].message.content;
-        else text = JSON.stringify(data);
-        
-        content.innerHTML = marked.parse(text);
-    } catch(e) {
-        content.innerText = "Error: " + e.message;
-    } finally {
-        loading.style.display = 'none';
-        btn.disabled = false;
-    }
-}
 function toggleSpeech(phase) {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if(!SR) return alert("Browser not supported");
@@ -911,17 +1258,270 @@ function toggleSpeech(phase) {
     recognition.lang = state.mode === 'en' ? 'en-US' : 'zh-CN';
     recognition.onstart = () => { isRecording=true; document.getElementById(phase+'-mic').classList.add('recording'); };
     recognition.onend = () => { isRecording=false; document.getElementById(phase+'-mic').classList.remove('recording'); };
+    
     recognition.onresult = e => { 
-        const t = e.results[0][0].transcript; 
-        document.getElementById(phase+'-input').value = t; 
-        if(phase!=='t8') addWord(phase);
+        const transcript = e.results[0][0].transcript; 
+        
+        if(phase === 't8') {
+            const words = transcript.split(/[\s,，.。;；]+/);
+            words.forEach(w => {
+                if(w && w.trim().length > 0) {
+                    document.getElementById(phase+'-input').value = w.trim();
+                    addWord(phase);
+                }
+            });
+        } else {
+            const t = transcript.split(/[\s,，.。]/)[0]; 
+            if(t) { 
+                document.getElementById(phase+'-input').value = t; 
+                document.getElementById(phase+'-input').focus(); 
+            }
+        }
     };
     recognition.start();
 }
-function calcAge() { 
-    const d = new Date(document.getElementById('p_dob').value);
-    if(d) document.getElementById('p_age').value = new Date().getFullYear() - d.getFullYear();
+
+document.addEventListener('keydown', function(event) {
+    const sdmtView = document.getElementById('view-t6-test');
+    if (!sdmtView || !sdmtView.classList.contains('active')) return;
+    const key = event.key;
+    if (['1','2','3','4','5','6','7','8','9'].includes(key)) {
+        const num = parseInt(key);
+        simulateBtnClick(num);
+        inputSDMT(num, 'Keyboard'); 
+    }
+});
+
+function simulateBtnClick(num) {
+    const btns = document.querySelectorAll('.sdmt-grid .key-btn');
+    for(let b of btns) {
+        if(b.innerText.trim() == num.toString()) {
+            b.classList.add('active-key');
+            setTimeout(() => { b.classList.remove('active-key'); }, 150);
+            break;
+        }
+    }
 }
+
+/* Report & Export */
+function showReport() {
+    showView('view-report');
+    const T = DB.text[state.mode];
+    const t1hits = state.t1.entered.filter(w => state.targets.includes(w)).length;
+    const t4hits = state.t4.entered.filter(w => state.targets.includes(w)).length;
+    const retention = t1hits > 0 ? ((t4hits / t1hits) * 100).toFixed(0) + "%" : "0%";
+    const net_recog = Math.max(0, state.t5.hits - state.t5.false_alarms);
+    let latencies = state.t6.responses.filter(r => !r.practice).map(r => r.latency);
+    let sd = 0; if(latencies.length > 1) { let m = latencies.reduce((a,b)=>a+b,0)/latencies.length; sd = Math.sqrt(latencies.map(x=>Math.pow(x-m,2)).reduce((a,b)=>a+b,0)/latencies.length); }
+    
+    // T2 Scores
+    const t2fwd = state.t2.history.filter(h=>h.mode==='Fwd' && h.success).length > 0 ? Math.max(...state.t2.history.filter(h=>h.mode==='Fwd' && h.success).map(h=>h.level)) : 0;
+    const t2bwd = state.t2.history.filter(h=>h.mode==='Bwd' && h.success).length > 0 ? Math.max(...state.t2.history.filter(h=>h.mode==='Bwd' && h.success).map(h=>h.level)) : 0;
+
+    let t9A = state.t9.timeA > 0 ? state.t9.timeA + 's' : '-';
+    let t9B = state.t9.timeB > 0 ? state.t9.timeB + 's' : '-';
+
+    let html = `
+    <table class="res-table">
+        <tr><th>${T.col_m}</th><th>${T.col_v}</th><th>${T.col_n}</th></tr>
+        <tr><td>${T.rep_t1}</td><td>${t1hits}/${state.config.t1_len}</td><td>${T.d_imm}</td></tr>
+        <tr><td>${T.rep_t4}</td><td>${t4hits}/${state.config.t1_len}</td><td>${T.d_ret}: <b>${retention}</b></td></tr>
+        <tr><td>${T.rep_t5}</td><td>${state.t5.hits}/${state.config.t1_len}</td><td>${T.d_net}: ${net_recog} (${T.d_fa}:${state.t5.false_alarms})</td></tr>
+        <tr><td>${T.rep_t2}</td><td>F:${t2fwd} / B:${t2bwd}</td><td>${T.d_span}</td></tr>
+        <tr><td>${T.rep_t3}</td><td>${state.t3.score}/6</td><td>${T.d_pt}</td></tr>
+        <tr><td>${T.rep_t9}</td><td>A:${t9A} / B:${t9B}</td><td>${T.d_err}: A${state.t9.errA}/B${state.t9.errB}</td></tr>
+        <tr><td>${T.rep_t7}</td><td>${state.t7.score}</td><td>${T.d_inh}</td></tr>
+        <tr><td>${T.rep_t6}</td><td>${state.t6.score}</td><td>${T.d_spd} (SD:${sd.toFixed(0)})</td></tr>
+        <tr><td>${T.rep_t8}</td><td>${state.t8.entered.length}</td><td>${T.d_ani}</td></tr>
+    </table>`;
+    document.getElementById('report-body').innerHTML = html;
+    document.getElementById('raw-data').value = generateCSVString();
+    document.querySelector('.backup-box').style.display = 'block';
+}
+
+function generateCSVString() {
+    let h = state.mode === 'en' ? "Section,Metric,Value,Raw_Data_Sequence\n" : "模块,指标,数值,原始数据序列\n";
+    let csv = `\uFEFF${h}`; 
+    const safe = (str) => String(str).replace(/,/g, ' '); 
+
+    for(let k in state.patient) csv += `Info,${k},${safe(state.patient[k])},-\n`;
+    csv += `Info,UserAgent,${state.meta.userAgent},-\n`;
+    csv += `Info,Session_Duration_sec,${((Date.now()-state.meta.startTime)/1000).toFixed(0)},-\n`;
+
+    let t1hits = state.t1.entered.filter(w => state.targets.includes(w)).length;
+    csv += `T1,Score_Immediate,${t1hits},${state.t1.entered.join(';')}\n`;
+    
+    let t2HistStr = state.t2.history.map(h => `${h.mode}_L${h.level}:${h.success?'P':'F'}`).join(';');
+    const t2fwd = state.t2.history.filter(h=>h.mode==='Fwd' && h.success).length > 0 ? Math.max(...state.t2.history.filter(h=>h.mode==='Fwd' && h.success).map(h=>h.level)) : 0;
+    const t2bwd = state.t2.history.filter(h=>h.mode==='Bwd' && h.success).length > 0 ? Math.max(...state.t2.history.filter(h=>h.mode==='Bwd' && h.success).map(h=>h.level)) : 0;
+    csv += `T2,Span_Fwd_Max,${t2fwd},${t2HistStr}\n`;
+    csv += `T2,Span_Bwd_Max,${t2bwd},-\n`;
+
+    let t3Details = state.t3.details.map(d => `Q${d.q}:[${d.ans}](${d.c?'1':'0'})`).join(';');
+    csv += `T3,Total_Score,${state.t3.score},${t3Details}\n`;
+    
+    csv += `T9,TMT_A_Time,${state.t9.timeA},Err:${state.t9.errA}\n`;
+    csv += `T9,TMT_B_Time,${state.t9.timeB},Err:${state.t9.errB}\n`;
+    let shiftCost = (state.t9.timeB && state.t9.timeA) ? (state.t9.timeB - state.t9.timeA).toFixed(2) : '-';
+    csv += `T9,Shifting_Cost_B-A,${shiftCost},-\n`;
+    // Digital Phenotyping: TMT Path Latency
+    let tmtHistory = state.t9.history.map((h, i, arr) => i===0 ? `${h.node}:0` : `${h.node}:${h.t - arr[i-1].t}ms`).join(';');
+    csv += `T9,Path_Latency_Seq,0,${tmtHistory}\n`;
+
+    let sRes = state.t7.responses.filter(r => !r.practice);
+    let sMean = 0; if(sRes.length > 0) sMean = sRes.reduce((a,b)=>a+b.latency,0) / sRes.length;
+    csv += `T7,Stroop_Correct,${state.t7.score},-\n`;
+    csv += `T7,Stroop_Errors,${state.t7.errors},-\n`;
+    csv += `T7,Stroop_RT_Mean,${sMean.toFixed(0)},${sRes.map(r=>r.latency).join(';')}\n`;
+
+    let realResponses = state.t6.responses.filter(r => !r.practice);
+    let latencies = realResponses.map(r => r.latency);
+    let keyCount = realResponses.filter(r => r.source === 'Keyboard').length;
+    let keyRatio = realResponses.length > 0 ? ((keyCount/realResponses.length)*100).toFixed(0) + "%" : "0%";
+    let mean = 0, sd = 0, cv = 0, fatigue = 0, median = 0, accuracy = 0;
+    if(latencies.length > 0) {
+        mean = latencies.reduce((a,b)=>a+b,0) / latencies.length;
+        sd = Math.sqrt(latencies.map(x=>Math.pow(x-mean,2)).reduce((a,b)=>a+b,0) / latencies.length);
+        cv = mean > 0 ? (sd / mean).toFixed(3) : 0;
+        let sortedLat = [...latencies].sort((a,b) => a - b);
+        let mid = Math.floor(sortedLat.length / 2);
+        median = sortedLat.length % 2 !== 0 ? sortedLat[mid] : (sortedLat[mid - 1] + sortedLat[mid]) / 2;
+        if (latencies.length > 10) {
+            let part = Math.floor(latencies.length / 3);
+            let firstPart = latencies.slice(0, part).reduce((a,b)=>a+b,0) / part;
+            let lastPart = latencies.slice(-part).reduce((a,b)=>a+b,0) / part;
+            fatigue = ((lastPart - firstPart) / firstPart).toFixed(2);
+        }
+        let totalAttempts = realResponses.length;
+        if(totalAttempts > 0) { accuracy = ((state.t6.score / totalAttempts) * 100).toFixed(1) + "%"; }
+    }
+    csv += `T6,Total_Correct,${state.t6.score},-\n`;
+    csv += `T6,Total_Errors,${state.t6.errors},-\n`;
+    csv += `T6,Accuracy_Rate,${accuracy},-\n`; 
+    csv += `T6,Input_Mode,${keyRatio}_Keyboard,${realResponses.map(r=>r.source[0]).join('')}\n`;
+    csv += `T6,Median_Latency_ms,${median.toFixed(0)},-\n`; 
+    csv += `T6,Fatigue_Index,${fatigue},-\n`;
+    // Digital Phenotyping: SDMT Response Sequence
+    csv += `T6,Response_Seq,0,${realResponses.map(r=>`${r.correct?'C':'E'}:${r.latency}ms`).join(';')}\n`;
+
+    let t4hits = state.t4.entered.filter(w => state.targets.includes(w)).length;
+    let retention = t1hits > 0 ? (t4hits / t1hits).toFixed(2) : "0.00";
+    csv += `T4,Score_Delayed,${t4hits},${state.t4.entered.join(';')}\n`;
+    csv += `T4,Retention_Rate,${retention},-\n`;
+    
+    let uniqueAnimals = [...new Set(state.t8.entered)];
+    csv += `T8,VFT_Animals_Total,${uniqueAnimals.length},${state.t8.entered.join(';')}\n`;
+
+    let net_recog = Math.max(0, state.t5.hits - state.t5.false_alarms);
+    csv += `T5,Net_Score,${net_recog},${state.t5.selected_words.join(';')}\n`;
+    csv += `T5,Hits_vs_FA,${state.t5.hits}/${state.t5.false_alarms},-\n`;
+
+    return csv;
+}
+
+function calcAge() { const d = new Date(document.getElementById('p_dob').value); document.getElementById('p_age').value = new Date().getFullYear() - d.getFullYear(); }
+function preloadVoice() { const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if(SR) { try { const r=new SR(); r.start(); setTimeout(()=>r.stop(),100); } catch(e){} } }
+
+async function analyzeWithAI() {
+    const provider = state.admin.provider || "gemini";
+    const key = state.admin.aiKey;
+    const modelName = state.admin.modelName;
+    const baseUrl = state.admin.baseUrl;
+
+    if(!key) return alert("Please set API Key in Settings first.");
+    
+    const reportArea = document.getElementById('ai-report-area');
+    const contentArea = document.getElementById('ai-report-content');
+    const loading = document.getElementById('ai-loading');
+    reportArea.style.display = 'block'; loading.style.display = 'block'; contentArea.innerHTML = '';
+    
+    const dataPrompt = generateCSVString();
+    const prompt = `Act as a clinical neuropsychologist. Analyze this Full Battery assessment data:\n${dataPrompt}\n\nProvide a clinical interpretation covering: 1. Memory Profile (Encoding vs Retention), 2. Executive Function (TMT Shifting, Inhibition, Fluency), 3. Processing Speed (SDMT). 4. Clinical Impression (Normal, MCI risk, or other). Concise. Language: ${state.mode === 'zh' || state.mode === 'geriatric' ? 'Chinese' : 'English'}.`;
+    
+    try {
+        if (provider === 'gemini') {
+            const m = modelName || 'gemini-2.0-flash';
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${key}`;
+            const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }) });
+            const data = await response.json();
+            if(data.error) throw new Error(data.error.message);
+            const text = data.candidates[0].content.parts[0].text;
+            contentArea.innerHTML = marked.parse(text);
+        } else {
+            let finalUrl = baseUrl;
+            let finalModel = modelName;
+            if (!finalUrl) {
+                if (provider === 'deepseek') finalUrl = "https://api.deepseek.com/chat/completions";
+                else if (provider === 'qwen') finalUrl = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions";
+                else if (provider === 'kimi') finalUrl = "https://api.moonshot.cn/v1/chat/completions";
+                else if (provider === 'doubao') finalUrl = "https://ark.cn-beijing.volces.com/api/v3/chat/completions";
+                else if (provider === 'openai') finalUrl = "https://api.openai.com/v1/chat/completions";
+                else if (provider === 'custom') finalUrl = "http://localhost:11434/v1/chat/completions";
+            }
+            if (!finalModel) {
+                if (provider === 'deepseek') finalModel = "deepseek-chat";
+                else if (provider === 'qwen') finalModel = "qwen-plus";
+                else if (provider === 'kimi') finalModel = "moonshot-v1-8k";
+                else if (provider === 'openai') finalModel = "gpt-3.5-turbo";
+            }
+            const payload = { model: finalModel, messages: [{ role: "user", content: prompt }], temperature: 0.7 };
+            const response = await fetch(finalUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+            if(data.error) throw new Error(data.error.message);
+            const text = data.choices[0].message.content;
+            contentArea.innerHTML = marked.parse(text);
+        }
+    } catch (e) { contentArea.innerHTML = `<span style="color:red">Error: ${e.message}</span>`; } finally { loading.style.display = 'none'; }
+}
+
+async function uploadData() {
+    if(!state.admin.cloudUrl) return alert("Please set Google Script URL in Settings.");
+    const btn = document.getElementById('btn-cloud-upload'); btn.innerText = "Uploading...";
+    try { await fetch(state.admin.cloudUrl, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state) }); alert("Upload Success (Sent to Cloud)"); } catch (e) { alert("Upload Failed: " + e.message); } finally { btn.innerText = "☁️ Upload Cloud"; }
+}
+function saveToLocal() { const hist = JSON.parse(localStorage.getItem('cog_history')||'[]'); hist.push({ meta: state.patient, data: state, date: new Date().toLocaleString() }); localStorage.setItem('cog_history', JSON.stringify(hist)); }
+function exportJSON() { const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'}); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `CogData_${state.patient.id}.json`; a.click(); }
+
+function exportCSV() { 
+    const blob = new Blob([generateCSVString()], {type:'text/csv'}); 
+    const a = document.createElement('a'); 
+    a.href = URL.createObjectURL(blob); 
+    const now = new Date();
+    const ts = now.toISOString().replace(/[-:T.]/g, '').slice(0, 12); 
+    a.download = `Report_${state.patient.id}_${ts}.csv`; 
+    a.click(); 
+}
+
+function toggleAdmin() { document.getElementById('admin-modal').style.display = document.getElementById('admin-modal').style.display==='block'?'none':'block'; }
+
+function saveAdmin() { 
+    state.admin.place = document.getElementById('set-place').value; 
+    state.admin.city = document.getElementById('set-city').value; 
+    state.admin.aiKey = document.getElementById('set-ai-key').value; 
+    state.admin.cloudUrl = document.getElementById('set-cloud-url').value; 
+    state.admin.provider = document.getElementById('set-provider').value;
+    state.admin.modelName = document.getElementById('set-model-name').value;
+    state.admin.baseUrl = document.getElementById('set-base-url').value;
+    localStorage.setItem('cog_admin', JSON.stringify(state.admin)); 
+    toggleAdmin(); 
+    checkConfigHealth();
+}
+
+function updateProviderFields() {
+    const p = document.getElementById('set-provider').value;
+    const modelInput = document.getElementById('set-model-name');
+    if (p === 'gemini') modelInput.placeholder = "gemini-2.0-flash (Default)";
+    else if (p === 'deepseek') modelInput.placeholder = "deepseek-chat";
+    else if (p === 'qwen') modelInput.placeholder = "qwen-plus";
+    else if (p === 'kimi') modelInput.placeholder = "moonshot-v1-8k";
+    else if (p === 'doubao') modelInput.placeholder = "Endpoint ID (ep-2024...)";
+    document.getElementById('group-url').style.display = (p === 'custom' || p === 'openai' || p === 'doubao') ? 'block' : 'none';
+}
+
 function toggleBackup() { const box = document.getElementById('backup-box'); box.style.display = box.style.display === 'block' ? 'none' : 'block'; }
 function copyRaw() { const text = document.getElementById('raw-data'); text.select(); document.execCommand("copy"); alert("Copied!"); }
 </script>
