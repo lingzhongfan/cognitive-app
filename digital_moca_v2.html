@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Digital MoCA v2.0 - Interactive</title>
+    <style>
+        :root {
+            --primary: #007AFF; /* iOS Blue */
+            --success: #34C759;
+            --error: #FF3B30;
+            --bg: #F2F2F7;
+            --card: #FFFFFF;
+            --text: #1C1C1E;
+        }
+        
+        * { box-sizing: border-box; -webkit-touch-callout: none; user-select: none; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 顶部进度条 */
+        .progress-bar {
+            height: 4px;
+            background: #E5E5EA;
+            width: 100%;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* 主容器 */
+        main {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* 通用卡片 */
+        .stage {
+            background: var(--card);
+            border-radius: 24px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            width: 100%;
+            max-width: 800px;
+            height: 100%;
+            max-height: 85vh;
+            display: none;
+            flex-direction: column;
+            padding: 30px;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .stage.active { 
+            display: flex; 
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* 指导语与标题 */
+        .header-area { text-align: center; margin-bottom: 20px; }
+        h2 { margin: 0 0 10px 0; font-size: 1.8rem; }
+        .instruction { font-size: 1.2rem; color: #666; }
+
+        /* 交互区域 */
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            background: #FAFAFA;
+            border: 2px dashed #C7C7CC;
+            border-radius: 16px;
+            touch-action: none;
+            overflow: hidden;
+        }
+
+        /* TMT 连线增强 */
+        .tmt-node {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid #333;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+        .tmt-node.active { transform: scale(1.1); border-color: var(--primary); color: var(--primary); }
+        .tmt-node.correct { background-color: var(--success); color: white; border-color: var(--success); transform: scale(1); }
+        .tmt-node.error { background-color: var(--error); color: white; border-color: var(--error); animation: shake 0.4s; }
+        
+        /* 连线 SVG 层 */
+        #tmt-svg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .connection-line {
+            stroke: var(--success);
+            stroke-width: 4;
+            stroke-linecap: round;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: drawLine 0.5s forwards;
+        }
+
+        @keyframes drawLine { to { stroke-dashoffset: 0; } }
+
+        /* 按钮 */
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .btn {
+            padding: 16px 40px;
+            border-radius: 50px;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,122,255,0.3);
+            transition: transform 0.1s;
+        }
+        .btn:active { transform: scale(0.95); }
+        .btn-secondary { background: #E5E5EA; color: #333; box-shadow: none; }
+
+        /* 过渡页 (Interstitial) */
+        .interstitial {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        .countdown { font-size: 6rem; font-weight: 800; color: var(--primary); }
+        .task-name { font-size: 2rem; margin-bottom: 20px; color: #333; }
+
+        /* Toast 提示 */
+        .toast {
+            position: fixed;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 200;
+        }
+        .toast.show { opacity: 1; }
+
+        @keyframes shake { 0%, 100% {transform:translateX(0);} 25% {transform:translateX(-10px);} 75% {transform:translateX(10px);} }
+    </style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+<main>
+    <div id="interstitial" class="interstitial">
+        <div class="task-name" id="next-task-name">准备好了吗？</div>
+        <div class="countdown" id="countdown-num">3</div>
+    </div>
+
+    <div id="stage-welcome" class="stage active">
+        <div class="header-area">
+            <div style="font-size:5rem; margin-bottom:10px;">🩺</div>
+            <h2>认知评估系统 (CAS)</h2>
+            <p class="instruction">
+                请找一个安静的环境，调大 iPad 音量。<br>
+                我们会通过一系列有趣的小任务来测试您的脑力。
+            </p>
+        </div>
+        <div class="controls">
+            <button class="btn" onclick="App.startFlow()">开始评估</button>
+        </div>
+    </div>
+
+    <div id="stage-tmt" class="stage">
+        <div class="header-area">
+            <h2>任务 1：连线</h2>
+            <p class="instruction">请按顺序连接：1 -> A -> 2 -> B -> 3 -> C</p>
+        </div>
+        <div id="tmt-area" class="canvas-container" style="background:white; border:none;">
+            <svg id="tmt-svg"></svg>
+            </div>
+        <div class="controls">
+            <div style="color:#888; font-size:0.9rem; padding-top:15px;">提示：请点击圆形按钮</div>
+        </div>
+    </div>
+
+    <div id="stage-clock" class="stage">
+        <div class="header-area">
+            <h2>任务 2：画钟</h2>
+            <p class="instruction">请画一个时钟，填上数字，并将时间指向 11点10分</p>
+        </div>
+        <div class="canvas-container">
+            <canvas id="clock-canvas"></canvas>
+        </div>
+        <div class="controls">
+            <button class="btn btn-secondary" onclick="App.clearCanvas()">重画</button>
+            <button class="btn" onclick="App.finishClock()">完成提交</button>
+        </div>
+    </div>
+
+    <div id="stage-result" class="stage">
+        <div class="header-area">
+            <div style="font-size:5rem; margin-bottom:10px;">🎉</div>
+            <h2>评估完成</h2>
+            <p class="instruction">感谢您的配合。数据已生成完毕。</p>
+        </div>
+        <textarea style="width:100%; height:200px; border-radius:12px; border:1px solid #ccc; padding:10px; font-family:monospace;" id="output-data" readonly></textarea>
+        <div class="controls">
+            <button class="btn" onclick="App.copyData()">复制数据</button>
+        </div>
+    </div>
+</main>
+
+<div id="toast" class="toast">提示信息</div>
+
+<script>
+/**
+ * 音效引擎 (AudioEngine)
+ * 使用 Web Audio API 生成即时音效，无需加载外部文件
+ */
+const AudioEngine = {
+    ctx: new (window.AudioContext || window.webkitAudioContext)(),
+    
+    playTone: function(freq, type, duration) {
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + duration);
+    },
+
+    playSuccess: function() { 
+        this.playTone(880, 'sine', 0.1); // 高音 Ping
+        setTimeout(() => this.playTone(1760, 'sine', 0.2), 100);
+    },
+    
+    playError: function() {
+        this.playTone(150, 'sawtooth', 0.4); // 低音 Buzz
+    },
+
+    playClick: function() {
+        this.playTone(400, 'triangle', 0.05); // 短促点击声
+    },
+
+    playCountdown: function() {
+        this.playTone(600, 'sine', 0.1);
+    },
+    
+    playStart: function() {
+        this.playTone(1200, 'sine', 0.6);
+    }
+};
+
+/**
+ * 核心应用逻辑
+ */
+const App = {
+    state: {
+        startTime: 0,
+        data: { tmt: [], clock: [] }
+    },
+
+    // 提示框
+    showToast: function(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2000);
+    },
+
+    // 流程控制：开始
+    startFlow: function() {
+        AudioEngine.ctx.resume(); // 激活音频上下文
+        this.transitionTo('stage-tmt', '任务 1：连线测验');
+    },
+
+    // 核心交互：过渡动画与倒计时
+    transitionTo: function(stageId, taskName) {
+        const overlay = document.getElementById('interstitial');
+        const nameEl = document.getElementById('next-task-name');
+        const countEl = document.getElementById('countdown-num');
+        
+        nameEl.innerText = taskName;
+        overlay.style.display = 'flex';
+        
+        // 进度条更新
+        const progress = stageId === 'stage-tmt' ? 30 : (stageId === 'stage-clock' ? 70 : 100);
+        document.getElementById('progress').style.width = progress + '%';
+
+        // 3秒倒计时逻辑
+        let count = 3;
+        countEl.innerText = count;
+        
+        const timer = setInterval(() => {
+            count--;
+            if (count > 0) {
+                countEl.innerText = count;
+                AudioEngine.playCountdown();
+            } else if (count === 0) {
+                countEl.innerText = "开始!";
+                AudioEngine.playStart();
+            } else {
+                clearInterval(timer);
+                overlay.style.display = 'none';
+                this.activateStage(stageId);
+            }
+        }, 1000);
+    },
+
+    activateStage: function(id) {
+        document.querySelectorAll('.stage').forEach(el => el.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        
+        // 初始化特定模块
+        if(id === 'stage-tmt') this.initTMT();
+        if(id === 'stage-clock') this.initClock();
+    },
+
+    // --- TMT 逻辑 (增强版) ---
+    initTMT: function() {
+        const container = document.getElementById('tmt-area');
+        // 清空旧元素（保留SVG）
+        const svg = document.getElementById('tmt-svg');
+        while (container.lastChild && container.lastChild !== svg) {
+            container.removeChild(container.lastChild);
+        }
+        svg.innerHTML = ''; // 清空连线
+
+        const nodes = [
+            { id: '1', next: 'A', x: 20, y: 15 },
+            { id: 'A', next: '2', x: 80, y: 30 },
+            { id: '2', next: 'B', x: 50, y: 50 },
+            { id: 'B', next: '3', x: 20, y: 80 },
+            { id: '3', next: 'C', x: 80, y: 70 },
+            { id: 'C', next: null, x: 50, y: 90 }
+        ];
+        
+        let currentTarget = '1';
+        let lastNodeEl = null;
+        let lastNodePos = null;
+
+        nodes.forEach(n => {
+            const el = document.createElement('div');
+            el.className = 'tmt-node';
+            el.innerText = n.id;
+            el.style.left = n.x + '%';
+            el.style.top = n.y + '%';
+            
+            // 触摸/点击处理
+            const handleInteract = (e) => {
+                e.preventDefault();
+                if(el.classList.contains('correct')) return; // 已连线的不处理
+
+                if (n.id === currentTarget) {
+                    // 正确
+                    AudioEngine.playSuccess();
+                    el.classList.add('correct');
+                    
+                    // 画线
+                    if (lastNodePos) {
+                        this.drawSVGLine(lastNodePos.x, lastNodePos.y, n.x, n.y);
+                    }
+                    
+                    // 记录数据
+                    this.state.data.tmt.push({ id: n.id, result: 'correct', t: Date.now() });
+
+                    lastNodeEl = el;
+                    lastNodePos = n;
+                    currentTarget = n.next;
+
+                    if (!currentTarget) {
+                        setTimeout(() => this.transitionTo('stage-clock', '任务 2：画钟测验'), 1000);
+                    }
+                } else {
+                    // 错误
+                    AudioEngine.playError();
+                    el.classList.add('error');
+                    this.state.data.tmt.push({ id: n.id, result: 'error', t: Date.now() });
+                    navigator.vibrate([100]); // 震动反馈
+                    setTimeout(() => el.classList.remove('error'), 500);
+                }
+            };
+
+            el.addEventListener('touchstart', handleInteract);
+            el.addEventListener('mousedown', handleInteract);
+            container.appendChild(el);
+        });
+    },
+
+    drawSVGLine: function(x1, y1, x2, y2) {
+        const svg = document.getElementById('tmt-svg');
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', x1 + '%');
+        line.setAttribute('y1', y1 + '%');
+        line.setAttribute('x2', x2 + '%');
+        line.setAttribute('y2', y2 + '%');
+        line.setAttribute('class', 'connection-line');
+        svg.appendChild(line);
+    },
+
+    // --- 画钟逻辑 ---
+    initClock: function() {
+        const cvs = document.getElementById('clock-canvas');
+        const ctx = cvs.getContext('2d');
+        const rect = cvs.parentElement.getBoundingClientRect();
+        cvs.width = rect.width;
+        cvs.height = rect.height;
+        
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = '#000';
+        
+        let isDrawing = false;
+
+        const getPos = (e) => {
+            const r = cvs.getBoundingClientRect();
+            const cx = e.touches ? e.touches[0].clientX : e.clientX;
+            const cy = e.touches ? e.touches[0].clientY : e.clientY;
+            return { x: cx - r.left, y: cy - r.top };
+        };
+
+        const start = (e) => {
+            e.preventDefault();
+            isDrawing = true;
+            const p = getPos(e);
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            this.state.data.clock.push({ type:'start', t: Date.now() });
+        };
+        const move = (e) => {
+            if(!isDrawing) return;
+            e.preventDefault();
+            const p = getPos(e);
+            ctx.lineTo(p.x, p.y);
+            ctx.stroke();
+        };
+        const end = () => { isDrawing = false; };
+
+        cvs.addEventListener('touchstart', start);
+        cvs.addEventListener('touchmove', move);
+        cvs.addEventListener('touchend', end);
+        cvs.addEventListener('mousedown', start);
+        cvs.addEventListener('mousemove', move);
+        cvs.addEventListener('mouseup', end);
+        
+        this.clockCtx = ctx;
+        this.clockCvs = cvs;
+    },
+
+    clearCanvas: function() {
+        this.clockCtx.clearRect(0, 0, this.clockCvs.width, this.clockCvs.height);
+        this.showToast("画布已清空");
+        AudioEngine.playClick();
+    },
+
+    finishClock: function() {
+        AudioEngine.playSuccess();
+        this.activateStage('stage-result');
+        document.getElementById('output-data').value = JSON.stringify(this.state.data, null, 2);
+    },
+
+    copyData: function() {
+        const el = document.getElementById('output-data');
+        el.select();
+        el.setSelectionRange(0, 99999);
+        document.execCommand("copy");
+        this.showToast("数据已复制到剪贴板");
+    }
+};
+</script>
+</body>
+</html>
