@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robotic TMS Neuronavigation Real-time Interface</title>
+    <title>Robotic TMS Neuronavigation - NIFTI Support</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/@niivue/niivue@0.44.0/dist/niivue.umd.js"></script>
     <style>
         :root {
             --bg-color: #121212;
@@ -13,6 +14,7 @@
             --accent: #00d2ff;
             --danger: #ff4c4c;
             --success: #00e676;
+            --border-color: #333;
         }
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -65,24 +67,27 @@
             margin-top: 0;
             font-size: 1.2rem;
             color: var(--accent);
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid var(--border-color);
             padding-bottom: 10px;
-        }
-        /* 可视化区域 */
-        .canvas-container {
-            flex: 1;
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
+        }
+        /* NIFTI 可视化区域 */
+        .gl-container {
+            flex: 1;
             background: #000;
-            border: 1px solid #333;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
             position: relative;
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
         }
         canvas {
             width: 100%;
             height: 100%;
+            outline: none;
         }
         /* 控制面板表单 */
         .control-group {
@@ -100,7 +105,7 @@
             margin-bottom: 5px;
             color: #aaa;
         }
-        input {
+        input[type="number"], input[type="file"] {
             background: #2a2a2a;
             border: 1px solid #444;
             color: white;
@@ -108,9 +113,23 @@
             border-radius: 4px;
             font-family: monospace;
         }
+        input[type="file"] {
+            font-family: inherit;
+            font-size: 0.85rem;
+        }
         input:focus {
             outline: none;
             border-color: var(--accent);
+        }
+        .file-upload-wrapper {
+            margin-bottom: 10px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px dashed #444;
         }
         .btn-group {
             display: flex;
@@ -149,46 +168,50 @@
             color: var(--accent);
             margin-top: 5px;
         }
-        .error-value {
-            color: var(--danger);
-        }
-        .error-safe {
-            color: var(--success);
-        }
+        .error-value { color: var(--danger); }
+        .error-safe { color: var(--success); }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Robotic TMS 神经导航监控系统</h1>
+        <h1>Robotic TMS 神经导航监控系统 (多模态影像版)</h1>
         <div class="status-indicator">
             <div class="status-dot" id="system-status-dot"></div>
-            <span id="system-status-text">系统就绪 (实时监听)</span>
+            <span id="system-status-text">系统就绪 (等待加载影像)</span>
         </div>
     </header>
 
     <div class="main-container">
         <div class="panel">
-            <h2>实时空间导航 (Axial View)</h2>
-            <div class="canvas-container">
-                <canvas id="navCanvas"></canvas>
+            <h2>
+                个体化影像导航 (NIFTI Viewer)
+                <span style="font-size: 0.8rem; font-weight: normal; color: #888;">支持 .nii / .nii.gz</span>
+            </h2>
+            <div class="file-upload-wrapper">
+                <label for="nii-file" style="margin: 0; color: var(--accent); cursor: pointer;">[点击导入 MRI 文件]</label>
+                <input type="file" id="nii-file" accept=".nii,.nii.gz" style="display: none;">
+                <span id="file-name" style="font-size: 0.85rem; color: #aaa;">未选择文件</span>
+            </div>
+            <div class="gl-container">
+                <canvas id="glCanvas"></canvas>
             </div>
         </div>
 
         <div class="panel">
-            <h2>运动控制与参数设置</h2>
+            <h2>运动控制与空间靶点配准</h2>
             <div class="control-group">
                 <div class="input-item">
-                    <label>Target X (MNI mm)</label>
-                    <input type="number" id="targetX" value="35.0" step="0.1">
+                    <label>Target X (World mm)</label>
+                    <input type="number" id="targetX" value="35.0" step="0.1" onchange="updateCrosshair()">
                 </div>
                 <div class="input-item">
-                    <label>Target Y (MNI mm)</label>
-                    <input type="number" id="targetY" value="-20.0" step="0.1">
+                    <label>Target Y (World mm)</label>
+                    <input type="number" id="targetY" value="-20.0" step="0.1" onchange="updateCrosshair()">
                 </div>
                 <div class="input-item">
-                    <label>Target Z (MNI mm)</label>
-                    <input type="number" id="targetZ" value="50.0" step="0.1">
+                    <label>Target Z (World mm)</label>
+                    <input type="number" id="targetZ" value="50.0" step="0.1" onchange="updateCrosshair()">
                 </div>
                 <div class="input-item">
                     <label>刺激强度 (% MSO)</label>
@@ -197,13 +220,13 @@
             </div>
             <div class="btn-group">
                 <button class="btn-primary" onclick="startRobotMovement()">驱动机械臂至靶点</button>
-                <button class="btn-primary" onclick="triggerStimulation()" id="stimBtn" disabled style="background-color: #555; color: #888;">触发单脉冲刺激</button>
+                <button class="btn-primary" onclick="triggerStimulation()" id="stimBtn" disabled style="background-color: #555; color: #888;">触发单脉冲</button>
                 <button class="btn-danger" onclick="emergencyStop()">急停 (E-STOP)</button>
             </div>
         </div>
 
         <div class="panel">
-            <h2>实时运动学数据</h2>
+            <h2>实时运动学反馈</h2>
             <div class="data-grid">
                 <div class="data-card">
                     <label>当前线圈 X</label>
@@ -218,89 +241,81 @@
                     <div class="data-value" id="currentZ">0.00</div>
                 </div>
                 <div class="data-card">
-                    <label>靶向欧氏误差 (Euclidean Error)</label>
+                    <label>欧氏距离误差 (Euclidean)</label>
                     <div class="data-value error-value" id="targetError">--- mm</div>
                 </div>
             </div>
-            <p style="color: #aaa; font-size: 0.85rem; margin-top: 20px;">
-                * 空间误差计算: $d = \sqrt{(x_t-x_c)^2 + (y_t-y_c)^2 + (z_t-z_c)^2}$
-            </p>
         </div>
 
         <div class="panel">
-            <h2>运动诱发电位 (MEP) 实时反馈</h2>
-            <div class="canvas-container" style="background: var(--panel-bg); border: none;">
+            <h2>神经可塑性量化反馈 (MEP)</h2>
+            <div class="gl-container" style="background: var(--panel-bg); border: none;">
                 <canvas id="mepChart"></canvas>
             </div>
         </div>
     </div>
 
     <script>
-        // --- 全局变量与状态 ---
+        // --- 1. NiiVue NIFTI 渲染引擎初始化 ---
+        const nv = new niivue.Niivue({
+            dragAndDropEnabled: true,
+            backColor: [0, 0, 0, 1], // 黑色背景
+            show3Dcrosshair: true,
+            crosshairColor: [0, 1, 0, 1] // 绿色准星代表靶点
+        });
+        nv.attachTo('glCanvas');
+        nv.setSliceType(nv.sliceTypeMultiplanar); // 设置为正交多平面视图
+
+        // 处理文件上传
+        const fileInput = document.getElementById('nii-file');
+        const fileNameDisplay = document.getElementById('file-name');
+
+        fileInput.addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                fileNameDisplay.innerText = "加载中: " + file.name;
+                setSystemStatus('正在解析 NIFTI 矩阵...', '#ffaa00');
+                try {
+                    // NiiVue 原生支持从 HTML5 File 对象加载
+                    await nv.loadFromFile(file);
+                    fileNameDisplay.innerText = file.name;
+                    setSystemStatus('影像加载完成', 'var(--success)');
+                    updateCrosshair(); // 影像加载后将准星移动到默认坐标
+                } catch (error) {
+                    console.error("NIFTI 加载失败:", error);
+                    fileNameDisplay.innerText = "加载失败，请检查文件格式";
+                    setSystemStatus('解析错误', 'var(--danger)');
+                }
+            }
+        });
+
+        // 联动：当修改坐标框时，更新 NiiVue 的准星位置
+        function updateCrosshair() {
+            if (nv.volumes.length === 0) return; // 尚未加载影像时不操作
+            const x = parseFloat(document.getElementById('targetX').value);
+            const y = parseFloat(document.getElementById('targetY').value);
+            const z = parseFloat(document.getElementById('targetZ').value);
+            // NiiVue 提供了直接跳转到指定空间坐标 (mm) 的方法
+            nv.scene.crosshairPos = nv.mm2frac([x, y, z]);
+            nv.drawScene();
+        }
+
+        // 联动：当用户在 NIFTI 图像上点击时，反向更新输入框中的坐标
+        nv.onLocationChange = function(data) {
+            if (isMoving) return; // 如果机械臂正在移动，忽略手动点击修改
+            // data.mm 包含用户点击的世界坐标
+            document.getElementById('targetX').value = data.mm[0].toFixed(1);
+            document.getElementById('targetY').value = data.mm[1].toFixed(1);
+            document.getElementById('targetZ').value = data.mm[2].toFixed(1);
+            robotTargetPos = { x: data.mm[0], y: data.mm[1], z: data.mm[2] };
+        };
+
+        // --- 2. 机械臂运动控制与误差计算 ---
         let robotCurrentPos = { x: 0, y: 0, z: 0 };
         let robotTargetPos = { x: 35, y: -20, z: 50 };
         let isMoving = false;
         let animationFrameId;
-        
-        // --- 1. 空间导航可视化 (Canvas) ---
-        const canvas = document.getElementById('navCanvas');
-        const ctx = canvas.getContext('2d');
-        
-        function resizeCanvas() {
-            canvas.width = canvas.parentElement.clientWidth;
-            canvas.height = canvas.parentElement.clientHeight;
-        }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
 
-        function drawNavigation() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2;
-            const scale = 2; // 缩放因子(mm到像素)
-
-            // 画一个示意性的脑部轮廓 (Axial view)
-            ctx.beginPath();
-            ctx.ellipse(centerX, centerY, 80 * scale, 100 * scale, 0, 0, 2 * Math.PI);
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // 绘制靶点 (十字准星)
-            const tgtCanvasX = centerX + robotTargetPos.x * scale;
-            const tgtCanvasY = centerY - robotTargetPos.y * scale; // Y轴翻转
-            
-            ctx.beginPath();
-            ctx.moveTo(tgtCanvasX - 10, tgtCanvasY);
-            ctx.lineTo(tgtCanvasX + 10, tgtCanvasY);
-            ctx.moveTo(tgtCanvasX, tgtCanvasY - 10);
-            ctx.lineTo(tgtCanvasX, tgtCanvasY + 10);
-            ctx.strokeStyle = '#00e676';
-            ctx.lineWidth = 2;
-            ctx.stroke();
-
-            // 绘制当前 TMS 线圈位置 (8字形线圈示意)
-            const curCanvasX = centerX + robotCurrentPos.x * scale;
-            const curCanvasY = centerY - robotCurrentPos.y * scale;
-
-            ctx.beginPath();
-            ctx.arc(curCanvasX - 15, curCanvasY, 15, 0, Math.PI * 2);
-            ctx.arc(curCanvasX + 15, curCanvasY, 15, 0, Math.PI * 2);
-            ctx.strokeStyle = '#00d2ff';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-            
-            // 连线：当前位置到靶点
-            ctx.beginPath();
-            ctx.moveTo(curCanvasX, curCanvasY);
-            ctx.lineTo(tgtCanvasX, tgtCanvasY);
-            ctx.strokeStyle = 'rgba(255, 76, 76, 0.5)';
-            ctx.setLineDash([5, 5]);
-            ctx.stroke();
-            ctx.setLineDash([]);
-        }
-
-        // --- 2. 运动控制与误差计算 ---
         function calculateError() {
             const dx = robotTargetPos.x - robotCurrentPos.x;
             const dy = robotTargetPos.y - robotCurrentPos.y;
@@ -317,7 +332,7 @@
             const errorElement = document.getElementById('targetError');
             errorElement.innerText = error.toFixed(2) + ' mm';
             
-            // 误差小于 2mm 判定为到达靶点
+            // 误差 < 2.0mm 解锁刺激按钮 (硬件 Interlock 模拟)
             const stimBtn = document.getElementById('stimBtn');
             if (error < 2.0) {
                 errorElement.className = 'data-value error-safe';
@@ -334,38 +349,36 @@
 
         function simulateRobotMovement() {
             if (!isMoving) return;
-            
-            // 简单的比例控制算法模拟机械臂接近靶点
             const speed = 0.05; 
             robotCurrentPos.x += (robotTargetPos.x - robotCurrentPos.x) * speed;
             robotCurrentPos.y += (robotTargetPos.y - robotCurrentPos.y) * speed;
             robotCurrentPos.z += (robotTargetPos.z - robotCurrentPos.z) * speed;
             
-            // 添加一些高斯噪声模拟真实传感器的抖动
+            // 模拟光学追踪系统的动态抖动
             robotCurrentPos.x += (Math.random() - 0.5) * 0.2;
             robotCurrentPos.y += (Math.random() - 0.5) * 0.2;
             robotCurrentPos.z += (Math.random() - 0.5) * 0.2;
 
             updateDataDisplay();
-            drawNavigation();
             
             const error = calculateError();
             if (error < 0.5) {
-                isMoving = false; // 停止模拟运动
-                setSystemStatus('已到达靶点', 'var(--success)');
+                isMoving = false;
+                setSystemStatus('已对齐靶点 (追踪锁定)', 'var(--success)');
             } else {
                 animationFrameId = requestAnimationFrame(simulateRobotMovement);
             }
         }
 
         function startRobotMovement() {
-            // 获取输入值
             robotTargetPos.x = parseFloat(document.getElementById('targetX').value);
             robotTargetPos.y = parseFloat(document.getElementById('targetY').value);
             robotTargetPos.z = parseFloat(document.getElementById('targetZ').value);
             
+            updateCrosshair(); // 确保图像靶点与指令一致
+            
             isMoving = true;
-            setSystemStatus('机械臂移动中...', '#ffaa00');
+            setSystemStatus('机械臂空间寻迹中...', '#ffaa00');
             cancelAnimationFrame(animationFrameId);
             simulateRobotMovement();
         }
@@ -373,7 +386,7 @@
         function emergencyStop() {
             isMoving = false;
             cancelAnimationFrame(animationFrameId);
-            setSystemStatus('急停已触发！', 'var(--danger)');
+            setSystemStatus('急停 (E-STOP) 激活！', 'var(--danger)');
         }
 
         function setSystemStatus(text, color) {
@@ -382,9 +395,9 @@
             document.getElementById('system-status-dot').style.boxShadow = `0 0 8px ${color}`;
         }
 
-        // --- 3. 生理反馈 (MEP) 可视化 (Chart.js) ---
+        // --- 3. 生理反馈 (MEP) 可视化 ---
         const ctxChart = document.getElementById('mepChart').getContext('2d');
-        const mepDataLength = 100; // 时间轴点数
+        const mepDataLength = 100; 
         const emptyData = Array.from({length: mepDataLength}, () => 0);
         
         const mepChart = new Chart(ctxChart, {
@@ -392,7 +405,7 @@
             data: {
                 labels: Array.from({length: mepDataLength}, (_, i) => i),
                 datasets: [{
-                    label: 'EMG Signal (μV)',
+                    label: 'EMG (μV)',
                     data: [...emptyData],
                     borderColor: 'var(--accent)',
                     borderWidth: 2,
@@ -406,51 +419,34 @@
                 animation: { duration: 0 },
                 scales: {
                     x: { display: false },
-                    y: { 
-                        display: true, 
-                        min: -100, 
-                        max: 100,
-                        grid: { color: '#333' }
-                    }
+                    y: { display: true, min: -100, max: 100, grid: { color: '#333' } }
                 },
                 plugins: { legend: { display: false } }
             }
         });
 
         function triggerStimulation() {
-            setSystemStatus('刺激输出中', 'var(--accent)');
-            
-            // 模拟 MEP 信号波形发生 (具有潜伏期的双相波)
+            setSystemStatus('磁脉冲输出中...', 'var(--accent)');
             const newData = [...emptyData];
-            const latency = 20; // 潜伏期
-            const amplitude = document.getElementById('intensity').value * 0.8; // 振幅受刺激强度影响
+            const latency = 20; 
+            const amplitude = document.getElementById('intensity').value * 0.8; 
             
             for (let i = 0; i < mepDataLength; i++) {
-                if (i === latency) {
-                    newData[i] = amplitude;
-                } else if (i === latency + 5) {
-                    newData[i] = -amplitude * 0.6;
-                } else if (i > latency && i < latency + 15) {
-                    // 模拟波形平滑衰减
-                    newData[i] = newData[i-1] * -0.5; 
-                }
-                // 添加基线噪声
+                if (i === latency) newData[i] = amplitude;
+                else if (i === latency + 5) newData[i] = -amplitude * 0.6;
+                else if (i > latency && i < latency + 15) newData[i] = newData[i-1] * -0.5; 
                 newData[i] += (Math.random() - 0.5) * 5;
             }
 
             mepChart.data.datasets[0].data = newData;
             mepChart.update();
 
-            // 刺激完成后恢复状态
             setTimeout(() => {
                 setSystemStatus('系统就绪 (已对齐靶点)', 'var(--success)');
             }, 500);
         }
 
-        // 初始化显示
-        drawNavigation();
         updateDataDisplay();
-
     </script>
 </body>
 </html>
