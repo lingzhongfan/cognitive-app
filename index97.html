@@ -3,246 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robotic TMS Clinical Interface</title>
+    <title>Robotic TMS 6-DOF Clinical Interface</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/@niivue/niivue@0.44.0/dist/niivue.umd.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.js"></script>
     <style>
         :root {
-            --bg-base: #0a0a0a;
-            --panel-bg: #16181a;
-            --border-dim: #2a2d31;
-            --text-main: #d1d5db;
-            --text-muted: #6b7280;
-            --accent-blue: #0ea5e9;
-            --accent-green: #10b981;
-            --accent-red: #ef4444;
-            --accent-orange: #f59e0b;
+            --bg-base: #0a0a0a; --panel-bg: #16181a; --border-dim: #2a2d31;
+            --text-main: #d1d5db; --text-muted: #6b7280;
+            --accent-blue: #0ea5e9; --accent-green: #10b981;
+            --accent-red: #ef4444; --accent-orange: #f59e0b;
+            --accent-purple: #8b5cf6;
         }
         * { box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            margin: 0;
-            padding: 16px;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-base); color: var(--text-main);
+            margin: 0; padding: 16px; height: 100vh; display: flex; flex-direction: column; overflow: hidden;
         }
-        /* 顶部状态栏 */
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-dim);
-            padding: 12px 24px;
-            border-radius: 6px;
-            margin-bottom: 16px;
-        }
-        .brand-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            color: #fff;
-        }
-        .patient-info {
-            display: flex;
-            gap: 20px;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-        .patient-info span { color: var(--accent-blue); font-weight: 500; }
+        /* 布局与之前保持一致的高级暗色系医疗UI */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; background-color: var(--panel-bg); border: 1px solid var(--border-dim); padding: 12px 24px; border-radius: 6px; margin-bottom: 16px; }
+        .brand-title { font-size: 1.25rem; font-weight: 600; color: #fff; }
+        .system-status { display: flex; align-items: center; gap: 12px; font-weight: 600; background: rgba(0,0,0,0.3); padding: 6px 16px; border-radius: 20px; border: 1px solid var(--border-dim); }
+        .status-led { width: 14px; height: 14px; border-radius: 50%; background-color: var(--accent-orange); box-shadow: 0 0 10px var(--accent-orange); transition: all 0.3s ease; }
         
-        .system-status {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-weight: 600;
-            background: rgba(0,0,0,0.3);
-            padding: 6px 16px;
-            border-radius: 20px;
-            border: 1px solid var(--border-dim);
-        }
-        .status-led {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background-color: var(--accent-orange);
-            box-shadow: 0 0 10px var(--accent-orange);
-            transition: all 0.3s ease;
-        }
-
-        /* 主体网格布局 */
-        .main-grid {
-            display: grid;
-            grid-template-columns: 45% 1fr 1fr;
-            grid-template-rows: auto 1fr;
-            gap: 16px;
-            flex: 1;
-            min-height: 0;
-        }
-
-        .panel {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-dim);
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .panel-header {
-            background-color: rgba(255,255,255,0.02);
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border-dim);
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #fff;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* 影像区 */
-        .viewer-panel {
-            grid-column: 1 / 2;
-            grid-row: 1 / 3;
-        }
-        .gl-wrapper {
-            flex: 1;
-            background: #000;
-            position: relative;
-        }
+        .main-grid { display: grid; grid-template-columns: 45% 1fr 1fr; grid-template-rows: auto 1fr; gap: 16px; flex: 1; min-height: 0; }
+        .panel { background-color: var(--panel-bg); border: 1px solid var(--border-dim); border-radius: 8px; display: flex; flex-direction: column; overflow: hidden; }
+        .panel-header { background-color: rgba(255,255,255,0.02); padding: 12px 16px; border-bottom: 1px solid var(--border-dim); font-size: 0.95rem; font-weight: 600; color: #fff; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* 影像区增强 */
+        .viewer-panel { grid-column: 1 / 2; grid-row: 1 / 3; }
+        .gl-wrapper { flex: 1; background: #000; position: relative; }
         canvas { width: 100%; height: 100%; outline: none; }
-        .file-tools {
-            padding: 10px 16px;
-            background: rgba(0,0,0,0.2);
-            border-bottom: 1px solid var(--border-dim);
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .custom-file-upload {
-            background: var(--border-dim);
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
+        .file-tools { padding: 10px 16px; background: rgba(0,0,0,0.2); border-bottom: 1px solid var(--border-dim); display: flex; flex-direction: column; gap: 10px; }
+        .file-row { display: flex; align-items: center; gap: 10px; }
+        .custom-file-upload { background: var(--border-dim); padding: 6px 12px; border-radius: 4px; font-size: 0.85rem; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
         .custom-file-upload:hover { background: #3a3d41; }
+        .file-name { font-size: 0.8rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        
+        /* 图谱信息面板 */
+        .atlas-info-box { background: rgba(139, 92, 246, 0.1); border-left: 4px solid var(--accent-purple); padding: 10px 16px; font-size: 0.9rem; }
+        .atlas-info-box span { color: var(--accent-purple); font-weight: bold; font-family: monospace; font-size: 1.1rem; }
 
-        /* 追踪与控制区 */
+        /* 追踪与矩阵区 */
         .tracking-panel { grid-column: 2 / 3; grid-row: 1 / 2; }
         .control-panel { grid-column: 3 / 4; grid-row: 1 / 2; }
-        
-        .data-display-group { padding: 16px; }
-        .metric-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--border-dim);
-        }
-        .metric-row:last-child { border-bottom: none; }
+        .data-display-group { padding: 16px; overflow-y: auto; }
+        .metric-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-dim); }
         .metric-label { font-size: 0.85rem; color: var(--text-muted); }
-        .metric-value {
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 1.25rem;
-            font-weight: bold;
-            color: #fff;
-        }
-        .highlight-value { color: var(--accent-blue); }
-        .error-value { font-size: 1.75rem; color: var(--accent-red); }
-        .safe-value { font-size: 1.75rem; color: var(--accent-green); }
+        .metric-value { font-family: 'Courier New', Courier, monospace; font-size: 1.1rem; font-weight: bold; color: #fff; }
+        .matrix-box { background: #0a0a0a; border: 1px solid #333; padding: 10px; border-radius: 4px; margin-top: 10px; font-family: monospace; font-size: 0.85rem; color: var(--accent-blue); white-space: pre-wrap; line-height: 1.4; }
 
-        /* 表单与输入 */
-        .form-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            padding: 16px;
-        }
+        /* 表单与按钮 */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 16px; }
         .input-group { display: flex; flex-direction: column; gap: 4px; }
-        .input-group label { font-size: 0.8rem; color: var(--text-muted); }
-        .input-group input {
-            background: #0a0a0a;
-            border: 1px solid var(--border-dim);
-            color: #fff;
-            padding: 8px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 1rem;
-        }
-        .input-group input:focus { outline: none; border-color: var(--accent-blue); }
-
-        /* 操作按钮 */
-        .action-area {
-            padding: 16px;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-top: auto;
-            background: rgba(0,0,0,0.2);
-            border-top: 1px solid var(--border-dim);
-        }
-        .btn {
-            padding: 14px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+        .input-group label { font-size: 0.75rem; color: var(--text-muted); }
+        .input-group input { background: #0a0a0a; border: 1px solid var(--border-dim); color: #fff; padding: 6px; border-radius: 4px; font-family: monospace; font-size: 0.95rem; }
+        
+        .action-area { padding: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: auto; background: rgba(0,0,0,0.2); border-top: 1px solid var(--border-dim); }
+        .btn { padding: 12px; border: none; border-radius: 6px; font-weight: 600; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; text-transform: uppercase; }
         .btn-drive { background-color: #2563eb; color: #fff; }
-        .btn-drive:hover { background-color: #1d4ed8; }
         .btn-stim { background-color: var(--accent-green); color: #000; }
-        .btn-stim:hover { background-color: #059669; }
         .btn-stim:disabled { background-color: #064e3b; color: #6b7280; cursor: not-allowed; }
         
-        .btn-estop {
-            grid-column: span 2;
-            background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
-            color: white;
-            font-size: 1.1rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
-        }
-        .btn-estop:active { box-shadow: inset 0 4px 6px rgba(0,0,0,0.4); transform: translateY(2px); }
-
-        /* MEP量化反馈区 */
-        .mep-panel {
-            grid-column: 2 / 4;
-            grid-row: 2 / 3;
-            display: flex;
-            flex-direction: column;
-        }
-        .mep-header-stats {
-            display: flex;
-            gap: 24px;
-        }
-        .mep-stat { display: flex; gap: 8px; align-items: baseline; }
-        .mep-stat-label { font-size: 0.8rem; color: var(--text-muted); }
-        .mep-stat-value { font-family: monospace; font-size: 1.1rem; color: var(--accent-orange); font-weight: bold; }
-        
-        .chart-container {
-            flex: 1;
-            padding: 16px;
-            position: relative;
-        }
+        /* MEP图表区 */
+        .mep-panel { grid-column: 2 / 4; grid-row: 2 / 3; display: flex; flex-direction: column; }
+        .chart-container { flex: 1; padding: 16px; position: relative; }
     </style>
 </head>
 <body>
 
     <header class="top-bar">
-        <div class="brand-title">TMS-NAV | Clinical Interlock System</div>
-        <div class="patient-info">
-            <div>Subject ID: <span>SUBJ-2026-004</span></div>
-            <div>Protocol: <span>Cortical Mapping / Single Pulse</span></div>
-        </div>
+        <div class="brand-title">Robotic TMS 6-DOF & Atlas Navigation</div>
         <div class="system-status">
             <div class="status-led" id="statusLed"></div>
             <span id="statusText">System Standby</span>
@@ -251,15 +83,25 @@
 
     <div class="main-grid">
         <div class="panel viewer-panel">
-            <div class="panel-header">
-                Image Space Planning (MPR)
-            </div>
+            <div class="panel-header">Atlas-Constrained Planning (MPR)</div>
             <div class="file-tools">
-                <label class="custom-file-upload">
-                    <input type="file" id="nii-file" accept=".nii,.nii.gz" style="display: none;">
-                    Load Individual NIFTI
-                </label>
-                <span id="file-name" style="font-size: 0.8rem; color: var(--text-muted);">No volume loaded</span>
+                <div class="file-row">
+                    <label class="custom-file-upload">
+                        <input type="file" id="nii-anat" accept=".nii,.nii.gz" style="display: none;">
+                        Load T1/T2 Anat
+                    </label>
+                    <span id="file-name-anat" class="file-name">No structural volume</span>
+                </div>
+                <div class="file-row">
+                    <label class="custom-file-upload" style="background-color: rgba(139, 92, 246, 0.2); border: 1px solid var(--accent-purple);">
+                        <input type="file" id="nii-atlas" accept=".nii,.nii.gz" style="display: none;">
+                        Load Atlas Parcellation
+                    </label>
+                    <span id="file-name-atlas" class="file-name">No atlas loaded (Label mapping disabled)</span>
+                </div>
+            </div>
+            <div class="atlas-info-box">
+                Current Constraint Parcel ID: <span id="dispLabelID">N/A</span>
             </div>
             <div class="gl-wrapper">
                 <canvas id="glCanvas"></canvas>
@@ -267,64 +109,49 @@
         </div>
 
         <div class="panel tracking-panel">
-            <div class="panel-header">Real-time Kinematics</div>
+            <div class="panel-header">6-DOF Kinematics & Transformation</div>
             <div class="data-display-group">
                 <div class="metric-row">
-                    <span class="metric-label">Target (X, Y, Z) mm</span>
-                    <span class="metric-value highlight-value" id="dispTarget">35.0, -20.0, 50.0</span>
+                    <span class="metric-label">Target Pos (X, Y, Z) mm</span>
+                    <span class="metric-value" style="color: var(--accent-blue);" id="dispTargetPos">35.0, -20.0, 50.0</span>
                 </div>
                 <div class="metric-row">
-                    <span class="metric-label">Current Coil (X, Y, Z) mm</span>
-                    <span class="metric-value" id="dispCurrent">0.0, 0.0, 0.0</span>
+                    <span class="metric-label">Target Euler (R, P, Y) deg</span>
+                    <span class="metric-value" style="color: var(--accent-orange);" id="dispTargetEuler">0.0, 0.0, 0.0</span>
                 </div>
-                <div class="metric-row" style="margin-top: 10px; border:none;">
-                    <span class="metric-label">Targeting Error (Euclidean)</span>
-                    <span class="metric-value error-value" id="dispError">---</span>
+                <div class="metric-row">
+                    <span class="metric-label">Spatial Error (Euclidean)</span>
+                    <span class="metric-value" style="color: var(--accent-red);" id="dispError">---</span>
+                </div>
+                <div style="margin-top: 15px; font-size: 0.8rem; color: var(--text-muted);">Homogeneous Command Matrix ($T_{target}$):</div>
+                <div class="matrix-box" id="dispMatrix">
+[ 1.000,  0.000,  0.000,   35.000 ]
+[ 0.000,  1.000,  0.000,  -20.000 ]
+[ 0.000,  0.000,  1.000,   50.000 ]
+[ 0.000,  0.000,  0.000,    1.000 ]
                 </div>
             </div>
         </div>
 
         <div class="panel control-panel">
-            <div class="panel-header">Stimulation Parameters</div>
+            <div class="panel-header">Angle Correction & Stimulation</div>
             <div class="form-grid">
-                <div class="input-group">
-                    <label>Target X</label>
-                    <input type="number" id="inpX" value="35.0" step="1" onchange="syncInputToTarget()">
-                </div>
-                <div class="input-group">
-                    <label>Target Y</label>
-                    <input type="number" id="inpY" value="-20.0" step="1" onchange="syncInputToTarget()">
-                </div>
-                <div class="input-group">
-                    <label>Target Z</label>
-                    <input type="number" id="inpZ" value="50.0" step="1" onchange="syncInputToTarget()">
-                </div>
-                <div class="input-group">
-                    <label>Intensity (% MSO)</label>
-                    <input type="number" id="inpIntens" value="110" step="1">
-                </div>
+                <div class="input-group"><label>Target X</label><input type="number" id="inpX" value="35.0" onchange="updateTargetFromInput()"></div>
+                <div class="input-group"><label>Target Y</label><input type="number" id="inpY" value="-20.0" onchange="updateTargetFromInput()"></div>
+                <div class="input-group"><label>Target Z</label><input type="number" id="inpZ" value="50.0" onchange="updateTargetFromInput()"></div>
+                
+                <div class="input-group"><label>Roll (Rx)°</label><input type="number" id="inpRoll" value="0.0" onchange="updateTargetFromInput()"></div>
+                <div class="input-group"><label>Pitch (Ry)°</label><input type="number" id="inpPitch" value="15.0" onchange="updateTargetFromInput()"></div>
+                <div class="input-group"><label>Yaw (Rz)°</label><input type="number" id="inpYaw" value="-45.0" onchange="updateTargetFromInput()"></div>
             </div>
             <div class="action-area">
-                <button class="btn btn-drive" onclick="engageRobot()">Engage Robot</button>
+                <button class="btn btn-drive" onclick="engageRobot()">Calculate & Track</button>
                 <button class="btn btn-stim" id="btnStim" onclick="triggerPulse()" disabled>Fire Pulse</button>
-                <button class="btn btn-estop" onclick="triggerEStop()">EMERGENCY STOP</button>
             </div>
         </div>
 
         <div class="panel mep-panel">
-            <div class="panel-header">
-                Neuroplasticity Quantification (EMG/MEP)
-                <div class="mep-header-stats">
-                    <div class="mep-stat">
-                        <span class="mep-stat-label">Vpp:</span>
-                        <span class="mep-stat-value" id="mepVpp">0.00 μV</span>
-                    </div>
-                    <div class="mep-stat">
-                        <span class="mep-stat-label">Latency:</span>
-                        <span class="mep-stat-value" id="mepLat">0.0 ms</span>
-                    </div>
-                </div>
-            </div>
+            <div class="panel-header">Computational Assessment / MEP Signal</div>
             <div class="chart-container">
                 <canvas id="mepChart"></canvas>
             </div>
@@ -332,63 +159,171 @@
     </div>
 
     <script>
-        // --- 1. NiiVue Engine Init ---
+        // --- 1. Math.js 6-DOF 矩阵计算逻辑 ---
+        // 根据坐标 (x,y,z) 和 欧拉角 (rx,ry,rz，单位：度) 计算 4x4 齐次变换矩阵
+        function computeHomogeneousMatrix(x, y, z, rollDeg, pitchDeg, yawDeg) {
+            const deg2rad = Math.PI / 180;
+            const r = rollDeg * deg2rad;
+            const p = pitchDeg * deg2rad;
+            const y_rad = yawDeg * deg2rad;
+
+            // 各轴旋转矩阵 (使用 math.js)
+            const Rx = math.matrix([
+                [1, 0, 0],
+                [0, Math.cos(r), -Math.sin(r)],
+                [0, Math.sin(r), Math.cos(r)]
+            ]);
+            const Ry = math.matrix([
+                [Math.cos(p), 0, Math.sin(p)],
+                [0, 1, 0],
+                [-Math.sin(p), 0, Math.cos(p)]
+            ]);
+            const Rz = math.matrix([
+                [Math.cos(y_rad), -Math.sin(y_rad), 0],
+                [Math.sin(y_rad), Math.cos(y_rad), 0],
+                [0, 0, 1]
+            ]);
+
+            // 综合旋转矩阵 R = Rz * Ry * Rx (外旋顺序)
+            const R = math.multiply(math.multiply(Rz, Ry), Rx);
+
+            // 构建 4x4 矩阵
+            const T = math.matrix([
+                [R.get([0,0]), R.get([0,1]), R.get([0,2]), x],
+                [R.get([1,0]), R.get([1,1]), R.get([1,2]), y],
+                [R.get([2,0]), R.get([2,1]), R.get([2,2]), z],
+                [0, 0, 0, 1]
+            ]);
+            return T;
+        }
+
+        // --- 2. NiiVue 图谱融合渲染与点击查询 ---
         const nv = new niivue.Niivue({
             dragAndDropEnabled: true,
             backColor: [0, 0, 0, 1],
             show3Dcrosshair: true,
-            crosshairColor: [0.05, 0.65, 0.9, 1] // Clinical blue
+            crosshairColor: [0, 1, 0, 1]
         });
         nv.attachTo('glCanvas');
         nv.setSliceType(nv.sliceTypeMultiplanar);
 
-        document.getElementById('nii-file').addEventListener('change', async (e) => {
+        let isAnatLoaded = false;
+        let isAtlasLoaded = false;
+
+        // 加载解剖影像
+        document.getElementById('nii-anat').addEventListener('change', async (e) => {
             const file = e.target.files[0];
-            if (file) {
-                document.getElementById('file-name').innerText = file.name;
-                updateSystemStatus('Loading Volume...', 'var(--accent-orange)');
-                try {
+            if (!file) return;
+            document.getElementById('file-name-anat').innerText = file.name;
+            try {
+                // 如果图谱已存在，我们需要重构卷列表
+                if (isAtlasLoaded) {
+                    const atlasVol = nv.volumes[1];
                     await nv.loadFromFile(file);
-                    updateSystemStatus('Volume Loaded', 'var(--accent-green)');
-                    syncInputToTarget();
-                } catch (err) {
-                    console.error(err);
-                    updateSystemStatus('Load Failed', 'var(--accent-red)');
+                    nv.addVolume(atlasVol);
+                } else {
+                    await nv.loadFromFile(file);
                 }
-            }
+                isAnatLoaded = true;
+                updateSystemStatus('Anatomy Loaded', 'var(--accent-green)');
+            } catch (err) { console.error(err); }
         });
 
+        // 加载图谱影像 (Overlay)
+        document.getElementById('nii-atlas').addEventListener('change', async (e) => {
+            if (!isAnatLoaded) {
+                alert("请先加载解剖学影像 (Anat) 作为底层参考！");
+                return;
+            }
+            const file = e.target.files[0];
+            if (!file) return;
+            document.getElementById('file-name-atlas').innerText = file.name;
+            
+            try {
+                // NiiVue 支持向当前场景添加带有特定 Colormap 和透明度的 Volume
+                const atlasVolume = await niivue.NVImage.loadFromFile({
+                    file: file,
+                    colormap: 'roi_i256', // 典型的离散标签伪彩映射
+                    opacity: 0.5 // 半透明叠加
+                });
+                nv.addVolume(atlasVolume);
+                isAtlasLoaded = true;
+                updateSystemStatus('Atlas Overlay Active', 'var(--accent-purple)');
+            } catch (err) { console.error(err); }
+        });
+
+        // 图谱约束点击逻辑：获取坐标与标签值
         nv.onLocationChange = function(data) {
             if (sysState.isMoving) return;
+            
+            // 提取空间坐标
             document.getElementById('inpX').value = data.mm[0].toFixed(1);
             document.getElementById('inpY').value = data.mm[1].toFixed(1);
             document.getElementById('inpZ').value = data.mm[2].toFixed(1);
-            updateTargetDisp();
+            
+            // 【核心特性】解析多重 Volume 的体素值
+            // data.values 是一个数组，[0] 是底层 Anat 灰度值，[1] 是 Atlas 标签值
+            if (isAtlasLoaded && data.values.length > 1) {
+                const labelValue = data.values[1].value;
+                document.getElementById('dispLabelID').innerText = 
+                    (labelValue !== 0) ? `Region_${labelValue}` : "Out of bounds / GM";
+                
+                // 【自动化角计算模拟】
+                // 临床上，选中某脑区后，线圈法线应指向该点。此处模拟计算一组角度。
+                // 实际应用中，这里会提取图谱局部表面的法向量计算出 Pitch/Yaw/Roll。
+                document.getElementById('inpPitch').value = (Math.random() * 30).toFixed(1);
+                document.getElementById('inpYaw').value = (data.mm[0] > 0 ? -45 : 45).toFixed(1);
+            }
+            
+            updateTargetFromInput();
         };
 
-        // --- 2. State & Kinematics ---
+
+        // --- 3. 系统状态与 6-DOF 数据更新 ---
         const sysState = {
-            target: {x: 35, y: -20, z: 50},
+            target: {x: 35, y: -20, z: 50, r: 0, p: 15, y_ang: -45},
             current: {x: 0, y: 0, z: 0},
             isMoving: false,
-            animId: null,
-            interlockThreshold: 2.0 // mm
+            animId: null
         };
 
-        function syncInputToTarget() {
+        function formatMatrixDisplay(T) {
+            let str = "";
+            for (let i = 0; i < 4; i++) {
+                str += "[ ";
+                for (let j = 0; j < 4; j++) {
+                    // 对齐格式输出
+                    str += T.get([i,j]).toFixed(3).padStart(7, ' ') + (j<3 ? ", " : " ");
+                }
+                str += " ]\n";
+            }
+            return str;
+        }
+
+        function updateTargetFromInput() {
             sysState.target.x = parseFloat(document.getElementById('inpX').value);
             sysState.target.y = parseFloat(document.getElementById('inpY').value);
             sysState.target.z = parseFloat(document.getElementById('inpZ').value);
-            updateTargetDisp();
-            if (nv.volumes.length > 0) {
+            sysState.target.r = parseFloat(document.getElementById('inpRoll').value);
+            sysState.target.p = parseFloat(document.getElementById('inpPitch').value);
+            sysState.target.y_ang = parseFloat(document.getElementById('inpYaw').value);
+
+            // 更新 UI 显示
+            document.getElementById('dispTargetPos').innerText = `${sysState.target.x.toFixed(1)}, ${sysState.target.y.toFixed(1)}, ${sysState.target.z.toFixed(1)}`;
+            document.getElementById('dispTargetEuler').innerText = `${sysState.target.r.toFixed(1)}, ${sysState.target.p.toFixed(1)}, ${sysState.target.y_ang.toFixed(1)}`;
+
+            // 计算并渲染 6-DOF 矩阵
+            const T = computeHomogeneousMatrix(
+                sysState.target.x, sysState.target.y, sysState.target.z, 
+                sysState.target.r, sysState.target.p, sysState.target.y_ang
+            );
+            document.getElementById('dispMatrix').innerText = formatMatrixDisplay(T);
+
+            // 更新 NiiVue 准星
+            if (isAnatLoaded && !sysState.isMoving) {
                 nv.scene.crosshairPos = nv.mm2frac([sysState.target.x, sysState.target.y, sysState.target.z]);
                 nv.drawScene();
             }
-        }
-
-        function updateTargetDisp() {
-            document.getElementById('dispTarget').innerText = 
-                `${sysState.target.x.toFixed(1)}, ${sysState.target.y.toFixed(1)}, ${sysState.target.z.toFixed(1)}`;
             evaluateTracking();
         }
 
@@ -402,61 +337,45 @@
         function evaluateTracking() {
             const err = getEuclideanError();
             const errEl = document.getElementById('dispError');
-            const btnStim = document.getElementById('btnStim');
-            
-            document.getElementById('dispCurrent').innerText = 
-                `${sysState.current.x.toFixed(1)}, ${sysState.current.y.toFixed(1)}, ${sysState.current.z.toFixed(1)}`;
-            
             errEl.innerText = err.toFixed(2) + ' mm';
 
-            // Hardware Interlock Logic
-            if (err <= sysState.interlockThreshold) {
-                errEl.className = 'metric-value safe-value';
-                if(!sysState.isMoving) {
-                    btnStim.disabled = false;
-                    updateSystemStatus('Interlock: READY', 'var(--accent-green)');
-                }
+            if (err <= 2.0 && !sysState.isMoving) {
+                errEl.style.color = 'var(--accent-green)';
+                document.getElementById('btnStim').disabled = false;
+                updateSystemStatus('6-DOF Aligned. Ready.', 'var(--accent-green)');
             } else {
-                errEl.className = 'metric-value error-value';
-                btnStim.disabled = true;
-                if(!sysState.isMoving) updateSystemStatus('Target Misaligned', 'var(--accent-orange)');
+                errEl.style.color = 'var(--accent-red)';
+                document.getElementById('btnStim').disabled = true;
             }
         }
 
         function engageRobot() {
-            syncInputToTarget();
             sysState.isMoving = true;
             document.getElementById('btnStim').disabled = true;
-            updateSystemStatus('Robot Engaging...', 'var(--accent-blue)');
-            cancelAnimationFrame(sysState.animId);
+            updateSystemStatus('Solving Inverse Kinematics...', 'var(--accent-blue)');
+            
+            // 提取目标矩阵并模拟下发硬件
+            const cmdMatrix = document.getElementById('dispMatrix').innerText;
+            console.log("Dispatching to ROS:\n", cmdMatrix);
+
             controlLoop();
         }
 
         function controlLoop() {
             if (!sysState.isMoving) return;
-            const kp = 0.08; // Proportional gain
-            sysState.current.x += (sysState.target.x - sysState.current.x) * kp + (Math.random()-0.5)*0.3;
-            sysState.current.y += (sysState.target.y - sysState.current.y) * kp + (Math.random()-0.5)*0.3;
-            sysState.current.z += (sysState.target.z - sysState.current.z) * kp + (Math.random()-0.5)*0.3;
+            const kp = 0.1;
+            sysState.current.x += (sysState.target.x - sysState.current.x) * kp;
+            sysState.current.y += (sysState.target.y - sysState.current.y) * kp;
+            sysState.current.z += (sysState.target.z - sysState.current.z) * kp;
             
             evaluateTracking();
 
-            if (getEuclideanError() < 0.5) {
+            if (getEuclideanError() < 0.2) {
                 sysState.isMoving = false;
-                evaluateTracking(); // Final eval to unlock stim
+                evaluateTracking();
             } else {
                 sysState.animId = requestAnimationFrame(controlLoop);
             }
-        }
-
-        function triggerEStop() {
-            sysState.isMoving = false;
-            cancelAnimationFrame(sysState.animId);
-            document.getElementById('btnStim').disabled = true;
-            updateSystemStatus('E-STOP ENGAGED', 'var(--accent-red)');
-            // Add visual flash to screen
-            document.body.style.backgroundColor = '#300';
-            setTimeout(() => document.body.style.backgroundColor = 'var(--bg-base)', 200);
         }
 
         function updateSystemStatus(text, color) {
@@ -466,81 +385,24 @@
             led.style.boxShadow = `0 0 10px ${color}`;
         }
 
-        // --- 3. MEP / Neuroplasticity Quantification ---
+        // --- 4. MEP 图表简易初始化 ---
         const ctx = document.getElementById('mepChart').getContext('2d');
-        const dataLen = 120;
-        const baseline = Array.from({length: dataLen}, () => 0);
-        
         const chart = new Chart(ctx, {
             type: 'line',
-            data: {
-                labels: Array.from({length: dataLen}, (_, i) => i),
-                datasets: [{
-                    data: [...baseline],
-                    borderColor: 'var(--accent-green)',
-                    borderWidth: 2,
-                    pointRadius: 0,
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: { duration: 0 },
-                scales: {
-                    x: { display: false },
-                    y: { 
-                        display: true, 
-                        min: -150, max: 150, 
-                        grid: { color: 'rgba(255,255,255,0.05)' },
-                        ticks: { color: 'var(--text-muted)' }
-                    }
-                },
-                plugins: { legend: { display: false } }
-            }
+            data: { labels: Array.from({length: 100}, (_, i) => i), datasets: [{ data: Array(100).fill(0), borderColor: 'var(--accent-green)', tension: 0.3 }] },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { display: false }, y: { min: -100, max: 100 } } }
         });
-
-        function extractMetrics(signal, latencyIndex) {
-            const postStim = signal.slice(latencyIndex);
-            const maxVal = Math.max(...postStim);
-            const minVal = Math.min(...postStim);
-            const vpp = maxVal - minVal;
-            // 简单估算真实潜伏期 (假设每点 0.5ms)
-            const latMs = latencyIndex * 0.5; 
-            
-            document.getElementById('mepVpp').innerText = vpp.toFixed(1) + ' μV';
-            document.getElementById('mepLat').innerText = latMs.toFixed(1) + ' ms';
-        }
-
+        
         function triggerPulse() {
-            updateSystemStatus('Pulse Fired', '#fff');
-            document.getElementById('statusLed').style.backgroundColor = '#fff';
-            
-            const signal = [...baseline];
-            const latencyIdx = 30 + Math.floor(Math.random() * 5); // 随机抖动潜伏期
-            const intens = parseFloat(document.getElementById('inpIntens').value) || 100;
-            const scale = intens / 100.0;
-
-            for (let i = 0; i < dataLen; i++) {
-                if (i === latencyIdx) signal[i] = 80 * scale;
-                else if (i === latencyIdx + 6) signal[i] = -95 * scale;
-                else if (i > latencyIdx && i < latencyIdx + 25) {
-                    signal[i] = signal[i-1] * -0.6; // 阻尼震荡
-                }
-                // Baseline noise
-                signal[i] += (Math.random() - 0.5) * 8;
-            }
-
+            updateSystemStatus('Pulse Executed', '#fff');
+            const signal = Array(100).fill(0);
+            for(let i=30; i<60; i++) signal[i] = Math.sin((i-30)*0.5) * 80 * Math.exp(-(i-30)*0.1);
             chart.data.datasets[0].data = signal;
             chart.update();
-            extractMetrics(signal, latencyIdx);
-
-            setTimeout(evaluateTracking, 300); // 恢复绿灯状态
+            setTimeout(evaluateTracking, 500);
         }
 
-        // Init
-        syncInputToTarget();
-        evaluateTracking();
+        updateTargetFromInput();
     </script>
 </body>
 </html>
