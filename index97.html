@@ -3,414 +3,484 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Robotic TMS Neuronavigation - NIFTI Support</title>
+    <title>Robotic TMS Clinical Interface</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/@niivue/niivue@0.44.0/dist/niivue.umd.js"></script>
     <style>
         :root {
-            --bg-color: #121212;
-            --panel-bg: #1e1e1e;
-            --text-main: #e0e0e0;
-            --accent: #00d2ff;
-            --danger: #ff4c4c;
-            --success: #00e676;
-            --border-color: #333;
+            --bg-base: #0a0a0a;
+            --panel-bg: #16181a;
+            --border-dim: #2a2d31;
+            --text-main: #d1d5db;
+            --text-muted: #6b7280;
+            --accent-blue: #0ea5e9;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-orange: #f59e0b;
         }
+        * { box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-base);
             color: var(--text-main);
             margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
+            padding: 16px;
             height: 100vh;
-            box-sizing: border-box;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--panel-bg);
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-        .status-indicator {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: bold;
-        }
-        .status-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: var(--success);
-            box-shadow: 0 0 8px var(--success);
-        }
-        .main-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            grid-template-rows: 1fr 1fr;
-            gap: 20px;
-            flex: 1;
-        }
-        .panel {
-            background-color: var(--panel-bg);
-            border-radius: 8px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
-        }
-        h2 {
-            margin-top: 0;
-            font-size: 1.2rem;
-            color: var(--accent);
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        /* NIFTI 可视化区域 */
-        .gl-container {
-            flex: 1;
-            background: #000;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            position: relative;
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
-        canvas {
-            width: 100%;
-            height: 100%;
-            outline: none;
+        /* 顶部状态栏 */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-dim);
+            padding: 12px 24px;
+            border-radius: 6px;
+            margin-bottom: 16px;
         }
-        /* 控制面板表单 */
-        .control-group {
+        .brand-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: #fff;
+        }
+        .patient-info {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+        .patient-info span { color: var(--accent-blue); font-weight: 500; }
+        
+        .system-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            background: rgba(0,0,0,0.3);
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border-dim);
+        }
+        .status-led {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background-color: var(--accent-orange);
+            box-shadow: 0 0 10px var(--accent-orange);
+            transition: all 0.3s ease;
+        }
+
+        /* 主体网格布局 */
+        .main-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 15px;
+            grid-template-columns: 45% 1fr 1fr;
+            grid-template-rows: auto 1fr;
+            gap: 16px;
+            flex: 1;
+            min-height: 0;
         }
-        .input-item {
+
+        .panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-dim);
+            border-radius: 8px;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
-        label {
-            font-size: 0.85rem;
-            margin-bottom: 5px;
-            color: #aaa;
+        .panel-header {
+            background-color: rgba(255,255,255,0.02);
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-dim);
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        input[type="number"], input[type="file"] {
-            background: #2a2a2a;
-            border: 1px solid #444;
-            color: white;
-            padding: 8px;
-            border-radius: 4px;
-            font-family: monospace;
+
+        /* 影像区 */
+        .viewer-panel {
+            grid-column: 1 / 2;
+            grid-row: 1 / 3;
         }
-        input[type="file"] {
-            font-family: inherit;
-            font-size: 0.85rem;
+        .gl-wrapper {
+            flex: 1;
+            background: #000;
+            position: relative;
         }
-        input:focus {
-            outline: none;
-            border-color: var(--accent);
-        }
-        .file-upload-wrapper {
-            margin-bottom: 10px;
+        canvas { width: 100%; height: 100%; outline: none; }
+        .file-tools {
+            padding: 10px 16px;
+            background: rgba(0,0,0,0.2);
+            border-bottom: 1px solid var(--border-dim);
             display: flex;
             gap: 10px;
             align-items: center;
-            background: #2a2a2a;
-            padding: 10px;
-            border-radius: 4px;
-            border: 1px dashed #444;
         }
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: auto;
-        }
-        button {
-            flex: 1;
-            padding: 12px;
-            border: none;
+        .custom-file-upload {
+            background: var(--border-dim);
+            padding: 6px 12px;
             border-radius: 4px;
+            font-size: 0.85rem;
             cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s;
+            transition: background 0.2s;
         }
-        .btn-primary { background-color: var(--accent); color: #000; }
-        .btn-primary:hover { background-color: #00b8e6; }
-        .btn-danger { background-color: var(--danger); color: #fff; }
-        .btn-danger:hover { background-color: #e60000; }
+        .custom-file-upload:hover { background: #3a3d41; }
+
+        /* 追踪与控制区 */
+        .tracking-panel { grid-column: 2 / 3; grid-row: 1 / 2; }
+        .control-panel { grid-column: 3 / 4; grid-row: 1 / 2; }
         
-        /* 状态与计算数据 */
-        .data-grid {
+        .data-display-group { padding: 16px; }
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-dim);
+        }
+        .metric-row:last-child { border-bottom: none; }
+        .metric-label { font-size: 0.85rem; color: var(--text-muted); }
+        .metric-value {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #fff;
+        }
+        .highlight-value { color: var(--accent-blue); }
+        .error-value { font-size: 1.75rem; color: var(--accent-red); }
+        .safe-value { font-size: 1.75rem; color: var(--accent-green); }
+
+        /* 表单与输入 */
+        .form-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 12px;
+            padding: 16px;
         }
-        .data-card {
-            background: #2a2a2a;
-            padding: 15px;
+        .input-group { display: flex; flex-direction: column; gap: 4px; }
+        .input-group label { font-size: 0.8rem; color: var(--text-muted); }
+        .input-group input {
+            background: #0a0a0a;
+            border: 1px solid var(--border-dim);
+            color: #fff;
+            padding: 8px;
             border-radius: 4px;
-            text-align: center;
-        }
-        .data-value {
-            font-size: 1.5rem;
             font-family: monospace;
-            color: var(--accent);
-            margin-top: 5px;
+            font-size: 1rem;
         }
-        .error-value { color: var(--danger); }
-        .error-safe { color: var(--success); }
+        .input-group input:focus { outline: none; border-color: var(--accent-blue); }
+
+        /* 操作按钮 */
+        .action-area {
+            padding: 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: auto;
+            background: rgba(0,0,0,0.2);
+            border-top: 1px solid var(--border-dim);
+        }
+        .btn {
+            padding: 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .btn-drive { background-color: #2563eb; color: #fff; }
+        .btn-drive:hover { background-color: #1d4ed8; }
+        .btn-stim { background-color: var(--accent-green); color: #000; }
+        .btn-stim:hover { background-color: #059669; }
+        .btn-stim:disabled { background-color: #064e3b; color: #6b7280; cursor: not-allowed; }
+        
+        .btn-estop {
+            grid-column: span 2;
+            background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+            color: white;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+        .btn-estop:active { box-shadow: inset 0 4px 6px rgba(0,0,0,0.4); transform: translateY(2px); }
+
+        /* MEP量化反馈区 */
+        .mep-panel {
+            grid-column: 2 / 4;
+            grid-row: 2 / 3;
+            display: flex;
+            flex-direction: column;
+        }
+        .mep-header-stats {
+            display: flex;
+            gap: 24px;
+        }
+        .mep-stat { display: flex; gap: 8px; align-items: baseline; }
+        .mep-stat-label { font-size: 0.8rem; color: var(--text-muted); }
+        .mep-stat-value { font-family: monospace; font-size: 1.1rem; color: var(--accent-orange); font-weight: bold; }
+        
+        .chart-container {
+            flex: 1;
+            padding: 16px;
+            position: relative;
+        }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>Robotic TMS 神经导航监控系统 (多模态影像版)</h1>
-        <div class="status-indicator">
-            <div class="status-dot" id="system-status-dot"></div>
-            <span id="system-status-text">系统就绪 (等待加载影像)</span>
+    <header class="top-bar">
+        <div class="brand-title">TMS-NAV | Clinical Interlock System</div>
+        <div class="patient-info">
+            <div>Subject ID: <span>SUBJ-2026-004</span></div>
+            <div>Protocol: <span>Cortical Mapping / Single Pulse</span></div>
+        </div>
+        <div class="system-status">
+            <div class="status-led" id="statusLed"></div>
+            <span id="statusText">System Standby</span>
         </div>
     </header>
 
-    <div class="main-container">
-        <div class="panel">
-            <h2>
-                个体化影像导航 (NIFTI Viewer)
-                <span style="font-size: 0.8rem; font-weight: normal; color: #888;">支持 .nii / .nii.gz</span>
-            </h2>
-            <div class="file-upload-wrapper">
-                <label for="nii-file" style="margin: 0; color: var(--accent); cursor: pointer;">[点击导入 MRI 文件]</label>
-                <input type="file" id="nii-file" accept=".nii,.nii.gz" style="display: none;">
-                <span id="file-name" style="font-size: 0.85rem; color: #aaa;">未选择文件</span>
+    <div class="main-grid">
+        <div class="panel viewer-panel">
+            <div class="panel-header">
+                Image Space Planning (MPR)
             </div>
-            <div class="gl-container">
+            <div class="file-tools">
+                <label class="custom-file-upload">
+                    <input type="file" id="nii-file" accept=".nii,.nii.gz" style="display: none;">
+                    Load Individual NIFTI
+                </label>
+                <span id="file-name" style="font-size: 0.8rem; color: var(--text-muted);">No volume loaded</span>
+            </div>
+            <div class="gl-wrapper">
                 <canvas id="glCanvas"></canvas>
             </div>
         </div>
 
-        <div class="panel">
-            <h2>运动控制与空间靶点配准</h2>
-            <div class="control-group">
-                <div class="input-item">
-                    <label>Target X (World mm)</label>
-                    <input type="number" id="targetX" value="35.0" step="0.1" onchange="updateCrosshair()">
+        <div class="panel tracking-panel">
+            <div class="panel-header">Real-time Kinematics</div>
+            <div class="data-display-group">
+                <div class="metric-row">
+                    <span class="metric-label">Target (X, Y, Z) mm</span>
+                    <span class="metric-value highlight-value" id="dispTarget">35.0, -20.0, 50.0</span>
                 </div>
-                <div class="input-item">
-                    <label>Target Y (World mm)</label>
-                    <input type="number" id="targetY" value="-20.0" step="0.1" onchange="updateCrosshair()">
+                <div class="metric-row">
+                    <span class="metric-label">Current Coil (X, Y, Z) mm</span>
+                    <span class="metric-value" id="dispCurrent">0.0, 0.0, 0.0</span>
                 </div>
-                <div class="input-item">
-                    <label>Target Z (World mm)</label>
-                    <input type="number" id="targetZ" value="50.0" step="0.1" onchange="updateCrosshair()">
-                </div>
-                <div class="input-item">
-                    <label>刺激强度 (% MSO)</label>
-                    <input type="number" id="intensity" value="110" step="1">
-                </div>
-            </div>
-            <div class="btn-group">
-                <button class="btn-primary" onclick="startRobotMovement()">驱动机械臂至靶点</button>
-                <button class="btn-primary" onclick="triggerStimulation()" id="stimBtn" disabled style="background-color: #555; color: #888;">触发单脉冲</button>
-                <button class="btn-danger" onclick="emergencyStop()">急停 (E-STOP)</button>
-            </div>
-        </div>
-
-        <div class="panel">
-            <h2>实时运动学反馈</h2>
-            <div class="data-grid">
-                <div class="data-card">
-                    <label>当前线圈 X</label>
-                    <div class="data-value" id="currentX">0.00</div>
-                </div>
-                <div class="data-card">
-                    <label>当前线圈 Y</label>
-                    <div class="data-value" id="currentY">0.00</div>
-                </div>
-                <div class="data-card">
-                    <label>当前线圈 Z</label>
-                    <div class="data-value" id="currentZ">0.00</div>
-                </div>
-                <div class="data-card">
-                    <label>欧氏距离误差 (Euclidean)</label>
-                    <div class="data-value error-value" id="targetError">--- mm</div>
+                <div class="metric-row" style="margin-top: 10px; border:none;">
+                    <span class="metric-label">Targeting Error (Euclidean)</span>
+                    <span class="metric-value error-value" id="dispError">---</span>
                 </div>
             </div>
         </div>
 
-        <div class="panel">
-            <h2>神经可塑性量化反馈 (MEP)</h2>
-            <div class="gl-container" style="background: var(--panel-bg); border: none;">
+        <div class="panel control-panel">
+            <div class="panel-header">Stimulation Parameters</div>
+            <div class="form-grid">
+                <div class="input-group">
+                    <label>Target X</label>
+                    <input type="number" id="inpX" value="35.0" step="1" onchange="syncInputToTarget()">
+                </div>
+                <div class="input-group">
+                    <label>Target Y</label>
+                    <input type="number" id="inpY" value="-20.0" step="1" onchange="syncInputToTarget()">
+                </div>
+                <div class="input-group">
+                    <label>Target Z</label>
+                    <input type="number" id="inpZ" value="50.0" step="1" onchange="syncInputToTarget()">
+                </div>
+                <div class="input-group">
+                    <label>Intensity (% MSO)</label>
+                    <input type="number" id="inpIntens" value="110" step="1">
+                </div>
+            </div>
+            <div class="action-area">
+                <button class="btn btn-drive" onclick="engageRobot()">Engage Robot</button>
+                <button class="btn btn-stim" id="btnStim" onclick="triggerPulse()" disabled>Fire Pulse</button>
+                <button class="btn btn-estop" onclick="triggerEStop()">EMERGENCY STOP</button>
+            </div>
+        </div>
+
+        <div class="panel mep-panel">
+            <div class="panel-header">
+                Neuroplasticity Quantification (EMG/MEP)
+                <div class="mep-header-stats">
+                    <div class="mep-stat">
+                        <span class="mep-stat-label">Vpp:</span>
+                        <span class="mep-stat-value" id="mepVpp">0.00 μV</span>
+                    </div>
+                    <div class="mep-stat">
+                        <span class="mep-stat-label">Latency:</span>
+                        <span class="mep-stat-value" id="mepLat">0.0 ms</span>
+                    </div>
+                </div>
+            </div>
+            <div class="chart-container">
                 <canvas id="mepChart"></canvas>
             </div>
         </div>
     </div>
 
     <script>
-        // --- 1. NiiVue NIFTI 渲染引擎初始化 ---
+        // --- 1. NiiVue Engine Init ---
         const nv = new niivue.Niivue({
             dragAndDropEnabled: true,
-            backColor: [0, 0, 0, 1], // 黑色背景
+            backColor: [0, 0, 0, 1],
             show3Dcrosshair: true,
-            crosshairColor: [0, 1, 0, 1] // 绿色准星代表靶点
+            crosshairColor: [0.05, 0.65, 0.9, 1] // Clinical blue
         });
         nv.attachTo('glCanvas');
-        nv.setSliceType(nv.sliceTypeMultiplanar); // 设置为正交多平面视图
+        nv.setSliceType(nv.sliceTypeMultiplanar);
 
-        // 处理文件上传
-        const fileInput = document.getElementById('nii-file');
-        const fileNameDisplay = document.getElementById('file-name');
-
-        fileInput.addEventListener('change', async function(e) {
+        document.getElementById('nii-file').addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if (file) {
-                fileNameDisplay.innerText = "加载中: " + file.name;
-                setSystemStatus('正在解析 NIFTI 矩阵...', '#ffaa00');
+                document.getElementById('file-name').innerText = file.name;
+                updateSystemStatus('Loading Volume...', 'var(--accent-orange)');
                 try {
-                    // NiiVue 原生支持从 HTML5 File 对象加载
                     await nv.loadFromFile(file);
-                    fileNameDisplay.innerText = file.name;
-                    setSystemStatus('影像加载完成', 'var(--success)');
-                    updateCrosshair(); // 影像加载后将准星移动到默认坐标
-                } catch (error) {
-                    console.error("NIFTI 加载失败:", error);
-                    fileNameDisplay.innerText = "加载失败，请检查文件格式";
-                    setSystemStatus('解析错误', 'var(--danger)');
+                    updateSystemStatus('Volume Loaded', 'var(--accent-green)');
+                    syncInputToTarget();
+                } catch (err) {
+                    console.error(err);
+                    updateSystemStatus('Load Failed', 'var(--accent-red)');
                 }
             }
         });
 
-        // 联动：当修改坐标框时，更新 NiiVue 的准星位置
-        function updateCrosshair() {
-            if (nv.volumes.length === 0) return; // 尚未加载影像时不操作
-            const x = parseFloat(document.getElementById('targetX').value);
-            const y = parseFloat(document.getElementById('targetY').value);
-            const z = parseFloat(document.getElementById('targetZ').value);
-            // NiiVue 提供了直接跳转到指定空间坐标 (mm) 的方法
-            nv.scene.crosshairPos = nv.mm2frac([x, y, z]);
-            nv.drawScene();
-        }
-
-        // 联动：当用户在 NIFTI 图像上点击时，反向更新输入框中的坐标
         nv.onLocationChange = function(data) {
-            if (isMoving) return; // 如果机械臂正在移动，忽略手动点击修改
-            // data.mm 包含用户点击的世界坐标
-            document.getElementById('targetX').value = data.mm[0].toFixed(1);
-            document.getElementById('targetY').value = data.mm[1].toFixed(1);
-            document.getElementById('targetZ').value = data.mm[2].toFixed(1);
-            robotTargetPos = { x: data.mm[0], y: data.mm[1], z: data.mm[2] };
+            if (sysState.isMoving) return;
+            document.getElementById('inpX').value = data.mm[0].toFixed(1);
+            document.getElementById('inpY').value = data.mm[1].toFixed(1);
+            document.getElementById('inpZ').value = data.mm[2].toFixed(1);
+            updateTargetDisp();
         };
 
-        // --- 2. 机械臂运动控制与误差计算 ---
-        let robotCurrentPos = { x: 0, y: 0, z: 0 };
-        let robotTargetPos = { x: 35, y: -20, z: 50 };
-        let isMoving = false;
-        let animationFrameId;
+        // --- 2. State & Kinematics ---
+        const sysState = {
+            target: {x: 35, y: -20, z: 50},
+            current: {x: 0, y: 0, z: 0},
+            isMoving: false,
+            animId: null,
+            interlockThreshold: 2.0 // mm
+        };
 
-        function calculateError() {
-            const dx = robotTargetPos.x - robotCurrentPos.x;
-            const dy = robotTargetPos.y - robotCurrentPos.y;
-            const dz = robotTargetPos.z - robotCurrentPos.z;
+        function syncInputToTarget() {
+            sysState.target.x = parseFloat(document.getElementById('inpX').value);
+            sysState.target.y = parseFloat(document.getElementById('inpY').value);
+            sysState.target.z = parseFloat(document.getElementById('inpZ').value);
+            updateTargetDisp();
+            if (nv.volumes.length > 0) {
+                nv.scene.crosshairPos = nv.mm2frac([sysState.target.x, sysState.target.y, sysState.target.z]);
+                nv.drawScene();
+            }
+        }
+
+        function updateTargetDisp() {
+            document.getElementById('dispTarget').innerText = 
+                `${sysState.target.x.toFixed(1)}, ${sysState.target.y.toFixed(1)}, ${sysState.target.z.toFixed(1)}`;
+            evaluateTracking();
+        }
+
+        function getEuclideanError() {
+            const dx = sysState.target.x - sysState.current.x;
+            const dy = sysState.target.y - sysState.current.y;
+            const dz = sysState.target.z - sysState.current.z;
             return Math.sqrt(dx*dx + dy*dy + dz*dz);
         }
 
-        function updateDataDisplay() {
-            document.getElementById('currentX').innerText = robotCurrentPos.x.toFixed(2);
-            document.getElementById('currentY').innerText = robotCurrentPos.y.toFixed(2);
-            document.getElementById('currentZ').innerText = robotCurrentPos.z.toFixed(2);
+        function evaluateTracking() {
+            const err = getEuclideanError();
+            const errEl = document.getElementById('dispError');
+            const btnStim = document.getElementById('btnStim');
             
-            const error = calculateError();
-            const errorElement = document.getElementById('targetError');
-            errorElement.innerText = error.toFixed(2) + ' mm';
+            document.getElementById('dispCurrent').innerText = 
+                `${sysState.current.x.toFixed(1)}, ${sysState.current.y.toFixed(1)}, ${sysState.current.z.toFixed(1)}`;
             
-            // 误差 < 2.0mm 解锁刺激按钮 (硬件 Interlock 模拟)
-            const stimBtn = document.getElementById('stimBtn');
-            if (error < 2.0) {
-                errorElement.className = 'data-value error-safe';
-                stimBtn.disabled = false;
-                stimBtn.style.backgroundColor = 'var(--accent)';
-                stimBtn.style.color = '#000';
+            errEl.innerText = err.toFixed(2) + ' mm';
+
+            // Hardware Interlock Logic
+            if (err <= sysState.interlockThreshold) {
+                errEl.className = 'metric-value safe-value';
+                if(!sysState.isMoving) {
+                    btnStim.disabled = false;
+                    updateSystemStatus('Interlock: READY', 'var(--accent-green)');
+                }
             } else {
-                errorElement.className = 'data-value error-value';
-                stimBtn.disabled = true;
-                stimBtn.style.backgroundColor = '#555';
-                stimBtn.style.color = '#888';
+                errEl.className = 'metric-value error-value';
+                btnStim.disabled = true;
+                if(!sysState.isMoving) updateSystemStatus('Target Misaligned', 'var(--accent-orange)');
             }
         }
 
-        function simulateRobotMovement() {
-            if (!isMoving) return;
-            const speed = 0.05; 
-            robotCurrentPos.x += (robotTargetPos.x - robotCurrentPos.x) * speed;
-            robotCurrentPos.y += (robotTargetPos.y - robotCurrentPos.y) * speed;
-            robotCurrentPos.z += (robotTargetPos.z - robotCurrentPos.z) * speed;
-            
-            // 模拟光学追踪系统的动态抖动
-            robotCurrentPos.x += (Math.random() - 0.5) * 0.2;
-            robotCurrentPos.y += (Math.random() - 0.5) * 0.2;
-            robotCurrentPos.z += (Math.random() - 0.5) * 0.2;
+        function engageRobot() {
+            syncInputToTarget();
+            sysState.isMoving = true;
+            document.getElementById('btnStim').disabled = true;
+            updateSystemStatus('Robot Engaging...', 'var(--accent-blue)');
+            cancelAnimationFrame(sysState.animId);
+            controlLoop();
+        }
 
-            updateDataDisplay();
+        function controlLoop() {
+            if (!sysState.isMoving) return;
+            const kp = 0.08; // Proportional gain
+            sysState.current.x += (sysState.target.x - sysState.current.x) * kp + (Math.random()-0.5)*0.3;
+            sysState.current.y += (sysState.target.y - sysState.current.y) * kp + (Math.random()-0.5)*0.3;
+            sysState.current.z += (sysState.target.z - sysState.current.z) * kp + (Math.random()-0.5)*0.3;
             
-            const error = calculateError();
-            if (error < 0.5) {
-                isMoving = false;
-                setSystemStatus('已对齐靶点 (追踪锁定)', 'var(--success)');
+            evaluateTracking();
+
+            if (getEuclideanError() < 0.5) {
+                sysState.isMoving = false;
+                evaluateTracking(); // Final eval to unlock stim
             } else {
-                animationFrameId = requestAnimationFrame(simulateRobotMovement);
+                sysState.animId = requestAnimationFrame(controlLoop);
             }
         }
 
-        function startRobotMovement() {
-            robotTargetPos.x = parseFloat(document.getElementById('targetX').value);
-            robotTargetPos.y = parseFloat(document.getElementById('targetY').value);
-            robotTargetPos.z = parseFloat(document.getElementById('targetZ').value);
-            
-            updateCrosshair(); // 确保图像靶点与指令一致
-            
-            isMoving = true;
-            setSystemStatus('机械臂空间寻迹中...', '#ffaa00');
-            cancelAnimationFrame(animationFrameId);
-            simulateRobotMovement();
+        function triggerEStop() {
+            sysState.isMoving = false;
+            cancelAnimationFrame(sysState.animId);
+            document.getElementById('btnStim').disabled = true;
+            updateSystemStatus('E-STOP ENGAGED', 'var(--accent-red)');
+            // Add visual flash to screen
+            document.body.style.backgroundColor = '#300';
+            setTimeout(() => document.body.style.backgroundColor = 'var(--bg-base)', 200);
         }
 
-        function emergencyStop() {
-            isMoving = false;
-            cancelAnimationFrame(animationFrameId);
-            setSystemStatus('急停 (E-STOP) 激活！', 'var(--danger)');
+        function updateSystemStatus(text, color) {
+            document.getElementById('statusText').innerText = text;
+            const led = document.getElementById('statusLed');
+            led.style.backgroundColor = color;
+            led.style.boxShadow = `0 0 10px ${color}`;
         }
 
-        function setSystemStatus(text, color) {
-            document.getElementById('system-status-text').innerText = text;
-            document.getElementById('system-status-dot').style.backgroundColor = color;
-            document.getElementById('system-status-dot').style.boxShadow = `0 0 8px ${color}`;
-        }
-
-        // --- 3. 生理反馈 (MEP) 可视化 ---
-        const ctxChart = document.getElementById('mepChart').getContext('2d');
-        const mepDataLength = 100; 
-        const emptyData = Array.from({length: mepDataLength}, () => 0);
+        // --- 3. MEP / Neuroplasticity Quantification ---
+        const ctx = document.getElementById('mepChart').getContext('2d');
+        const dataLen = 120;
+        const baseline = Array.from({length: dataLen}, () => 0);
         
-        const mepChart = new Chart(ctxChart, {
+        const chart = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: Array.from({length: mepDataLength}, (_, i) => i),
+                labels: Array.from({length: dataLen}, (_, i) => i),
                 datasets: [{
-                    label: 'EMG (μV)',
-                    data: [...emptyData],
-                    borderColor: 'var(--accent)',
+                    data: [...baseline],
+                    borderColor: 'var(--accent-green)',
                     borderWidth: 2,
                     pointRadius: 0,
-                    tension: 0.4
+                    tension: 0.3
                 }]
             },
             options: {
@@ -419,34 +489,58 @@
                 animation: { duration: 0 },
                 scales: {
                     x: { display: false },
-                    y: { display: true, min: -100, max: 100, grid: { color: '#333' } }
+                    y: { 
+                        display: true, 
+                        min: -150, max: 150, 
+                        grid: { color: 'rgba(255,255,255,0.05)' },
+                        ticks: { color: 'var(--text-muted)' }
+                    }
                 },
                 plugins: { legend: { display: false } }
             }
         });
 
-        function triggerStimulation() {
-            setSystemStatus('磁脉冲输出中...', 'var(--accent)');
-            const newData = [...emptyData];
-            const latency = 20; 
-            const amplitude = document.getElementById('intensity').value * 0.8; 
+        function extractMetrics(signal, latencyIndex) {
+            const postStim = signal.slice(latencyIndex);
+            const maxVal = Math.max(...postStim);
+            const minVal = Math.min(...postStim);
+            const vpp = maxVal - minVal;
+            // 简单估算真实潜伏期 (假设每点 0.5ms)
+            const latMs = latencyIndex * 0.5; 
             
-            for (let i = 0; i < mepDataLength; i++) {
-                if (i === latency) newData[i] = amplitude;
-                else if (i === latency + 5) newData[i] = -amplitude * 0.6;
-                else if (i > latency && i < latency + 15) newData[i] = newData[i-1] * -0.5; 
-                newData[i] += (Math.random() - 0.5) * 5;
-            }
-
-            mepChart.data.datasets[0].data = newData;
-            mepChart.update();
-
-            setTimeout(() => {
-                setSystemStatus('系统就绪 (已对齐靶点)', 'var(--success)');
-            }, 500);
+            document.getElementById('mepVpp').innerText = vpp.toFixed(1) + ' μV';
+            document.getElementById('mepLat').innerText = latMs.toFixed(1) + ' ms';
         }
 
-        updateDataDisplay();
+        function triggerPulse() {
+            updateSystemStatus('Pulse Fired', '#fff');
+            document.getElementById('statusLed').style.backgroundColor = '#fff';
+            
+            const signal = [...baseline];
+            const latencyIdx = 30 + Math.floor(Math.random() * 5); // 随机抖动潜伏期
+            const intens = parseFloat(document.getElementById('inpIntens').value) || 100;
+            const scale = intens / 100.0;
+
+            for (let i = 0; i < dataLen; i++) {
+                if (i === latencyIdx) signal[i] = 80 * scale;
+                else if (i === latencyIdx + 6) signal[i] = -95 * scale;
+                else if (i > latencyIdx && i < latencyIdx + 25) {
+                    signal[i] = signal[i-1] * -0.6; // 阻尼震荡
+                }
+                // Baseline noise
+                signal[i] += (Math.random() - 0.5) * 8;
+            }
+
+            chart.data.datasets[0].data = signal;
+            chart.update();
+            extractMetrics(signal, latencyIdx);
+
+            setTimeout(evaluateTracking, 300); // 恢复绿灯状态
+        }
+
+        // Init
+        syncInputToTarget();
+        evaluateTracking();
     </script>
 </body>
 </html>
